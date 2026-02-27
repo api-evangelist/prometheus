@@ -1,0 +1,88 @@
+name: Prometheus
+description: An open-source systems monitoring and alerting toolkit originally built at SoundCloud
+image: https://prometheus.io/assets/prometheus_logo_grey.svg
+tags:
+- monitoring
+- metrics
+- alerting
+- time-series
+- observability
+created: '2024-01-01'
+modified: '2024-01-01'
+url: https://prometheus.io
+specificationVersion: '0.16'
+apis:
+- name: Prometheus HTTP API
+  description: HTTP API for querying metrics and managing Prometheus
+  image: https://prometheus.io/assets/prometheus_logo_grey.svg
+  humanURL: https://prometheus.io/docs/prometheus/latest/querying/api/
+  baseURL: http://localhost:9090/api/v1
+  tags:
+  - metrics
+  - query
+  - time-series
+  properties:
+  - type: Documentation
+    url: https://prometheus.io/docs/prometheus/latest/querying/api/
+  - type: OpenAPI
+    url: https://github.com/prometheus/prometheus/blob/main/docs/querying/api.md
+  - type: X-PromQL
+    url: https://prometheus.io/docs/prometheus/latest/querying/basics/
+  contact:
+  - FN: Prometheus Community
+    email: prometheus-users@googlegroups.com
+    X-twitter: PrometheusIO
+- name: Prometheus Pushgateway API
+  description: API for pushing metrics to Prometheus via the Pushgateway
+  image: https://prometheus.io/assets/prometheus_logo_grey.svg
+  humanURL: https://github.com/prometheus/pushgateway
+  baseURL: http://localhost:9091
+  tags:
+  - pushgateway
+  - metrics
+  - batch-jobs
+  properties:
+  - type: Documentation
+    url: https://github.com/prometheus/pushgateway/blob/master/README.md
+  - type: GitHub
+    url: https://github.com/prometheus/pushgateway
+- name: Prometheus Alertmanager API
+  description: API for managing alerts and notifications
+  image: https://prometheus.io/assets/prometheus_logo_grey.svg
+  humanURL: https://prometheus.io/docs/alerting/latest/alertmanager/
+  baseURL: http://localhost:9093/api/v2
+  tags:
+  - alerting
+  - notifications
+  - alerts
+  properties:
+  - type: Documentation
+    url: https://prometheus.io/docs/alerting/latest/alertmanager/
+  - type: OpenAPI
+    url: https://github.com/prometheus/alertmanager/blob/main/api/v2/openapi.yaml
+  - type: GitHub
+    url: https://github.com/prometheus/alertmanager
+maintainers:
+- FN: Prometheus Authors
+  email: prometheus-developers@googlegroups.com
+  X-twitter: PrometheusIO
+  X-github: prometheus
+common:
+- type: Website
+  url: https://prometheus.io
+- type: Documentation
+  url: https://prometheus.io/docs/
+- type: GitHub Organization
+  url: https://github.com/prometheus
+- type: Blog
+  url: https://prometheus.io/blog/
+- type: Community
+  url: https://prometheus.io/community/
+- type: Mailing List
+  url: https://groups.google.com/forum/#!forum/prometheus-users
+- type: Slack
+  url: https://slack.cncf.io/
+- type: Twitter
+  url: https://twitter.com/PrometheusIO
+- type: License
+  url: https://github.com/prometheus/prometheus/blob/main/LICENSE
