@@ -1,0 +1,380 @@
+openapi: 3.1.0
+info:
+  title: Prometheus Pushgateway API
+  description: >-
+    The Prometheus Pushgateway API accepts metrics pushed from short-lived
+    batch jobs and ephemeral processes that cannot be scraped by Prometheus
+    directly. Metrics are organized by job label and optional grouping labels.
+    Pushed metrics are exposed via a /metrics endpoint for Prometheus to scrape
+    until explicitly deleted. The Pushgateway supports the Prometheus text
+    exposition format and OpenMetrics format for metric payloads.
+  version: v1.9.0
+  contact:
+    name: Prometheus Project
+    url: https://prometheus.io/community/
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+externalDocs:
+  description: Prometheus Pushgateway Documentation
+  url: https://github.com/prometheus/pushgateway/blob/master/README.md
+servers:
+  - url: 'http://{host}:{port}'
+    description: Pushgateway server
+    variables:
+      host:
+        default: localhost
+        description: Pushgateway server hostname
+      port:
+        default: '9091'
+        description: Pushgateway server port
+tags:
+  - name: Metrics
+    description: >-
+      Endpoints for pushing, replacing, and deleting metric groups. Metrics
+      are grouped by job and optional additional labels.
+  - name: Status
+    description: >-
+      Endpoints for checking Pushgateway health and retrieving build
+      information.
+paths:
+  /metrics/job/{job}:
+    put:
+      operationId: replaceJobMetrics
+      summary: Replace all metrics for a job
+      description: >-
+        Replaces all metrics for the specified job with the metrics in the
+        request body. The entire group of metrics for the job is atomically
+        replaced. Use PUT when you want to fully overwrite the existing metric
+        set for a job.
+      tags:
+        - Metrics
+      parameters:
+        - $ref: '#/components/parameters/Job'
+      requestBody:
+        required: true
+        content:
+          text/plain:
+            schema:
+              type: string
+              description: >-
+                Metrics in Prometheus text exposition format or OpenMetrics
+                format.
+              example: "# HELP batch_job_duration_seconds Duration of a batch job.\n# TYPE batch_job_duration_seconds gauge\nbatch_job_duration_seconds 42.0\n"
+          application/openmetrics-text:
+            schema:
+              type: string
+              description: Metrics in OpenMetrics text format.
+      responses:
+        '200':
+          description: Metrics replaced successfully
+        '400':
+          description: Bad request — invalid metric format or labels
+    post:
+      operationId: pushJobMetrics
+      summary: Add or update metrics for a job
+      description: >-
+        Adds new metrics for the specified job or updates existing metrics.
+        Unlike PUT, POST only updates the metrics that are present in the
+        request body while leaving other metrics in the group untouched.
+      tags:
+        - Metrics
+      parameters:
+        - $ref: '#/components/parameters/Job'
+      requestBody:
+        required: true
+        content:
+          text/plain:
+            schema:
+              type: string
+              description: Metrics in Prometheus text exposition format.
+          application/openmetrics-text:
+            schema:
+              type: string
+              description: Metrics in OpenMetrics text format.
+      responses:
+        '200':
+          description: Metrics added or updated successfully
+        '400':
+          description: Bad request — invalid metric format or labels
+    delete:
+      operationId: deleteJobMetrics
+      summary: Delete all metrics for a job
+      description: >-
+        Deletes all metrics for the specified job from the Pushgateway. After
+        deletion, Prometheus will no longer scrape any metrics for this job
+        label combination.
+      tags:
+        - Metrics
+      parameters:
+        - $ref: '#/components/parameters/Job'
+      responses:
+        '202':
+          description: Metrics deletion accepted
+        '400':
+          description: Bad request — invalid job label value
+  /metrics/job/{job}/{labels}:
+    put:
+      operationId: replaceGroupedMetrics
+      summary: Replace metrics for a job with grouping labels
+      description: >-
+        Replaces all metrics for the specified job and grouping label
+        combination. Grouping labels are additional key-value pairs appended to
+        the path as alternating label name and value segments (e.g.,
+        /metrics/job/myjob/instance/myinstance).
+      tags:
+        - Metrics
+      parameters:
+        - $ref: '#/components/parameters/Job'
+        - $ref: '#/components/parameters/Labels'
+      requestBody:
+        required: true
+        content:
+          text/plain:
+            schema:
+              type: string
+              description: Metrics in Prometheus text exposition format.
+          application/openmetrics-text:
+            schema:
+              type: string
+              description: Metrics in OpenMetrics text format.
+      responses:
+        '200':
+          description: Metrics replaced successfully
+        '400':
+          description: Bad request — invalid metric format or label names
+    post:
+      operationId: pushGroupedMetrics
+      summary: Add or update metrics for a job with grouping labels
+      description: >-
+        Adds or updates metrics for the specified job and grouping label
+        combination. Only metrics included in the request body are changed;
+        other metrics in the group are preserved.
+      tags:
+        - Metrics
+      parameters:
+        - $ref: '#/components/parameters/Job'
+        - $ref: '#/components/parameters/Labels'
+      requestBody:
+        required: true
+        content:
+          text/plain:
+            schema:
+              type: string
+              description: Metrics in Prometheus text exposition format.
+      responses:
+        '200':
+          description: Metrics added or updated successfully
+        '400':
+          description: Bad request
+    delete:
+      operationId: deleteGroupedMetrics
+      summary: Delete metrics for a job with grouping labels
+      description: >-
+        Deletes all metrics for the specified job and grouping label combination.
+        Only metrics with the exact label set specified in the path are deleted.
+      tags:
+        - Metrics
+      parameters:
+        - $ref: '#/components/parameters/Job'
+        - $ref: '#/components/parameters/Labels'
+      responses:
+        '202':
+          description: Metrics deletion accepted
+        '400':
+          description: Bad request
+  /api/v1/metrics:
+    get:
+      operationId: listAllMetrics
+      summary: List all pushed metrics
+      description: >-
+        Returns all currently stored metric families in JSON format, grouped
+        by job and grouping labels. This endpoint provides a structured view
+        of all metrics available for Prometheus to scrape.
+      tags:
+        - Metrics
+      responses:
+        '200':
+          description: All pushed metrics returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MetricsResponse'
+  /-/healthy:
+    get:
+      operationId: checkHealth
+      summary: Health check
+      description: >-
+        Returns 200 if the Pushgateway is healthy and ready to accept pushed
+        metrics. Used for liveness probes in Kubernetes deployments.
+      tags:
+        - Status
+      responses:
+        '200':
+          description: Pushgateway is healthy
+  /-/ready:
+    get:
+      operationId: checkReady
+      summary: Readiness check
+      description: >-
+        Returns 200 when the Pushgateway is ready to serve traffic.
+        Used for readiness probes in Kubernetes deployments.
+      tags:
+        - Status
+      responses:
+        '200':
+          description: Pushgateway is ready
+  /api/v1/status:
+    get:
+      operationId: getStatus
+      summary: Get Pushgateway status
+      description: >-
+        Returns build information and runtime status for the Pushgateway
+        server including version, revision, and configuration flags.
+      tags:
+        - Status
+      responses:
+        '200':
+          description: Status returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+components:
+  parameters:
+    Job:
+      name: job
+      in: path
+      required: true
+      description: >-
+        The job label value for this metric group. This is the primary grouping
+        key for pushed metrics.
+      schema:
+        type: string
+        example: batch-importer
+    Labels:
+      name: labels
+      in: path
+      required: true
+      description: >-
+        Additional grouping labels as alternating label-name/label-value path
+        segments (e.g., instance/host1/datacenter/eu).
+      schema:
+        type: string
+        example: instance/server01
+  schemas:
+    MetricsResponse:
+      type: object
+      description: All currently stored metric groups in the Pushgateway.
+      properties:
+        status:
+          type: string
+          enum:
+            - success
+            - error
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/MetricGroup'
+    MetricGroup:
+      type: object
+      description: A group of metrics sharing the same job and grouping labels.
+      properties:
+        labels:
+          type: object
+          additionalProperties:
+            type: string
+          description: The grouping labels for this metric group including job.
+        lastPushedAt:
+          type: string
+          format: date-time
+          description: Timestamp of the last push to this group.
+        metricFamilies:
+          type: object
+          description: Map of metric family names to their metric family objects.
+          additionalProperties:
+            $ref: '#/components/schemas/MetricFamily'
+    MetricFamily:
+      type: object
+      description: A family of metrics with the same name.
+      properties:
+        name:
+          type: string
+          description: Metric family name.
+        help:
+          type: string
+          description: Help text describing the metric.
+        type:
+          type: string
+          enum:
+            - COUNTER
+            - GAUGE
+            - SUMMARY
+            - HISTOGRAM
+            - UNTYPED
+          description: Metric type.
+        metric:
+          type: array
+          items:
+            $ref: '#/components/schemas/Metric'
+          description: Individual metric instances in this family.
+    Metric:
+      type: object
+      description: An individual metric with labels and value.
+      properties:
+        label:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Label name.
+              value:
+                type: string
+                description: Label value.
+          description: Labels attached to this metric.
+        gauge:
+          type: object
+          properties:
+            value:
+              type: number
+              description: Gauge value.
+        counter:
+          type: object
+          properties:
+            value:
+              type: number
+              description: Counter value.
+        timestampMs:
+          type: integer
+          description: Metric timestamp in milliseconds.
+    StatusResponse:
+      type: object
+      description: Pushgateway build and runtime status.
+      properties:
+        status:
+          type: string
+          enum:
+            - success
+        data:
+          type: object
+          properties:
+            version:
+              type: string
+              description: Pushgateway version.
+            revision:
+              type: string
+              description: Git revision.
+            branch:
+              type: string
+              description: Git branch.
+            buildUser:
+              type: string
+              description: User who built this binary.
+            buildDate:
+              type: string
+              description: Build date.
+            goVersion:
+              type: string
+              description: Go version.

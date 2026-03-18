@@ -1,0 +1,197 @@
+asyncapi: 2.6.0
+info:
+  title: Prometheus Alertmanager Webhook Events
+  description: >-
+    The Prometheus Alertmanager webhook receiver sends HTTP POST requests to
+    configured endpoints when alert groups are triggered. Each webhook payload
+    contains a group of alerts sharing common routing labels, their annotations,
+    firing status, and the external Alertmanager URL. Alertmanager delivers
+    webhooks for both firing and resolved alerts, enabling downstream systems
+    to react to alert lifecycle events.
+  version: v0.28.0
+  contact:
+    name: Prometheus Project
+    url: https://prometheus.io/community/
+externalDocs:
+  description: Alertmanager Webhook Receiver Documentation
+  url: https://prometheus.io/docs/alerting/latest/configuration/#webhook_config
+servers:
+  webhookReceiver:
+    url: '{webhookURL}'
+    protocol: https
+    description: >-
+      The webhook receiver endpoint configured in Alertmanager's webhook_config.
+      Alertmanager POSTs alert group payloads to this URL when routing rules
+      match.
+    variables:
+      webhookURL:
+        description: The full URL of the webhook receiver endpoint.
+channels:
+  /{path}:
+    description: >-
+      Alertmanager sends HTTP POST requests to configured webhook receiver
+      URLs when alert groups fire or resolve. The path is determined by the
+      webhook receiver URL configuration.
+    parameters:
+      path:
+        description: Path component of the webhook URL as configured.
+        schema:
+          type: string
+    publish:
+      operationId: receiveAlertGroup
+      summary: Receive alert group notification
+      description: >-
+        Alertmanager POSTs this payload when a group of alerts fires or
+        resolves. The payload includes the alert group's status, group labels,
+        common labels, common annotations, and individual alert details.
+        Webhook receivers should respond with 2xx to acknowledge receipt.
+        Non-2xx responses cause Alertmanager to retry with exponential backoff.
+      message:
+        $ref: '#/components/messages/AlertGroupMessage'
+components:
+  messages:
+    AlertGroupMessage:
+      name: AlertGroupMessage
+      title: Alert Group Webhook Payload
+      summary: Batch of alerts sharing common group labels from Alertmanager
+      description: >-
+        The webhook payload sent by Alertmanager when a group of alerts
+        transitions to firing or resolving state. Contains all alerts in the
+        group, their current status (firing or resolved), and label/annotation
+        data aggregated across the group.
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/AlertGroupPayload'
+  schemas:
+    AlertGroupPayload:
+      type: object
+      required:
+        - version
+        - groupKey
+        - status
+        - receiver
+        - groupLabels
+        - commonLabels
+        - commonAnnotations
+        - externalURL
+        - alerts
+      description: >-
+        The top-level webhook payload from Alertmanager containing a group of
+        related alerts and their current firing or resolved state.
+      properties:
+        version:
+          type: string
+          description: Webhook payload version. Currently "4".
+          example: '4'
+        groupKey:
+          type: string
+          description: >-
+            Key identifying this alert group, composed of routing labels and
+            their values.
+          example: '{alertname="HighCPU"}/{instance="server01"}'
+        truncatedAlerts:
+          type: integer
+          description: >-
+            Number of alerts that were truncated from this payload due to the
+            max_alerts configuration setting. 0 if no truncation occurred.
+          default: 0
+        status:
+          type: string
+          enum:
+            - firing
+            - resolved
+          description: >-
+            Whether any alerts in this group are still firing (firing) or
+            all have resolved (resolved).
+        receiver:
+          type: string
+          description: The name of the Alertmanager receiver that dispatched this webhook.
+          example: webhook-receiver
+        groupLabels:
+          type: object
+          additionalProperties:
+            type: string
+          description: >-
+            The labels used to group these alerts as configured in the routing
+            rules. These labels are common to all alerts in the group.
+        commonLabels:
+          type: object
+          additionalProperties:
+            type: string
+          description: >-
+            Labels present on every alert in the group. A superset of
+            groupLabels.
+        commonAnnotations:
+          type: object
+          additionalProperties:
+            type: string
+          description: >-
+            Annotations present on every alert in the group. Useful for
+            extracting a shared runbook URL or description.
+        externalURL:
+          type: string
+          format: uri
+          description: >-
+            The external URL configured for this Alertmanager instance. Used
+            to construct links back to the Alertmanager web UI.
+        alerts:
+          type: array
+          items:
+            $ref: '#/components/schemas/WebhookAlert'
+          description: >-
+            The list of alerts in this group. Includes both firing and resolved
+            alerts depending on Alertmanager configuration.
+    WebhookAlert:
+      type: object
+      required:
+        - status
+        - labels
+        - annotations
+        - startsAt
+        - endsAt
+        - generatorURL
+        - fingerprint
+      description: An individual alert within a webhook payload.
+      properties:
+        status:
+          type: string
+          enum:
+            - firing
+            - resolved
+          description: Current status of this specific alert.
+        labels:
+          type: object
+          additionalProperties:
+            type: string
+          description: >-
+            Identification labels for this alert. Always includes alertname and
+            any labels set by the alerting rule and its recording metric.
+        annotations:
+          type: object
+          additionalProperties:
+            type: string
+          description: >-
+            Non-identifying annotations for this alert such as summary,
+            description, and runbook_url.
+        startsAt:
+          type: string
+          format: date-time
+          description: Timestamp when this alert transitioned to firing state.
+        endsAt:
+          type: string
+          format: date-time
+          description: >-
+            Timestamp when this alert resolved. Set to a far-future timestamp
+            for currently firing alerts.
+        generatorURL:
+          type: string
+          format: uri
+          description: >-
+            URL to the Prometheus expression browser for the rule that
+            generated this alert.
+        fingerprint:
+          type: string
+          description: >-
+            SHA256-based fingerprint of the alert's label set, used to
+            deduplicate alerts across Alertmanager instances.
+          example: b3e4e2c9a5b23e1f

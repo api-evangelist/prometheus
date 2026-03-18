@@ -1,0 +1,1469 @@
+openapi: 3.1.0
+info:
+  title: Prometheus HTTP API
+  description: >-
+    The Prometheus HTTP API provides endpoints for executing instant and range
+    queries using PromQL, querying metadata such as label names, label values,
+    and series, and accessing targets, rules, alerts, and TSDB information. The
+    API is reachable under /api/v1 on a Prometheus server and returns JSON
+    responses with a consistent envelope containing status, data, and optional
+    error fields.
+  version: v3.1.0
+  contact:
+    name: Prometheus Project
+    url: https://prometheus.io/community/
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+externalDocs:
+  description: Prometheus HTTP API Documentation
+  url: https://prometheus.io/docs/prometheus/latest/querying/api/
+servers:
+  - url: 'http://{host}:{port}'
+    description: Prometheus server
+    variables:
+      host:
+        default: localhost
+        description: Prometheus server hostname
+      port:
+        default: '9090'
+        description: Prometheus server port
+tags:
+  - name: Query
+    description: >-
+      PromQL instant and range query endpoints for evaluating expressions against
+      the time series database.
+  - name: Metadata
+    description: >-
+      Endpoints for querying label names, label values, series metadata, and
+      metric metadata without executing PromQL expressions.
+  - name: Targets
+    description: >-
+      Endpoints for discovering scrape targets and their current health status.
+  - name: Rules
+    description: >-
+      Endpoints for retrieving loaded recording rules and alerting rules.
+  - name: Alerts
+    description: >-
+      Endpoints for listing currently firing and pending alerts.
+  - name: Status
+    description: >-
+      Endpoints for retrieving Prometheus server configuration, flags, build
+      information, and TSDB statistics.
+  - name: TSDB
+    description: >-
+      Endpoints for querying TSDB statistics and deleting time series data.
+paths:
+  /api/v1/query:
+    get:
+      operationId: queryInstant
+      summary: Execute instant query
+      description: >-
+        Evaluates a PromQL expression at a single point in time. Returns a
+        vector of time series with their values at the specified time. If the
+        time parameter is omitted, the current server time is used.
+      tags:
+        - Query
+      parameters:
+        - $ref: '#/components/parameters/QueryExpr'
+        - name: time
+          in: query
+          description: >-
+            Evaluation timestamp as a Unix timestamp or RFC3339 string. Defaults
+            to current server time.
+          schema:
+            type: string
+        - $ref: '#/components/parameters/Timeout'
+      responses:
+        '200':
+          description: Query executed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryResponse'
+        '400':
+          description: Bad request — invalid query expression or parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Unprocessable entity — expression cannot be executed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '503':
+          description: Query timed out or was aborted
+    post:
+      operationId: queryInstantPost
+      summary: Execute instant query (POST)
+      description: >-
+        Evaluates a PromQL expression at a single point in time using a POST
+        request body. Use POST when query parameters exceed URL length limits.
+      tags:
+        - Query
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - query
+              properties:
+                query:
+                  type: string
+                  description: PromQL expression to evaluate.
+                time:
+                  type: string
+                  description: Evaluation timestamp.
+                timeout:
+                  type: string
+                  description: Evaluation timeout.
+      responses:
+        '200':
+          description: Query executed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryResponse'
+        '400':
+          description: Bad request
+  /api/v1/query_range:
+    get:
+      operationId: queryRange
+      summary: Execute range query
+      description: >-
+        Evaluates a PromQL expression over a range of time, returning a matrix
+        of time series with values at each step interval. Used for generating
+        graphs and time-based analysis.
+      tags:
+        - Query
+      parameters:
+        - $ref: '#/components/parameters/QueryExpr'
+        - name: start
+          in: query
+          required: true
+          description: Start of the time range as a Unix timestamp or RFC3339 string.
+          schema:
+            type: string
+        - name: end
+          in: query
+          required: true
+          description: End of the time range as a Unix timestamp or RFC3339 string.
+          schema:
+            type: string
+        - name: step
+          in: query
+          required: true
+          description: Query resolution step width as a duration string (e.g., 15s, 1m, 1h).
+          schema:
+            type: string
+        - $ref: '#/components/parameters/Timeout'
+      responses:
+        '200':
+          description: Range query executed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryResponse'
+        '400':
+          description: Bad request — invalid query or time parameters
+        '422':
+          description: Unprocessable query expression
+    post:
+      operationId: queryRangePost
+      summary: Execute range query (POST)
+      description: >-
+        Evaluates a PromQL expression over a range of time using a POST request
+        body. Use POST when query parameters exceed URL length limits.
+      tags:
+        - Query
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - query
+                - start
+                - end
+                - step
+              properties:
+                query:
+                  type: string
+                  description: PromQL expression to evaluate.
+                start:
+                  type: string
+                  description: Start of the time range.
+                end:
+                  type: string
+                  description: End of the time range.
+                step:
+                  type: string
+                  description: Query resolution step width.
+                timeout:
+                  type: string
+                  description: Evaluation timeout.
+      responses:
+        '200':
+          description: Range query executed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryResponse'
+        '400':
+          description: Bad request
+  /api/v1/query_exemplars:
+    get:
+      operationId: queryExemplars
+      summary: Query exemplars
+      description: >-
+        Returns a list of exemplars for a given PromQL expression over a time
+        range. Exemplars are specific trace or log IDs attached to high-value
+        metric observations that link metrics to traces.
+      tags:
+        - Query
+      parameters:
+        - $ref: '#/components/parameters/QueryExpr'
+        - name: start
+          in: query
+          required: true
+          description: Start of the time range.
+          schema:
+            type: string
+        - name: end
+          in: query
+          required: true
+          description: End of the time range.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Exemplars returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExemplarResponse'
+        '400':
+          description: Bad request
+  /api/v1/labels:
+    get:
+      operationId: getLabelNames
+      summary: Get label names
+      description: >-
+        Returns a list of label names present in the TSDB. Optionally filtered
+        by a time range or series selectors. Useful for building autocomplete
+        in query UIs.
+      tags:
+        - Metadata
+      parameters:
+        - name: start
+          in: query
+          description: Start of the time range filter.
+          schema:
+            type: string
+        - name: end
+          in: query
+          description: End of the time range filter.
+          schema:
+            type: string
+        - name: match[]
+          in: query
+          description: Series selector(s) to restrict the label results.
+          schema:
+            type: array
+            items:
+              type: string
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Label names returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringListResponse'
+        '400':
+          description: Bad request
+  /api/v1/label/{label_name}/values:
+    get:
+      operationId: getLabelValues
+      summary: Get label values
+      description: >-
+        Returns a list of values for a given label name. Optionally filtered by
+        a time range or series selectors. The special label name __name__
+        returns all metric names.
+      tags:
+        - Metadata
+      parameters:
+        - name: label_name
+          in: path
+          required: true
+          description: The label name to retrieve values for.
+          schema:
+            type: string
+            example: job
+        - name: start
+          in: query
+          description: Start of the time range filter.
+          schema:
+            type: string
+        - name: end
+          in: query
+          description: End of the time range filter.
+          schema:
+            type: string
+        - name: match[]
+          in: query
+          description: Series selector(s) to restrict the label value results.
+          schema:
+            type: array
+            items:
+              type: string
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Label values returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringListResponse'
+        '400':
+          description: Bad request
+        '404':
+          description: Label not found
+  /api/v1/series:
+    get:
+      operationId: querySeries
+      summary: Query series
+      description: >-
+        Returns the list of time series that match a certain label set. The
+        response contains the label sets identifying each time series. At
+        least one match[] selector must be provided.
+      tags:
+        - Metadata
+      parameters:
+        - name: match[]
+          in: query
+          required: true
+          description: Series selector(s). At least one required.
+          schema:
+            type: array
+            items:
+              type: string
+        - name: start
+          in: query
+          description: Start of the time range filter.
+          schema:
+            type: string
+        - name: end
+          in: query
+          description: End of the time range filter.
+          schema:
+            type: string
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Series returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeriesResponse'
+        '400':
+          description: Bad request
+    delete:
+      operationId: deleteSeries
+      summary: Delete series
+      description: >-
+        Deletes data for a selection of series in a time range. This only
+        creates tombstones in the TSDB; actual deletion happens on the next
+        compaction. Requires --web.enable-admin-api flag.
+      tags:
+        - TSDB
+      parameters:
+        - name: match[]
+          in: query
+          required: true
+          description: Series selector(s) to delete. At least one required.
+          schema:
+            type: array
+            items:
+              type: string
+        - name: start
+          in: query
+          description: Start of the time range. Defaults to minimum possible time.
+          schema:
+            type: string
+        - name: end
+          in: query
+          description: End of the time range. Defaults to maximum possible time.
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Series deletion tombstones created successfully
+        '400':
+          description: Bad request
+        '403':
+          description: Admin API not enabled
+  /api/v1/metadata:
+    get:
+      operationId: getMetricMetadata
+      summary: Get metric metadata
+      description: >-
+        Returns metadata about metrics currently scraped from targets. Metadata
+        includes the metric type (counter, gauge, histogram, summary, untyped)
+        and help string. Multiple targets may provide metadata for the same
+        metric.
+      tags:
+        - Metadata
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - name: metric
+          in: query
+          description: Metric name to filter by. If omitted, all metrics are returned.
+          schema:
+            type: string
+        - name: limit_per_metric
+          in: query
+          description: Maximum number of metadata entries to return per metric.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Metric metadata returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MetricMetadataResponse'
+        '400':
+          description: Bad request
+  /api/v1/targets:
+    get:
+      operationId: getTargets
+      summary: Get scrape targets
+      description: >-
+        Returns an overview of the current state of the Prometheus target
+        discovery including active and dropped targets, their labels, and
+        scrape health status.
+      tags:
+        - Targets
+      parameters:
+        - name: state
+          in: query
+          description: Filter targets by state.
+          schema:
+            type: string
+            enum:
+              - active
+              - dropped
+              - any
+            default: any
+      responses:
+        '200':
+          description: Targets returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TargetsResponse'
+  /api/v1/targets/metadata:
+    get:
+      operationId: getTargetMetadata
+      summary: Get target metadata
+      description: >-
+        Returns metadata about metrics for individual targets. Allows filtering
+        by target label matchers and metric name to retrieve per-target metadata
+        contributed by scrape pools.
+      tags:
+        - Targets
+      parameters:
+        - name: match_target
+          in: query
+          description: Label selectors matching target labels.
+          schema:
+            type: string
+        - name: metric
+          in: query
+          description: Metric name to filter by.
+          schema:
+            type: string
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Target metadata returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TargetMetadataResponse'
+        '400':
+          description: Bad request
+  /api/v1/rules:
+    get:
+      operationId: getRules
+      summary: Get rules
+      description: >-
+        Returns a list of alerting and recording rules currently loaded. Rules
+        include the rule expression, their last evaluation time, and any active
+        alerts for alerting rules.
+      tags:
+        - Rules
+      parameters:
+        - name: type
+          in: query
+          description: Filter by rule type.
+          schema:
+            type: string
+            enum:
+              - alert
+              - record
+        - name: rule_name[]
+          in: query
+          description: Filter by rule name.
+          schema:
+            type: array
+            items:
+              type: string
+        - name: rule_group[]
+          in: query
+          description: Filter by rule group name.
+          schema:
+            type: array
+            items:
+              type: string
+        - name: file[]
+          in: query
+          description: Filter by the file the rule group was loaded from.
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: Rules returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RulesResponse'
+  /api/v1/alerts:
+    get:
+      operationId: getAlerts
+      summary: Get alerts
+      description: >-
+        Returns a list of all active alerts currently firing or pending in
+        Prometheus. Alerts include their labels, state, and timestamps.
+      tags:
+        - Alerts
+      responses:
+        '200':
+          description: Alerts returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlertsResponse'
+  /api/v1/alertmanagers:
+    get:
+      operationId: getAlertmanagers
+      summary: Get Alertmanager discovery status
+      description: >-
+        Returns an overview of the current state of the Prometheus Alertmanager
+        service discovery including active and dropped Alertmanager instances.
+      tags:
+        - Status
+      responses:
+        '200':
+          description: Alertmanager discovery status returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlertmanagersResponse'
+  /api/v1/status/config:
+    get:
+      operationId: getConfig
+      summary: Get server configuration
+      description: >-
+        Returns the currently loaded configuration file as a YAML string.
+        Includes the full Prometheus configuration including scrape configs,
+        rule files, and alerting configuration.
+      tags:
+        - Status
+      responses:
+        '200':
+          description: Configuration returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfigResponse'
+  /api/v1/status/flags:
+    get:
+      operationId: getFlags
+      summary: Get command-line flags
+      description: >-
+        Returns the values of all command-line flag settings currently in use
+        by the Prometheus server.
+      tags:
+        - Status
+      responses:
+        '200':
+          description: Flags returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlagsResponse'
+  /api/v1/status/buildinfo:
+    get:
+      operationId: getBuildInfo
+      summary: Get build information
+      description: >-
+        Returns build and version information for the Prometheus server,
+        including version, revision, branch, build user, build date, and Go
+        version.
+      tags:
+        - Status
+      responses:
+        '200':
+          description: Build information returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BuildInfoResponse'
+  /api/v1/status/runtimeinfo:
+    get:
+      operationId: getRuntimeInfo
+      summary: Get runtime information
+      description: >-
+        Returns various runtime properties about the Prometheus server including
+        the start time, storage retention, TSDB stats summary, and corruptible
+        chunk count.
+      tags:
+        - Status
+      responses:
+        '200':
+          description: Runtime information returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RuntimeInfoResponse'
+  /api/v1/status/tsdb:
+    get:
+      operationId: getTsdbStatus
+      summary: Get TSDB statistics
+      description: >-
+        Returns a set of properties about the Prometheus TSDB including the
+        top series by label count, top chunks by label, most frequently
+        changing metrics, and head statistics.
+      tags:
+        - TSDB
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: TSDB statistics returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TsdbStatusResponse'
+  /api/v1/status/walreplay:
+    get:
+      operationId: getWalReplayStatus
+      summary: Get WAL replay status
+      description: >-
+        Returns the current status of the WAL (Write-Ahead Log) replay. WAL
+        replay occurs during Prometheus startup to recover data from the most
+        recent checkpoint.
+      tags:
+        - Status
+      responses:
+        '200':
+          description: WAL replay status returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WalReplayResponse'
+components:
+  parameters:
+    QueryExpr:
+      name: query
+      in: query
+      required: true
+      description: PromQL expression to evaluate.
+      schema:
+        type: string
+        example: rate(http_requests_total[5m])
+    Timeout:
+      name: timeout
+      in: query
+      description: Evaluation timeout as a duration string (e.g., 30s).
+      schema:
+        type: string
+    Limit:
+      name: limit
+      in: query
+      description: Maximum number of items to return.
+      schema:
+        type: integer
+        minimum: 1
+  schemas:
+    QueryResponse:
+      type: object
+      description: Standard response envelope for query results.
+      required:
+        - status
+        - data
+      properties:
+        status:
+          type: string
+          description: Request status — success or error.
+          enum:
+            - success
+            - error
+        data:
+          $ref: '#/components/schemas/QueryData'
+        errorType:
+          type: string
+          description: Type of error if status is error.
+        error:
+          type: string
+          description: Error message if status is error.
+        warnings:
+          type: array
+          items:
+            type: string
+          description: Non-fatal warnings encountered during query execution.
+    QueryData:
+      type: object
+      description: The result data from a query, containing the result type and values.
+      required:
+        - resultType
+        - result
+      properties:
+        resultType:
+          type: string
+          description: The type of the result data.
+          enum:
+            - matrix
+            - vector
+            - scalar
+            - string
+        result:
+          description: >-
+            The query result. Shape depends on resultType: matrix contains
+            arrays of values over time, vector contains a single value per
+            series, scalar is a single numeric value.
+          oneOf:
+            - type: array
+              items:
+                $ref: '#/components/schemas/MatrixSeries'
+            - type: array
+              items:
+                $ref: '#/components/schemas/VectorSample'
+            - $ref: '#/components/schemas/ScalarValue'
+    MatrixSeries:
+      type: object
+      description: A time series with multiple values over a time range (range query result).
+      required:
+        - metric
+        - values
+      properties:
+        metric:
+          type: object
+          additionalProperties:
+            type: string
+          description: Label set identifying this time series.
+        values:
+          type: array
+          items:
+            $ref: '#/components/schemas/SamplePair'
+          description: Array of timestamp-value pairs over the queried time range.
+    VectorSample:
+      type: object
+      description: A single time series with one value at a specific timestamp (instant query result).
+      required:
+        - metric
+        - value
+      properties:
+        metric:
+          type: object
+          additionalProperties:
+            type: string
+          description: Label set identifying this time series.
+        value:
+          $ref: '#/components/schemas/SamplePair'
+    SamplePair:
+      type: array
+      description: A [timestamp, value] pair where timestamp is a Unix float and value is a string-encoded float.
+      prefixItems:
+        - type: number
+          description: Unix timestamp as a float.
+        - type: string
+          description: Metric value as a string-encoded float (including Inf, -Inf, NaN).
+      minItems: 2
+      maxItems: 2
+    ScalarValue:
+      type: array
+      description: A scalar value at a timestamp.
+      prefixItems:
+        - type: number
+          description: Unix timestamp.
+        - type: string
+          description: Scalar value.
+      minItems: 2
+      maxItems: 2
+    ExemplarResponse:
+      type: object
+      description: Response containing exemplars for a query.
+      required:
+        - status
+        - data
+      properties:
+        status:
+          type: string
+          enum:
+            - success
+            - error
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExemplarData'
+    ExemplarData:
+      type: object
+      description: Exemplar data for a metric series.
+      properties:
+        seriesLabels:
+          type: object
+          additionalProperties:
+            type: string
+          description: Labels identifying the metric series.
+        exemplars:
+          type: array
+          items:
+            type: object
+            properties:
+              labels:
+                type: object
+                additionalProperties:
+                  type: string
+                description: Exemplar labels including trace ID.
+              value:
+                type: string
+                description: Metric value at the exemplar timestamp.
+              timestamp:
+                type: number
+                description: Unix timestamp of the exemplar.
+    StringListResponse:
+      type: object
+      description: Response containing a list of string values.
+      required:
+        - status
+        - data
+      properties:
+        status:
+          type: string
+          enum:
+            - success
+            - error
+        data:
+          type: array
+          items:
+            type: string
+          description: List of string values.
+        warnings:
+          type: array
+          items:
+            type: string
+    SeriesResponse:
+      type: object
+      description: Response containing a list of series label sets.
+      required:
+        - status
+        - data
+      properties:
+        status:
+          type: string
+          enum:
+            - success
+            - error
+        data:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: string
+          description: List of label sets, each identifying a matching time series.
+    MetricMetadataResponse:
+      type: object
+      description: Response containing metadata for metrics.
+      required:
+        - status
+        - data
+      properties:
+        status:
+          type: string
+          enum:
+            - success
+            - error
+        data:
+          type: object
+          description: Map of metric names to arrays of metadata entries.
+          additionalProperties:
+            type: array
+            items:
+              type: object
+              properties:
+                type:
+                  type: string
+                  enum:
+                    - counter
+                    - gauge
+                    - histogram
+                    - gaugehistogram
+                    - summary
+                    - untyped
+                  description: Metric type.
+                help:
+                  type: string
+                  description: Help text for the metric.
+                unit:
+                  type: string
+                  description: Unit of the metric.
+    TargetsResponse:
+      type: object
+      description: Response containing active and dropped scrape targets.
+      required:
+        - status
+        - data
+      properties:
+        status:
+          type: string
+          enum:
+            - success
+            - error
+        data:
+          type: object
+          properties:
+            activeTargets:
+              type: array
+              items:
+                $ref: '#/components/schemas/ActiveTarget'
+              description: List of currently active scrape targets.
+            droppedTargets:
+              type: array
+              items:
+                $ref: '#/components/schemas/DroppedTarget'
+              description: List of dropped targets from service discovery.
+    ActiveTarget:
+      type: object
+      description: An active scrape target.
+      properties:
+        discoveredLabels:
+          type: object
+          additionalProperties:
+            type: string
+          description: Unmodified labels before relabeling from service discovery.
+        labels:
+          type: object
+          additionalProperties:
+            type: string
+          description: Labels after relabeling.
+        scrapePool:
+          type: string
+          description: The scrape pool this target belongs to.
+        scrapeUrl:
+          type: string
+          format: uri
+          description: The URL Prometheus will scrape.
+        globalUrl:
+          type: string
+          description: The globally accessible scrape URL.
+        lastError:
+          type: string
+          description: Error from the last scrape, empty if successful.
+        lastScrape:
+          type: string
+          format: date-time
+          description: Timestamp of the last scrape.
+        lastScrapeDuration:
+          type: number
+          description: Duration of the last scrape in seconds.
+        health:
+          type: string
+          enum:
+            - up
+            - down
+            - unknown
+          description: Health status of the target.
+        scrapeInterval:
+          type: string
+          description: The scrape interval for this target.
+        scrapeTimeout:
+          type: string
+          description: The scrape timeout for this target.
+    DroppedTarget:
+      type: object
+      description: A scrape target dropped by relabeling.
+      properties:
+        discoveredLabels:
+          type: object
+          additionalProperties:
+            type: string
+          description: Labels from service discovery before the target was dropped.
+    TargetMetadataResponse:
+      type: object
+      description: Response containing per-target metric metadata.
+      required:
+        - status
+        - data
+      properties:
+        status:
+          type: string
+          enum:
+            - success
+            - error
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              target:
+                type: object
+                additionalProperties:
+                  type: string
+                description: Labels identifying the target.
+              metric:
+                type: string
+                description: Metric name.
+              type:
+                type: string
+                description: Metric type.
+              help:
+                type: string
+                description: Help text.
+              unit:
+                type: string
+                description: Unit.
+    RulesResponse:
+      type: object
+      description: Response containing recording and alerting rule groups.
+      required:
+        - status
+        - data
+      properties:
+        status:
+          type: string
+          enum:
+            - success
+            - error
+        data:
+          type: object
+          properties:
+            groups:
+              type: array
+              items:
+                $ref: '#/components/schemas/RuleGroup'
+    RuleGroup:
+      type: object
+      description: A group of recording and alerting rules.
+      required:
+        - name
+        - rules
+      properties:
+        name:
+          type: string
+          description: Group name.
+        file:
+          type: string
+          description: File the group was loaded from.
+        interval:
+          type: number
+          description: Evaluation interval in seconds.
+        limit:
+          type: integer
+          description: Maximum number of alerts this group can produce.
+        rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/Rule'
+          description: List of rules in this group.
+        lastEvaluation:
+          type: string
+          format: date-time
+          description: Timestamp of the last evaluation.
+        evaluationTime:
+          type: number
+          description: Duration of the last evaluation in seconds.
+    Rule:
+      type: object
+      description: A recording rule or alerting rule.
+      required:
+        - name
+        - query
+        - type
+      properties:
+        name:
+          type: string
+          description: Rule or alert name.
+        query:
+          type: string
+          description: PromQL expression of the rule.
+        labels:
+          type: object
+          additionalProperties:
+            type: string
+          description: Labels to add to the rule output.
+        annotations:
+          type: object
+          additionalProperties:
+            type: string
+          description: Annotations for alerting rules (e.g., summary, description).
+        duration:
+          type: number
+          description: Alerting duration in seconds (for rules with for clauses).
+        health:
+          type: string
+          enum:
+            - ok
+            - err
+            - unknown
+          description: Rule evaluation health.
+        lastError:
+          type: string
+          description: Last evaluation error if health is err.
+        lastEvaluation:
+          type: string
+          format: date-time
+          description: Timestamp of last evaluation.
+        evaluationTime:
+          type: number
+          description: Time taken for the last evaluation in seconds.
+        type:
+          type: string
+          enum:
+            - recording
+            - alerting
+          description: Whether this is a recording or alerting rule.
+        alerts:
+          type: array
+          items:
+            $ref: '#/components/schemas/AlertInstance'
+          description: Currently active alerts for alerting rules.
+    AlertInstance:
+      type: object
+      description: An instance of a firing or pending alert.
+      properties:
+        labels:
+          type: object
+          additionalProperties:
+            type: string
+          description: Labels of this alert instance.
+        annotations:
+          type: object
+          additionalProperties:
+            type: string
+          description: Annotations of this alert instance.
+        state:
+          type: string
+          enum:
+            - firing
+            - pending
+          description: Current alert state.
+        activeAt:
+          type: string
+          format: date-time
+          description: Time the alert became active.
+        value:
+          type: string
+          description: The value of the expression at the time of the last evaluation.
+    AlertsResponse:
+      type: object
+      description: Response containing currently active alerts.
+      required:
+        - status
+        - data
+      properties:
+        status:
+          type: string
+          enum:
+            - success
+            - error
+        data:
+          type: object
+          properties:
+            alerts:
+              type: array
+              items:
+                $ref: '#/components/schemas/AlertInstance'
+    AlertmanagersResponse:
+      type: object
+      description: Response containing Alertmanager discovery status.
+      required:
+        - status
+        - data
+      properties:
+        status:
+          type: string
+          enum:
+            - success
+            - error
+        data:
+          type: object
+          properties:
+            activeAlertmanagers:
+              type: array
+              items:
+                type: object
+                properties:
+                  url:
+                    type: string
+                    format: uri
+                    description: Alertmanager URL.
+            droppedAlertmanagers:
+              type: array
+              items:
+                type: object
+                properties:
+                  url:
+                    type: string
+                    format: uri
+                    description: Dropped Alertmanager URL.
+    ConfigResponse:
+      type: object
+      description: Response containing the current Prometheus configuration.
+      required:
+        - status
+        - data
+      properties:
+        status:
+          type: string
+          enum:
+            - success
+            - error
+        data:
+          type: object
+          properties:
+            yaml:
+              type: string
+              description: Currently loaded Prometheus configuration as YAML string.
+    FlagsResponse:
+      type: object
+      description: Response containing command-line flag values.
+      required:
+        - status
+        - data
+      properties:
+        status:
+          type: string
+          enum:
+            - success
+            - error
+        data:
+          type: object
+          additionalProperties:
+            type: string
+          description: Map of flag names to their current values.
+    BuildInfoResponse:
+      type: object
+      description: Response containing Prometheus build information.
+      required:
+        - status
+        - data
+      properties:
+        status:
+          type: string
+          enum:
+            - success
+            - error
+        data:
+          type: object
+          properties:
+            version:
+              type: string
+              description: Prometheus version.
+            revision:
+              type: string
+              description: Git commit SHA.
+            branch:
+              type: string
+              description: Git branch.
+            buildUser:
+              type: string
+              description: User who built this binary.
+            buildDate:
+              type: string
+              description: Date the binary was built.
+            goVersion:
+              type: string
+              description: Go version used to build.
+    RuntimeInfoResponse:
+      type: object
+      description: Response containing Prometheus runtime information.
+      required:
+        - status
+        - data
+      properties:
+        status:
+          type: string
+          enum:
+            - success
+            - error
+        data:
+          type: object
+          properties:
+            startTime:
+              type: string
+              format: date-time
+              description: When Prometheus was started.
+            CWD:
+              type: string
+              description: Current working directory.
+            reloadConfigSuccess:
+              type: boolean
+              description: Whether the last configuration reload was successful.
+            lastConfigTime:
+              type: string
+              format: date-time
+              description: Timestamp of the last successful configuration reload.
+            corruptionCount:
+              type: integer
+              description: Number of corrupted chunks detected.
+            goroutineCount:
+              type: integer
+              description: Number of active goroutines.
+            GOMAXPROCS:
+              type: integer
+              description: Maximum number of CPUs used by Go runtime.
+            GOMEMLIMIT:
+              type: integer
+              description: Memory limit in bytes set for the Go runtime.
+            GOGC:
+              type: string
+              description: GC frequency setting.
+            GODEBUG:
+              type: string
+              description: GODEBUG settings.
+            storageRetention:
+              type: string
+              description: Storage retention duration.
+    TsdbStatusResponse:
+      type: object
+      description: Response containing TSDB statistics.
+      required:
+        - status
+        - data
+      properties:
+        status:
+          type: string
+          enum:
+            - success
+            - error
+        data:
+          type: object
+          properties:
+            headStats:
+              type: object
+              description: Statistics about the TSDB head block.
+              properties:
+                numSeries:
+                  type: integer
+                  description: Number of series in the head block.
+                numLabelPairs:
+                  type: integer
+                  description: Number of label pairs in the head block.
+                chunkCount:
+                  type: integer
+                  description: Number of chunks in the head block.
+                minTime:
+                  type: integer
+                  description: Minimum time in milliseconds.
+                maxTime:
+                  type: integer
+                  description: Maximum time in milliseconds.
+            seriesCountByMetricName:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  value:
+                    type: integer
+            labelValueCountByLabelName:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  value:
+                    type: integer
+            memoryInBytesByLabelName:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  value:
+                    type: integer
+    WalReplayResponse:
+      type: object
+      description: Response containing WAL replay progress.
+      required:
+        - status
+        - data
+      properties:
+        status:
+          type: string
+          enum:
+            - success
+            - error
+        data:
+          type: object
+          properties:
+            min:
+              type: integer
+              description: Minimum segment being replayed.
+            max:
+              type: integer
+              description: Maximum segment to replay.
+            current:
+              type: integer
+              description: Current segment being replayed.
+            state:
+              type: string
+              enum:
+                - waiting
+                - in progress
+                - done
+              description: WAL replay state.
+    ErrorResponse:
+      type: object
+      description: Error response from the Prometheus API.
+      required:
+        - status
+        - errorType
+        - error
+      properties:
+        status:
+          type: string
+          enum:
+            - error
+        errorType:
+          type: string
+          description: Category of the error.
+          enum:
+            - timeout
+            - canceled
+            - execution
+            - bad_data
+            - internal
+            - unavailable
+            - not_found
+        error:
+          type: string
+          description: Human-readable error message.
+        warnings:
+          type: array
+          items:
+            type: string
+          description: Warnings that occurred alongside the error.

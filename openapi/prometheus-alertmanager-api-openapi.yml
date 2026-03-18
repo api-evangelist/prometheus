@@ -1,0 +1,644 @@
+openapi: 3.1.0
+info:
+  title: Prometheus Alertmanager API
+  description: >-
+    The Prometheus Alertmanager HTTP API v2 provides endpoints for querying
+    active alert status, creating and managing silences, retrieving receiver
+    configurations, and checking cluster peer status. Alertmanager deduplicates,
+    groups, and routes alert notifications to receivers such as email, PagerDuty,
+    Slack, and OpsGenie. The API base path is /api/v2.
+  version: v0.28.0
+  contact:
+    name: Prometheus Project
+    url: https://prometheus.io/community/
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+externalDocs:
+  description: Alertmanager Documentation
+  url: https://prometheus.io/docs/alerting/latest/alertmanager/
+servers:
+  - url: 'http://{host}:{port}'
+    description: Alertmanager server
+    variables:
+      host:
+        default: localhost
+        description: Alertmanager server hostname
+      port:
+        default: '9093'
+        description: Alertmanager server port
+tags:
+  - name: Alerts
+    description: >-
+      Endpoints for listing and creating alerts in the Alertmanager.
+  - name: Silences
+    description: >-
+      Endpoints for creating, listing, updating, and expiring silences that
+      mute matching alerts.
+  - name: Receivers
+    description: >-
+      Endpoints for listing configured alert receivers.
+  - name: Status
+    description: >-
+      Endpoints for retrieving Alertmanager configuration, cluster status,
+      and version information.
+paths:
+  /api/v2/alerts:
+    get:
+      operationId: getAlerts
+      summary: Get active alerts
+      description: >-
+        Returns a list of active alerts currently managed by Alertmanager.
+        Supports filtering by silenced, inhibited, active state, and label
+        matchers.
+      tags:
+        - Alerts
+      parameters:
+        - name: active
+          in: query
+          description: Only return active (non-silenced, non-inhibited) alerts.
+          schema:
+            type: boolean
+            default: true
+        - name: silenced
+          in: query
+          description: Include silenced alerts in results.
+          schema:
+            type: boolean
+            default: false
+        - name: inhibited
+          in: query
+          description: Include inhibited alerts in results.
+          schema:
+            type: boolean
+            default: false
+        - name: unprocessed
+          in: query
+          description: Include unprocessed alerts that have not yet been routed.
+          schema:
+            type: boolean
+            default: false
+        - name: filter
+          in: query
+          description: >-
+            A list of label matchers to filter alerts by. Matchers use the
+            syntax label=value, label!=value, label=~regex, or label!~regex.
+          schema:
+            type: array
+            items:
+              type: string
+        - name: receiver
+          in: query
+          description: Filter by receiver name.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Active alerts returned successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GettableAlert'
+        '400':
+          description: Bad request — invalid filter matchers
+    post:
+      operationId: postAlerts
+      summary: Post alerts
+      description: >-
+        Creates or updates alerts in Alertmanager. Prometheus typically calls
+        this endpoint to send firing alerts. Each alert must include a labels
+        map; generatorURL is optional but recommended for linking back to the
+        triggering expression.
+      tags:
+        - Alerts
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/PostableAlert'
+      responses:
+        '200':
+          description: Alerts accepted
+        '400':
+          description: Bad request — invalid alert format
+        '500':
+          description: Internal server error
+  /api/v2/silences:
+    get:
+      operationId: listSilences
+      summary: List silences
+      description: >-
+        Returns a list of all silences including pending, active, and expired
+        silences. Silences mute alerts matching their matchers for a defined
+        time range.
+      tags:
+        - Silences
+      parameters:
+        - name: filter
+          in: query
+          description: Label matchers to filter silences by.
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: Silences returned successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GettableSilence'
+        '400':
+          description: Bad request
+    post:
+      operationId: createSilence
+      summary: Create or update silence
+      description: >-
+        Creates a new silence or updates an existing one. To update, include
+        the ID of the existing silence. Silences mute all alerts whose labels
+        match every matcher in the silence for the specified time period.
+      tags:
+        - Silences
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostableSilence'
+      responses:
+        '200':
+          description: Silence created or updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  silenceID:
+                    type: string
+                    format: uuid
+                    description: ID of the created or updated silence.
+        '400':
+          description: Bad request — invalid silence definition
+        '404':
+          description: Silence not found (when updating by ID)
+  /api/v2/silence/{silenceID}:
+    get:
+      operationId: getSilence
+      summary: Get silence by ID
+      description: >-
+        Returns the silence with the specified ID, including its matchers,
+        time range, creator, and current status.
+      tags:
+        - Silences
+      parameters:
+        - $ref: '#/components/parameters/SilenceID'
+      responses:
+        '200':
+          description: Silence returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GettableSilence'
+        '404':
+          description: Silence not found
+    delete:
+      operationId: deleteSilence
+      summary: Expire silence
+      description: >-
+        Expires a silence, setting its end time to now. Expired silences no
+        longer mute alerts but remain visible until fully removed.
+      tags:
+        - Silences
+      parameters:
+        - $ref: '#/components/parameters/SilenceID'
+      responses:
+        '200':
+          description: Silence expired successfully
+        '404':
+          description: Silence not found
+        '500':
+          description: Internal error expiring silence
+  /api/v2/receivers:
+    get:
+      operationId: listReceivers
+      summary: List receivers
+      description: >-
+        Returns a list of all configured alert receivers. Receivers are the
+        notification integrations (email, Slack, PagerDuty, etc.) configured
+        in the Alertmanager configuration file.
+      tags:
+        - Receivers
+      responses:
+        '200':
+          description: Receivers returned successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Receiver'
+  /api/v2/status:
+    get:
+      operationId: getStatus
+      summary: Get Alertmanager status
+      description: >-
+        Returns the current status of the Alertmanager including the current
+        loaded configuration, cluster peers, and version information.
+      tags:
+        - Status
+      responses:
+        '200':
+          description: Status returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlertmanagerStatus'
+  /api/v2/alerts/groups:
+    get:
+      operationId: getAlertGroups
+      summary: Get alert groups
+      description: >-
+        Returns a list of alert groups. Alertmanager groups alerts by their
+        group labels as configured in routing rules. Each group has a receiver
+        and a set of alerts.
+      tags:
+        - Alerts
+      parameters:
+        - name: active
+          in: query
+          description: Include active alerts.
+          schema:
+            type: boolean
+            default: true
+        - name: silenced
+          in: query
+          description: Include silenced alerts.
+          schema:
+            type: boolean
+            default: false
+        - name: inhibited
+          in: query
+          description: Include inhibited alerts.
+          schema:
+            type: boolean
+            default: false
+        - name: filter
+          in: query
+          description: Label matchers to filter by.
+          schema:
+            type: array
+            items:
+              type: string
+        - name: receiver
+          in: query
+          description: Filter by receiver name.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Alert groups returned successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AlertGroup'
+        '400':
+          description: Bad request
+components:
+  parameters:
+    SilenceID:
+      name: silenceID
+      in: path
+      required: true
+      description: UUID identifier of the silence.
+      schema:
+        type: string
+        format: uuid
+  schemas:
+    GettableAlert:
+      type: object
+      description: An alert as returned by Alertmanager including routing metadata.
+      required:
+        - labels
+        - annotations
+        - startsAt
+        - endsAt
+        - updatedAt
+        - fingerprint
+        - receivers
+        - status
+      properties:
+        labels:
+          type: object
+          additionalProperties:
+            type: string
+          description: Alert identification labels including alertname.
+        annotations:
+          type: object
+          additionalProperties:
+            type: string
+          description: Non-identifying metadata such as summary and description.
+        startsAt:
+          type: string
+          format: date-time
+          description: Timestamp when the alert started firing.
+        endsAt:
+          type: string
+          format: date-time
+          description: Timestamp when the alert resolves. Set far future if still active.
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp of the last update.
+        generatorURL:
+          type: string
+          format: uri
+          description: URL linking back to the expression that triggered this alert.
+        fingerprint:
+          type: string
+          description: Hash identifying this unique alert label set.
+        receivers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Receiver'
+          description: Receivers that will be notified for this alert.
+        status:
+          $ref: '#/components/schemas/AlertStatus'
+    PostableAlert:
+      type: object
+      description: An alert payload for sending to Alertmanager.
+      required:
+        - labels
+      properties:
+        labels:
+          type: object
+          additionalProperties:
+            type: string
+          description: Alert identification labels. Must include alertname.
+        annotations:
+          type: object
+          additionalProperties:
+            type: string
+          description: Non-identifying metadata.
+        startsAt:
+          type: string
+          format: date-time
+          description: Alert start time. Defaults to current time if omitted.
+        endsAt:
+          type: string
+          format: date-time
+          description: Alert end time. If in the past, the alert resolves.
+        generatorURL:
+          type: string
+          format: uri
+          description: URL to the expression that triggered this alert.
+    AlertStatus:
+      type: object
+      description: The current routing and inhibition status of an alert.
+      required:
+        - state
+        - silencedBy
+        - inhibitedBy
+      properties:
+        state:
+          type: string
+          enum:
+            - unprocessed
+            - active
+            - suppressed
+          description: Whether the alert is active, silenced, or inhibited.
+        silencedBy:
+          type: array
+          items:
+            type: string
+          description: IDs of silences that mute this alert.
+        inhibitedBy:
+          type: array
+          items:
+            type: string
+          description: Fingerprints of alerts that inhibit this alert.
+    GettableSilence:
+      type: object
+      description: A silence as returned by Alertmanager with full metadata.
+      required:
+        - id
+        - status
+        - updatedAt
+        - matchers
+        - startsAt
+        - endsAt
+        - createdBy
+        - comment
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier of the silence.
+        status:
+          type: object
+          properties:
+            state:
+              type: string
+              enum:
+                - expired
+                - active
+                - pending
+              description: Current state of the silence.
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp of the last update to this silence.
+        matchers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Matcher'
+          description: Label matchers that determine which alerts this silence affects.
+        startsAt:
+          type: string
+          format: date-time
+          description: When the silence takes effect.
+        endsAt:
+          type: string
+          format: date-time
+          description: When the silence expires.
+        createdBy:
+          type: string
+          description: The person or system that created this silence.
+        comment:
+          type: string
+          description: A comment explaining the reason for the silence.
+    PostableSilence:
+      type: object
+      description: Silence definition for creation or update.
+      required:
+        - matchers
+        - startsAt
+        - endsAt
+        - createdBy
+        - comment
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ID of existing silence to update. Omit for creation.
+        matchers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Matcher'
+          description: Label matchers for the silence.
+        startsAt:
+          type: string
+          format: date-time
+          description: When the silence takes effect.
+        endsAt:
+          type: string
+          format: date-time
+          description: When the silence expires.
+        createdBy:
+          type: string
+          description: The person or system creating this silence.
+        comment:
+          type: string
+          description: Reason for the silence.
+    Matcher:
+      type: object
+      description: A label matcher used in silences and routes.
+      required:
+        - name
+        - value
+        - isRegex
+      properties:
+        name:
+          type: string
+          description: Label name to match.
+        value:
+          type: string
+          description: Label value or regex to match against.
+        isRegex:
+          type: boolean
+          description: Whether value is a regular expression.
+        isEqual:
+          type: boolean
+          description: Whether the match is equality (true) or inequality (false).
+          default: true
+    Receiver:
+      type: object
+      description: An Alertmanager notification receiver.
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: Receiver name as defined in the configuration file.
+    AlertGroup:
+      type: object
+      description: A group of alerts sharing common group labels.
+      required:
+        - labels
+        - groupLabels
+        - commonLabels
+        - commonAnnotations
+        - externalURL
+        - receiver
+        - alerts
+      properties:
+        labels:
+          type: object
+          additionalProperties:
+            type: string
+          description: Labels common to all alerts in this group.
+        groupLabels:
+          type: object
+          additionalProperties:
+            type: string
+          description: Labels used to group these alerts per the routing config.
+        commonLabels:
+          type: object
+          additionalProperties:
+            type: string
+          description: Labels present on all alerts in the group.
+        commonAnnotations:
+          type: object
+          additionalProperties:
+            type: string
+          description: Annotations present on all alerts in the group.
+        externalURL:
+          type: string
+          format: uri
+          description: External URL for the Alertmanager instance.
+        receiver:
+          $ref: '#/components/schemas/Receiver'
+        alerts:
+          type: array
+          items:
+            $ref: '#/components/schemas/GettableAlert'
+          description: Alerts belonging to this group.
+    AlertmanagerStatus:
+      type: object
+      description: Overall status of the Alertmanager instance.
+      required:
+        - cluster
+        - versionInfo
+        - config
+        - uptime
+      properties:
+        cluster:
+          type: object
+          description: Cluster peer status.
+          properties:
+            name:
+              type: string
+              description: Name of this cluster member.
+            status:
+              type: string
+              enum:
+                - ready
+                - settling
+                - disabled
+              description: Cluster status.
+            peers:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    description: Peer name.
+                  address:
+                    type: string
+                    description: Peer address.
+        versionInfo:
+          type: object
+          description: Version information.
+          properties:
+            version:
+              type: string
+            revision:
+              type: string
+            branch:
+              type: string
+            buildUser:
+              type: string
+            buildDate:
+              type: string
+            goVersion:
+              type: string
+        config:
+          type: object
+          description: Currently loaded configuration.
+          properties:
+            original:
+              type: string
+              description: The raw configuration file content as a string.
+        uptime:
+          type: string
+          format: date-time
+          description: Timestamp when Alertmanager started.

@@ -1,0 +1,495 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prometheus.io/schemas/metrics.json",
+  "title": "Prometheus Metrics and Alerting Schema",
+  "description": "JSON Schema covering the core Prometheus data model and alerting configuration structures: metric types, label sets, time series, alerting rules, recording rules, scrape configs, and Alertmanager webhook payloads.",
+  "type": "object",
+  "properties": {},
+  "$defs": {
+    "LabelSet": {
+      "type": "object",
+      "description": "A set of key-value label pairs that uniquely identify a time series. Label names must match [a-zA-Z_:][a-zA-Z0-9_:]* and values are arbitrary UTF-8 strings.",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "examples": [
+        {
+          "__name__": "http_requests_total",
+          "job": "api-server",
+          "instance": "0.0.0.0:8080",
+          "method": "GET",
+          "status": "200"
+        }
+      ]
+    },
+    "SamplePair": {
+      "type": "array",
+      "description": "A [timestamp, value] pair. Timestamp is a Unix float in seconds; value is a string-encoded float to accommodate +Inf, -Inf, and NaN.",
+      "prefixItems": [
+        {
+          "type": "number",
+          "description": "Unix timestamp in seconds as a float."
+        },
+        {
+          "type": "string",
+          "description": "Sample value as a string-encoded float."
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "InstantVector": {
+      "type": "array",
+      "description": "Result of an instant PromQL query — a set of time series, each with a single sample at the evaluation time.",
+      "items": {
+        "$ref": "#/$defs/VectorSample"
+      }
+    },
+    "RangeMatrix": {
+      "type": "array",
+      "description": "Result of a range PromQL query — a set of time series, each with multiple samples over the evaluated time range.",
+      "items": {
+        "$ref": "#/$defs/MatrixSeries"
+      }
+    },
+    "VectorSample": {
+      "type": "object",
+      "description": "A single time series with one sample value from an instant query.",
+      "required": ["metric", "value"],
+      "properties": {
+        "metric": {
+          "$ref": "#/$defs/LabelSet",
+          "description": "Labels identifying this time series."
+        },
+        "value": {
+          "$ref": "#/$defs/SamplePair",
+          "description": "The sample value at the query evaluation time."
+        }
+      }
+    },
+    "MatrixSeries": {
+      "type": "object",
+      "description": "A time series with multiple samples over a range.",
+      "required": ["metric", "values"],
+      "properties": {
+        "metric": {
+          "$ref": "#/$defs/LabelSet",
+          "description": "Labels identifying this time series."
+        },
+        "values": {
+          "type": "array",
+          "description": "Array of [timestamp, value] pairs over the queried time range.",
+          "items": {
+            "$ref": "#/$defs/SamplePair"
+          }
+        }
+      }
+    },
+    "MetricType": {
+      "type": "string",
+      "description": "The type of a Prometheus metric. Counter always increases; Gauge can go up and down; Histogram and Summary observe values and compute quantiles; Untyped has no defined type.",
+      "enum": [
+        "counter",
+        "gauge",
+        "histogram",
+        "gaugehistogram",
+        "summary",
+        "untyped"
+      ]
+    },
+    "MetricMetadata": {
+      "type": "object",
+      "description": "Metadata describing a Prometheus metric family as reported by scrape targets.",
+      "required": ["type", "help"],
+      "properties": {
+        "type": {
+          "$ref": "#/$defs/MetricType"
+        },
+        "help": {
+          "type": "string",
+          "description": "Human-readable description of the metric's meaning and usage."
+        },
+        "unit": {
+          "type": "string",
+          "description": "Optional unit of the metric (e.g., bytes, seconds, ratio)."
+        }
+      }
+    },
+    "AlertingRule": {
+      "type": "object",
+      "description": "An alerting rule definition as found in a Prometheus rules file. Generates alerts when the PromQL expression evaluates to a non-empty set for the specified duration.",
+      "required": ["alert", "expr"],
+      "properties": {
+        "alert": {
+          "type": "string",
+          "description": "Name of the alert. Becomes the alertname label value on generated alerts.",
+          "pattern": "^[a-zA-Z_:][a-zA-Z0-9_:]*$"
+        },
+        "expr": {
+          "type": "string",
+          "description": "PromQL expression to evaluate. When it returns a non-empty vector the rule is pending or firing.",
+          "examples": [
+            "rate(http_requests_total[5m]) > 100",
+            "up == 0"
+          ]
+        },
+        "for": {
+          "type": "string",
+          "description": "Duration the expression must be true before an alert fires. Alerts are in pending state during this period. E.g., '5m', '1h'.",
+          "pattern": "^[0-9]+(ms|s|m|h|d|w|y)$"
+        },
+        "keep_firing_for": {
+          "type": "string",
+          "description": "Minimum duration to keep an alert firing after the condition is no longer met.",
+          "pattern": "^[0-9]+(ms|s|m|h|d|w|y)$"
+        },
+        "labels": {
+          "$ref": "#/$defs/LabelSet",
+          "description": "Labels to add to the generated alert. These labels are added to all alerts from this rule."
+        },
+        "annotations": {
+          "type": "object",
+          "description": "Annotations to add to the alert. Common keys include summary, description, and runbook_url.",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "examples": [
+            {
+              "summary": "High request rate on {{ $labels.instance }}",
+              "description": "Request rate is {{ $value }} req/s",
+              "runbook_url": "https://wiki.example.com/runbooks/high-request-rate"
+            }
+          ]
+        }
+      }
+    },
+    "RecordingRule": {
+      "type": "object",
+      "description": "A recording rule that precomputes expensive PromQL expressions and saves the results as a new metric. Recording rules reduce query latency for dashboards and alerts.",
+      "required": ["record", "expr"],
+      "properties": {
+        "record": {
+          "type": "string",
+          "description": "Name of the new metric to create. Must be a valid metric name.",
+          "pattern": "^[a-zA-Z_:][a-zA-Z0-9_:]*$",
+          "examples": [
+            "job:http_requests_total:rate5m",
+            "instance:node_cpu_seconds:rate5m"
+          ]
+        },
+        "expr": {
+          "type": "string",
+          "description": "PromQL expression to evaluate. The result is stored as the recording rule metric.",
+          "examples": [
+            "rate(http_requests_total[5m])",
+            "sum by (job) (rate(http_requests_total[5m]))"
+          ]
+        },
+        "labels": {
+          "$ref": "#/$defs/LabelSet",
+          "description": "Labels to add to or overwrite in the resulting metric's label set."
+        }
+      }
+    },
+    "RuleGroup": {
+      "type": "object",
+      "description": "A named group of alerting and recording rules. Rules within a group are evaluated sequentially at the group's interval, enabling recording rules to feed into alerting rules.",
+      "required": ["name", "rules"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Unique name for this rule group within the rules file."
+        },
+        "interval": {
+          "type": "string",
+          "description": "Evaluation interval for this rule group. Overrides the global evaluation_interval when set.",
+          "pattern": "^[0-9]+(ms|s|m|h|d|w|y)$"
+        },
+        "limit": {
+          "type": "integer",
+          "description": "Maximum number of alerts a rule in this group can produce. 0 means no limit.",
+          "minimum": 0
+        },
+        "rules": {
+          "type": "array",
+          "description": "List of alerting and recording rules in this group.",
+          "items": {
+            "oneOf": [
+              { "$ref": "#/$defs/AlertingRule" },
+              { "$ref": "#/$defs/RecordingRule" }
+            ]
+          }
+        }
+      }
+    },
+    "RuleFile": {
+      "type": "object",
+      "description": "A Prometheus rules file containing one or more rule groups. Rule files are referenced in the Prometheus configuration via rule_files paths.",
+      "required": ["groups"],
+      "properties": {
+        "groups": {
+          "type": "array",
+          "description": "List of rule groups defined in this file.",
+          "items": {
+            "$ref": "#/$defs/RuleGroup"
+          }
+        }
+      }
+    },
+    "ScrapeConfig": {
+      "type": "object",
+      "description": "Configuration for a Prometheus scrape job that defines which targets to scrape and how to scrape them.",
+      "required": ["job_name"],
+      "properties": {
+        "job_name": {
+          "type": "string",
+          "description": "Name of the scrape job. Appears as the job label on all scraped metrics.",
+          "pattern": "^[a-zA-Z_:][a-zA-Z0-9_:-]*$"
+        },
+        "scrape_interval": {
+          "type": "string",
+          "description": "How frequently to scrape targets from this job. Overrides global scrape_interval.",
+          "pattern": "^[0-9]+(ms|s|m|h)$"
+        },
+        "scrape_timeout": {
+          "type": "string",
+          "description": "Per-scrape timeout. Must be less than scrape_interval.",
+          "pattern": "^[0-9]+(ms|s|m|h)$"
+        },
+        "metrics_path": {
+          "type": "string",
+          "description": "HTTP path to scrape metrics from. Defaults to /metrics.",
+          "default": "/metrics"
+        },
+        "scheme": {
+          "type": "string",
+          "description": "Protocol scheme for scraping.",
+          "enum": ["http", "https"],
+          "default": "http"
+        },
+        "honor_labels": {
+          "type": "boolean",
+          "description": "When true, Prometheus preserves labels from the scraped target without prefixing conflicts.",
+          "default": false
+        },
+        "honor_timestamps": {
+          "type": "boolean",
+          "description": "When true, Prometheus uses timestamps from the scraped metrics if present.",
+          "default": true
+        },
+        "params": {
+          "type": "object",
+          "description": "Query parameters to append to the scrape URL.",
+          "additionalProperties": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        },
+        "static_configs": {
+          "type": "array",
+          "description": "Static list of scrape target groups.",
+          "items": {
+            "$ref": "#/$defs/StaticConfig"
+          }
+        },
+        "relabel_configs": {
+          "type": "array",
+          "description": "Relabeling rules applied to discovered targets before scraping.",
+          "items": {
+            "$ref": "#/$defs/RelabelConfig"
+          }
+        },
+        "metric_relabel_configs": {
+          "type": "array",
+          "description": "Relabeling rules applied to metrics after scraping.",
+          "items": {
+            "$ref": "#/$defs/RelabelConfig"
+          }
+        }
+      }
+    },
+    "StaticConfig": {
+      "type": "object",
+      "description": "A static list of scrape targets with optional labels.",
+      "required": ["targets"],
+      "properties": {
+        "targets": {
+          "type": "array",
+          "description": "List of scrape targets in host:port format.",
+          "items": {
+            "type": "string"
+          },
+          "examples": [
+            ["localhost:9090", "localhost:9091"]
+          ]
+        },
+        "labels": {
+          "$ref": "#/$defs/LabelSet",
+          "description": "Labels to assign to all targets in this group."
+        }
+      }
+    },
+    "RelabelConfig": {
+      "type": "object",
+      "description": "A relabeling rule that transforms label sets on discovered targets or scraped metrics.",
+      "properties": {
+        "source_labels": {
+          "type": "array",
+          "description": "Labels whose values are joined with separator and matched against regex.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "separator": {
+          "type": "string",
+          "description": "Separator between source label values.",
+          "default": ";"
+        },
+        "target_label": {
+          "type": "string",
+          "description": "Label to write the result of replace action into."
+        },
+        "regex": {
+          "type": "string",
+          "description": "Regular expression to match against the source label value.",
+          "default": "(.*)"
+        },
+        "modulus": {
+          "type": "integer",
+          "description": "Modulus for hashmod action.",
+          "minimum": 1
+        },
+        "replacement": {
+          "type": "string",
+          "description": "Replacement string for replace action. Can use $1 capture groups.",
+          "default": "$1"
+        },
+        "action": {
+          "type": "string",
+          "description": "Relabeling action to perform.",
+          "enum": [
+            "replace",
+            "keep",
+            "drop",
+            "hashmod",
+            "labelmap",
+            "labeldrop",
+            "labelkeep",
+            "lowercase",
+            "uppercase",
+            "keepequal",
+            "dropequal"
+          ],
+          "default": "replace"
+        }
+      }
+    },
+    "AlertGroupWebhookPayload": {
+      "type": "object",
+      "description": "The webhook payload sent by Alertmanager to configured webhook receivers when alert groups fire or resolve.",
+      "required": [
+        "version",
+        "groupKey",
+        "status",
+        "receiver",
+        "groupLabels",
+        "commonLabels",
+        "commonAnnotations",
+        "externalURL",
+        "alerts"
+      ],
+      "properties": {
+        "version": {
+          "type": "string",
+          "description": "Webhook payload version. Currently '4'.",
+          "const": "4"
+        },
+        "groupKey": {
+          "type": "string",
+          "description": "Key identifying this alert group based on routing label values."
+        },
+        "truncatedAlerts": {
+          "type": "integer",
+          "description": "Number of alerts omitted due to max_alerts configuration.",
+          "minimum": 0,
+          "default": 0
+        },
+        "status": {
+          "type": "string",
+          "description": "Whether any alerts in the group are still firing.",
+          "enum": ["firing", "resolved"]
+        },
+        "receiver": {
+          "type": "string",
+          "description": "Name of the Alertmanager receiver."
+        },
+        "groupLabels": {
+          "$ref": "#/$defs/LabelSet",
+          "description": "Labels used to group these alerts."
+        },
+        "commonLabels": {
+          "$ref": "#/$defs/LabelSet",
+          "description": "Labels present on all alerts in the group."
+        },
+        "commonAnnotations": {
+          "type": "object",
+          "description": "Annotations present on all alerts in the group.",
+          "additionalProperties": { "type": "string" }
+        },
+        "externalURL": {
+          "type": "string",
+          "format": "uri",
+          "description": "External URL of the Alertmanager instance."
+        },
+        "alerts": {
+          "type": "array",
+          "description": "Individual alerts in this group.",
+          "items": {
+            "$ref": "#/$defs/WebhookAlert"
+          }
+        }
+      }
+    },
+    "WebhookAlert": {
+      "type": "object",
+      "description": "An individual alert within an Alertmanager webhook payload.",
+      "required": ["status", "labels", "annotations", "startsAt", "endsAt", "generatorURL", "fingerprint"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["firing", "resolved"],
+          "description": "Current alert status."
+        },
+        "labels": {
+          "$ref": "#/$defs/LabelSet",
+          "description": "Alert identification labels including alertname."
+        },
+        "annotations": {
+          "type": "object",
+          "additionalProperties": { "type": "string" },
+          "description": "Alert annotations including summary, description, and runbook_url."
+        },
+        "startsAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when the alert began firing."
+        },
+        "endsAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when the alert resolved or far-future if still firing."
+        },
+        "generatorURL": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL to the Prometheus expression that triggered this alert."
+        },
+        "fingerprint": {
+          "type": "string",
+          "description": "Hash fingerprint of the alert's label set for deduplication.",
+          "pattern": "^[0-9a-f]{16}$"
+        }
+      }
+    }
+  }
+}

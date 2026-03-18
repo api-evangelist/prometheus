@@ -1,0 +1,271 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "prom": "https://prometheus.io/schemas/",
+    "schema": "https://schema.org/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "dcterms": "http://purl.org/dc/terms/",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "prov": "http://www.w3.org/ns/prov#",
+    "time": "http://www.w3.org/2006/time#",
+
+    "TimeSeries": {
+      "@id": "prom:TimeSeries",
+      "@context": {
+        "metric": {
+          "@id": "prom:labels",
+          "@container": "@index"
+        },
+        "values": {
+          "@id": "prom:values",
+          "@container": "@list"
+        },
+        "value": {
+          "@id": "prom:value",
+          "@type": "xsd:string"
+        }
+      }
+    },
+
+    "MetricFamily": {
+      "@id": "prom:MetricFamily",
+      "@context": {
+        "name": {
+          "@id": "schema:name",
+          "@type": "xsd:string"
+        },
+        "help": {
+          "@id": "rdfs:comment",
+          "@type": "xsd:string"
+        },
+        "type": {
+          "@id": "prom:metricType",
+          "@type": "xsd:string"
+        },
+        "unit": {
+          "@id": "schema:unitText",
+          "@type": "xsd:string"
+        }
+      }
+    },
+
+    "AlertingRule": {
+      "@id": "prom:AlertingRule",
+      "@context": {
+        "alert": {
+          "@id": "schema:name",
+          "@type": "xsd:string"
+        },
+        "expr": {
+          "@id": "prom:expression",
+          "@type": "xsd:string"
+        },
+        "for": {
+          "@id": "prom:pendingDuration",
+          "@type": "xsd:string"
+        },
+        "labels": {
+          "@id": "prom:ruleLabels",
+          "@container": "@index"
+        },
+        "annotations": {
+          "@id": "prom:ruleAnnotations",
+          "@container": "@index"
+        }
+      }
+    },
+
+    "RecordingRule": {
+      "@id": "prom:RecordingRule",
+      "@context": {
+        "record": {
+          "@id": "schema:name",
+          "@type": "xsd:string"
+        },
+        "expr": {
+          "@id": "prom:expression",
+          "@type": "xsd:string"
+        },
+        "labels": {
+          "@id": "prom:ruleLabels",
+          "@container": "@index"
+        }
+      }
+    },
+
+    "RuleGroup": {
+      "@id": "prom:RuleGroup",
+      "@context": {
+        "name": {
+          "@id": "schema:name",
+          "@type": "xsd:string"
+        },
+        "interval": {
+          "@id": "prom:evaluationInterval",
+          "@type": "xsd:string"
+        },
+        "rules": {
+          "@id": "prom:rules",
+          "@container": "@list"
+        }
+      }
+    },
+
+    "Alert": {
+      "@id": "prom:Alert",
+      "@context": {
+        "labels": {
+          "@id": "prom:alertLabels",
+          "@container": "@index"
+        },
+        "annotations": {
+          "@id": "prom:alertAnnotations",
+          "@container": "@index"
+        },
+        "state": {
+          "@id": "prom:alertState",
+          "@type": "xsd:string"
+        },
+        "activeAt": {
+          "@id": "prom:activeAt",
+          "@type": "xsd:dateTime"
+        },
+        "value": {
+          "@id": "prom:alertValue",
+          "@type": "xsd:string"
+        },
+        "generatorURL": {
+          "@id": "schema:url",
+          "@type": "@id"
+        },
+        "fingerprint": {
+          "@id": "dcterms:identifier",
+          "@type": "xsd:string"
+        },
+        "startsAt": {
+          "@id": "dcterms:created",
+          "@type": "xsd:dateTime"
+        },
+        "endsAt": {
+          "@id": "prom:endsAt",
+          "@type": "xsd:dateTime"
+        }
+      }
+    },
+
+    "Silence": {
+      "@id": "prom:Silence",
+      "@context": {
+        "id": {
+          "@id": "dcterms:identifier",
+          "@type": "xsd:string"
+        },
+        "matchers": {
+          "@id": "prom:silenceMatchers",
+          "@container": "@set"
+        },
+        "startsAt": {
+          "@id": "prom:silenceStartsAt",
+          "@type": "xsd:dateTime"
+        },
+        "endsAt": {
+          "@id": "prom:silenceEndsAt",
+          "@type": "xsd:dateTime"
+        },
+        "createdBy": {
+          "@id": "dcterms:creator",
+          "@type": "xsd:string"
+        },
+        "comment": {
+          "@id": "rdfs:comment",
+          "@type": "xsd:string"
+        },
+        "updatedAt": {
+          "@id": "dcterms:modified",
+          "@type": "xsd:dateTime"
+        }
+      }
+    },
+
+    "ScrapeTarget": {
+      "@id": "prom:ScrapeTarget",
+      "@context": {
+        "scrapeUrl": {
+          "@id": "schema:url",
+          "@type": "@id"
+        },
+        "labels": {
+          "@id": "prom:targetLabels",
+          "@container": "@index"
+        },
+        "health": {
+          "@id": "schema:healthCondition",
+          "@type": "xsd:string"
+        },
+        "lastScrape": {
+          "@id": "prom:lastScrape",
+          "@type": "xsd:dateTime"
+        },
+        "lastScrapeDuration": {
+          "@id": "prom:lastScrapeDuration",
+          "@type": "xsd:double"
+        },
+        "scrapePool": {
+          "@id": "prom:scrapePool",
+          "@type": "xsd:string"
+        }
+      }
+    },
+
+    "AlertGroup": {
+      "@id": "prom:AlertGroup",
+      "@context": {
+        "groupLabels": {
+          "@id": "prom:groupLabels",
+          "@container": "@index"
+        },
+        "commonLabels": {
+          "@id": "prom:commonLabels",
+          "@container": "@index"
+        },
+        "commonAnnotations": {
+          "@id": "prom:commonAnnotations",
+          "@container": "@index"
+        },
+        "receiver": {
+          "@id": "prom:receiver",
+          "@type": "xsd:string"
+        },
+        "status": {
+          "@id": "prom:groupStatus",
+          "@type": "xsd:string"
+        },
+        "externalURL": {
+          "@id": "schema:url",
+          "@type": "@id"
+        },
+        "alerts": {
+          "@id": "prom:alerts",
+          "@container": "@set"
+        }
+      }
+    },
+
+    "name": {
+      "@id": "schema:name",
+      "@type": "xsd:string"
+    },
+    "description": {
+      "@id": "schema:description",
+      "@type": "xsd:string"
+    },
+    "version": {
+      "@id": "schema:softwareVersion",
+      "@type": "xsd:string"
+    },
+    "startTime": {
+      "@id": "prov:startedAtTime",
+      "@type": "xsd:dateTime"
+    }
+  }
+}

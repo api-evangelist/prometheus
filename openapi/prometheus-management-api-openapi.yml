@@ -1,0 +1,191 @@
+openapi: 3.1.0
+info:
+  title: Prometheus Management API
+  description: >-
+    The Prometheus Management API provides administrative endpoints for
+    managing a running Prometheus server. This includes configuration reloads,
+    TSDB snapshots, tombstone cleanup, and graceful shutdown. These endpoints
+    are disabled by default and require the --web.enable-lifecycle flag for
+    the reload and quit endpoints, and --web.enable-admin-api for the TSDB
+    admin endpoints.
+  version: v3.1.0
+  contact:
+    name: Prometheus Project
+    url: https://prometheus.io/community/
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+externalDocs:
+  description: Prometheus Management API Documentation
+  url: https://prometheus.io/docs/prometheus/latest/management_api/
+servers:
+  - url: 'http://{host}:{port}'
+    description: Prometheus server
+    variables:
+      host:
+        default: localhost
+        description: Prometheus server hostname
+      port:
+        default: '9090'
+        description: Prometheus server port
+tags:
+  - name: Lifecycle
+    description: >-
+      Endpoints for managing the Prometheus server lifecycle including
+      configuration reloads and graceful shutdown. Requires
+      --web.enable-lifecycle flag.
+  - name: Admin
+    description: >-
+      Administrative endpoints for TSDB management including snapshots and
+      tombstone cleanup. Requires --web.enable-admin-api flag.
+paths:
+  /-/reload:
+    post:
+      operationId: reloadConfig
+      summary: Reload configuration
+      description: >-
+        Triggers a reload of the Prometheus configuration file and rule files.
+        Returns 200 when the reload is successful and 500 if the reload fails.
+        Requires --web.enable-lifecycle flag. Also triggered by sending SIGHUP
+        to the Prometheus process.
+      tags:
+        - Lifecycle
+      responses:
+        '200':
+          description: Configuration reloaded successfully
+        '500':
+          description: Configuration reload failed
+  /-/quit:
+    post:
+      operationId: quitServer
+      summary: Graceful shutdown
+      description: >-
+        Triggers a graceful shutdown of the Prometheus server. Returns 200
+        immediately while the shutdown proceeds asynchronously. Requires
+        --web.enable-lifecycle flag. Also triggered by sending SIGTERM to the
+        Prometheus process.
+      tags:
+        - Lifecycle
+      responses:
+        '200':
+          description: Shutdown initiated
+  /-/healthy:
+    get:
+      operationId: checkHealth
+      summary: Health check
+      description: >-
+        Returns 200 when Prometheus is healthy and ready to serve requests.
+        Returns 500 if Prometheus is not ready. Used for Kubernetes liveness
+        probes.
+      tags:
+        - Lifecycle
+      responses:
+        '200':
+          description: Prometheus is healthy
+        '500':
+          description: Prometheus is not healthy
+  /-/ready:
+    get:
+      operationId: checkReady
+      summary: Readiness check
+      description: >-
+        Returns 200 when Prometheus is ready to serve traffic, meaning it has
+        finished startup and is serving queries. Returns 503 if not yet ready.
+        Used for Kubernetes readiness probes.
+      tags:
+        - Lifecycle
+      responses:
+        '200':
+          description: Prometheus is ready to serve traffic
+        '503':
+          description: Prometheus is not yet ready
+  /api/v1/admin/tsdb/snapshot:
+    post:
+      operationId: createTsdbSnapshot
+      summary: Create TSDB snapshot
+      description: >-
+        Creates a snapshot of all current data into the snapshots/ directory
+        under the data directory and returns the directory name. Requires
+        --web.enable-admin-api flag.
+      tags:
+        - Admin
+      parameters:
+        - name: skip_head
+          in: query
+          description: Skip data present in the head block if true. Defaults to false.
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Snapshot created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum:
+                      - success
+                  data:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        description: Directory name of the snapshot.
+                        example: 20240316T105532Z-fcea73e5e91ba6db
+        '403':
+          description: Admin API not enabled
+  /api/v1/admin/tsdb/delete_series:
+    post:
+      operationId: deleteTsdbSeries
+      summary: Delete series
+      description: >-
+        Deletes data for a selection of series in a time range by creating
+        tombstones. The series data is not immediately removed but marked for
+        deletion during the next compaction cycle. Requires
+        --web.enable-admin-api flag.
+      tags:
+        - Admin
+      parameters:
+        - name: match[]
+          in: query
+          required: true
+          description: Repeated label matcher argument to select series to delete.
+          schema:
+            type: array
+            items:
+              type: string
+        - name: start
+          in: query
+          description: Start of the time range to delete. Defaults to minimum time.
+          schema:
+            type: string
+        - name: end
+          in: query
+          description: End of the time range to delete. Defaults to maximum time.
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Deletion tombstones created successfully
+        '400':
+          description: Bad request — invalid match or time parameters
+        '403':
+          description: Admin API not enabled
+  /api/v1/admin/tsdb/clean_tombstones:
+    post:
+      operationId: cleanTombstones
+      summary: Clean tombstones
+      description: >-
+        Removes the deleted data from disk and cleans up existing tombstones.
+        This operation triggers a compaction on all blocks with tombstones.
+        Requires --web.enable-admin-api flag.
+      tags:
+        - Admin
+      responses:
+        '204':
+          description: Tombstones cleaned successfully
+        '403':
+          description: Admin API not enabled
