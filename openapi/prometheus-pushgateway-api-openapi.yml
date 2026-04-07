@@ -41,7 +41,7 @@ paths:
   /metrics/job/{job}:
     put:
       operationId: replaceJobMetrics
-      summary: Replace all metrics for a job
+      summary: Prometheus Replace all metrics for a job
       description: >-
         Replaces all metrics for the specified job with the metrics in the
         request body. The entire group of metrics for the job is atomically
@@ -72,7 +72,7 @@ paths:
           description: Bad request — invalid metric format or labels
     post:
       operationId: pushJobMetrics
-      summary: Add or update metrics for a job
+      summary: Prometheus Add or update metrics for a job
       description: >-
         Adds new metrics for the specified job or updates existing metrics.
         Unlike PUT, POST only updates the metrics that are present in the
@@ -99,7 +99,7 @@ paths:
           description: Bad request — invalid metric format or labels
     delete:
       operationId: deleteJobMetrics
-      summary: Delete all metrics for a job
+      summary: Prometheus Delete all metrics for a job
       description: >-
         Deletes all metrics for the specified job from the Pushgateway. After
         deletion, Prometheus will no longer scrape any metrics for this job
@@ -116,7 +116,7 @@ paths:
   /metrics/job/{job}/{labels}:
     put:
       operationId: replaceGroupedMetrics
-      summary: Replace metrics for a job with grouping labels
+      summary: Prometheus Replace metrics for a job with grouping labels
       description: >-
         Replaces all metrics for the specified job and grouping label
         combination. Grouping labels are additional key-value pairs appended to
@@ -145,7 +145,7 @@ paths:
           description: Bad request — invalid metric format or label names
     post:
       operationId: pushGroupedMetrics
-      summary: Add or update metrics for a job with grouping labels
+      summary: Prometheus Add or update metrics for a job with grouping labels
       description: >-
         Adds or updates metrics for the specified job and grouping label
         combination. Only metrics included in the request body are changed;
@@ -169,7 +169,7 @@ paths:
           description: Bad request
     delete:
       operationId: deleteGroupedMetrics
-      summary: Delete metrics for a job with grouping labels
+      summary: Prometheus Delete metrics for a job with grouping labels
       description: >-
         Deletes all metrics for the specified job and grouping label combination.
         Only metrics with the exact label set specified in the path are deleted.
@@ -186,7 +186,7 @@ paths:
   /api/v1/metrics:
     get:
       operationId: listAllMetrics
-      summary: List all pushed metrics
+      summary: Prometheus List all pushed metrics
       description: >-
         Returns all currently stored metric families in JSON format, grouped
         by job and grouping labels. This endpoint provides a structured view
@@ -203,7 +203,7 @@ paths:
   /-/healthy:
     get:
       operationId: checkHealth
-      summary: Health check
+      summary: Prometheus Health check
       description: >-
         Returns 200 if the Pushgateway is healthy and ready to accept pushed
         metrics. Used for liveness probes in Kubernetes deployments.
@@ -215,7 +215,7 @@ paths:
   /-/ready:
     get:
       operationId: checkReady
-      summary: Readiness check
+      summary: Prometheus Readiness check
       description: >-
         Returns 200 when the Pushgateway is ready to serve traffic.
         Used for readiness probes in Kubernetes deployments.
@@ -227,7 +227,7 @@ paths:
   /api/v1/status:
     get:
       operationId: getStatus
-      summary: Get Pushgateway status
+      summary: Prometheus Get Pushgateway status
       description: >-
         Returns build information and runtime status for the Pushgateway
         server including version, revision, and configuration flags.

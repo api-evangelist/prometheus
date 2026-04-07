@@ -46,7 +46,7 @@ paths:
   /api/v2/alerts:
     get:
       operationId: getAlerts
-      summary: Get active alerts
+      summary: Prometheus Get active alerts
       description: >-
         Returns a list of active alerts currently managed by Alertmanager.
         Supports filtering by silenced, inhibited, active state, and label
@@ -105,7 +105,7 @@ paths:
           description: Bad request — invalid filter matchers
     post:
       operationId: postAlerts
-      summary: Post alerts
+      summary: Prometheus Post alerts
       description: >-
         Creates or updates alerts in Alertmanager. Prometheus typically calls
         this endpoint to send firing alerts. Each alert must include a labels
@@ -131,7 +131,7 @@ paths:
   /api/v2/silences:
     get:
       operationId: listSilences
-      summary: List silences
+      summary: Prometheus List silences
       description: >-
         Returns a list of all silences including pending, active, and expired
         silences. Silences mute alerts matching their matchers for a defined
@@ -159,7 +159,7 @@ paths:
           description: Bad request
     post:
       operationId: createSilence
-      summary: Create or update silence
+      summary: Prometheus Create or update silence
       description: >-
         Creates a new silence or updates an existing one. To update, include
         the ID of the existing silence. Silences mute all alerts whose labels
@@ -191,7 +191,7 @@ paths:
   /api/v2/silence/{silenceID}:
     get:
       operationId: getSilence
-      summary: Get silence by ID
+      summary: Prometheus Get silence by ID
       description: >-
         Returns the silence with the specified ID, including its matchers,
         time range, creator, and current status.
@@ -210,7 +210,7 @@ paths:
           description: Silence not found
     delete:
       operationId: deleteSilence
-      summary: Expire silence
+      summary: Prometheus Expire silence
       description: >-
         Expires a silence, setting its end time to now. Expired silences no
         longer mute alerts but remain visible until fully removed.
@@ -228,7 +228,7 @@ paths:
   /api/v2/receivers:
     get:
       operationId: listReceivers
-      summary: List receivers
+      summary: Prometheus List receivers
       description: >-
         Returns a list of all configured alert receivers. Receivers are the
         notification integrations (email, Slack, PagerDuty, etc.) configured
@@ -247,7 +247,7 @@ paths:
   /api/v2/status:
     get:
       operationId: getStatus
-      summary: Get Alertmanager status
+      summary: Prometheus Get Alertmanager status
       description: >-
         Returns the current status of the Alertmanager including the current
         loaded configuration, cluster peers, and version information.
@@ -263,7 +263,7 @@ paths:
   /api/v2/alerts/groups:
     get:
       operationId: getAlertGroups
-      summary: Get alert groups
+      summary: Prometheus Get alert groups
       description: >-
         Returns a list of alert groups. Alertmanager groups alerts by their
         group labels as configured in routing rules. Each group has a receiver

@@ -57,7 +57,7 @@ paths:
   /api/v1/query:
     get:
       operationId: queryInstant
-      summary: Execute instant query
+      summary: Prometheus Execute instant query
       description: >-
         Evaluates a PromQL expression at a single point in time. Returns a
         vector of time series with their values at the specified time. If the
@@ -97,7 +97,7 @@ paths:
           description: Query timed out or was aborted
     post:
       operationId: queryInstantPost
-      summary: Execute instant query (POST)
+      summary: Prometheus Execute instant query (POST)
       description: >-
         Evaluates a PromQL expression at a single point in time using a POST
         request body. Use POST when query parameters exceed URL length limits.
@@ -133,7 +133,7 @@ paths:
   /api/v1/query_range:
     get:
       operationId: queryRange
-      summary: Execute range query
+      summary: Prometheus Execute range query
       description: >-
         Evaluates a PromQL expression over a range of time, returning a matrix
         of time series with values at each step interval. Used for generating
@@ -174,7 +174,7 @@ paths:
           description: Unprocessable query expression
     post:
       operationId: queryRangePost
-      summary: Execute range query (POST)
+      summary: Prometheus Execute range query (POST)
       description: >-
         Evaluates a PromQL expression over a range of time using a POST request
         body. Use POST when query parameters exceed URL length limits.
@@ -219,7 +219,7 @@ paths:
   /api/v1/query_exemplars:
     get:
       operationId: queryExemplars
-      summary: Query exemplars
+      summary: Prometheus Query exemplars
       description: >-
         Returns a list of exemplars for a given PromQL expression over a time
         range. Exemplars are specific trace or log IDs attached to high-value
@@ -252,7 +252,7 @@ paths:
   /api/v1/labels:
     get:
       operationId: getLabelNames
-      summary: Get label names
+      summary: Prometheus Get label names
       description: >-
         Returns a list of label names present in the TSDB. Optionally filtered
         by a time range or series selectors. Useful for building autocomplete
@@ -290,7 +290,7 @@ paths:
   /api/v1/label/{label_name}/values:
     get:
       operationId: getLabelValues
-      summary: Get label values
+      summary: Prometheus Get label values
       description: >-
         Returns a list of values for a given label name. Optionally filtered by
         a time range or series selectors. The special label name __name__
@@ -337,7 +337,7 @@ paths:
   /api/v1/series:
     get:
       operationId: querySeries
-      summary: Query series
+      summary: Prometheus Query series
       description: >-
         Returns the list of time series that match a certain label set. The
         response contains the label sets identifying each time series. At
@@ -375,7 +375,7 @@ paths:
           description: Bad request
     delete:
       operationId: deleteSeries
-      summary: Delete series
+      summary: Prometheus Delete series
       description: >-
         Deletes data for a selection of series in a time range. This only
         creates tombstones in the TSDB; actual deletion happens on the next
@@ -411,7 +411,7 @@ paths:
   /api/v1/metadata:
     get:
       operationId: getMetricMetadata
-      summary: Get metric metadata
+      summary: Prometheus Get metric metadata
       description: >-
         Returns metadata about metrics currently scraped from targets. Metadata
         includes the metric type (counter, gauge, histogram, summary, untyped)
@@ -443,7 +443,7 @@ paths:
   /api/v1/targets:
     get:
       operationId: getTargets
-      summary: Get scrape targets
+      summary: Prometheus Get scrape targets
       description: >-
         Returns an overview of the current state of the Prometheus target
         discovery including active and dropped targets, their labels, and
@@ -471,7 +471,7 @@ paths:
   /api/v1/targets/metadata:
     get:
       operationId: getTargetMetadata
-      summary: Get target metadata
+      summary: Prometheus Get target metadata
       description: >-
         Returns metadata about metrics for individual targets. Allows filtering
         by target label matchers and metric name to retrieve per-target metadata
@@ -502,7 +502,7 @@ paths:
   /api/v1/rules:
     get:
       operationId: getRules
-      summary: Get rules
+      summary: Prometheus Get rules
       description: >-
         Returns a list of alerting and recording rules currently loaded. Rules
         include the rule expression, their last evaluation time, and any active
@@ -549,7 +549,7 @@ paths:
   /api/v1/alerts:
     get:
       operationId: getAlerts
-      summary: Get alerts
+      summary: Prometheus Get alerts
       description: >-
         Returns a list of all active alerts currently firing or pending in
         Prometheus. Alerts include their labels, state, and timestamps.
@@ -565,7 +565,7 @@ paths:
   /api/v1/alertmanagers:
     get:
       operationId: getAlertmanagers
-      summary: Get Alertmanager discovery status
+      summary: Prometheus Get Alertmanager discovery status
       description: >-
         Returns an overview of the current state of the Prometheus Alertmanager
         service discovery including active and dropped Alertmanager instances.
@@ -581,7 +581,7 @@ paths:
   /api/v1/status/config:
     get:
       operationId: getConfig
-      summary: Get server configuration
+      summary: Prometheus Get server configuration
       description: >-
         Returns the currently loaded configuration file as a YAML string.
         Includes the full Prometheus configuration including scrape configs,
@@ -598,7 +598,7 @@ paths:
   /api/v1/status/flags:
     get:
       operationId: getFlags
-      summary: Get command-line flags
+      summary: Prometheus Get command-line flags
       description: >-
         Returns the values of all command-line flag settings currently in use
         by the Prometheus server.
@@ -614,7 +614,7 @@ paths:
   /api/v1/status/buildinfo:
     get:
       operationId: getBuildInfo
-      summary: Get build information
+      summary: Prometheus Get build information
       description: >-
         Returns build and version information for the Prometheus server,
         including version, revision, branch, build user, build date, and Go
@@ -631,7 +631,7 @@ paths:
   /api/v1/status/runtimeinfo:
     get:
       operationId: getRuntimeInfo
-      summary: Get runtime information
+      summary: Prometheus Get runtime information
       description: >-
         Returns various runtime properties about the Prometheus server including
         the start time, storage retention, TSDB stats summary, and corruptible
@@ -648,7 +648,7 @@ paths:
   /api/v1/status/tsdb:
     get:
       operationId: getTsdbStatus
-      summary: Get TSDB statistics
+      summary: Prometheus Get TSDB statistics
       description: >-
         Returns a set of properties about the Prometheus TSDB including the
         top series by label count, top chunks by label, most frequently
@@ -667,7 +667,7 @@ paths:
   /api/v1/status/walreplay:
     get:
       operationId: getWalReplayStatus
-      summary: Get WAL replay status
+      summary: Prometheus Get WAL replay status
       description: >-
         Returns the current status of the WAL (Write-Ahead Log) replay. WAL
         replay occurs during Prometheus startup to recover data from the most

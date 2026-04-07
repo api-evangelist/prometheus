@@ -42,7 +42,7 @@ paths:
   /-/reload:
     post:
       operationId: reloadConfig
-      summary: Reload configuration
+      summary: Prometheus Reload configuration
       description: >-
         Triggers a reload of the Prometheus configuration file and rule files.
         Returns 200 when the reload is successful and 500 if the reload fails.
@@ -58,7 +58,7 @@ paths:
   /-/quit:
     post:
       operationId: quitServer
-      summary: Graceful shutdown
+      summary: Prometheus Graceful shutdown
       description: >-
         Triggers a graceful shutdown of the Prometheus server. Returns 200
         immediately while the shutdown proceeds asynchronously. Requires
@@ -72,7 +72,7 @@ paths:
   /-/healthy:
     get:
       operationId: checkHealth
-      summary: Health check
+      summary: Prometheus Health check
       description: >-
         Returns 200 when Prometheus is healthy and ready to serve requests.
         Returns 500 if Prometheus is not ready. Used for Kubernetes liveness
@@ -87,7 +87,7 @@ paths:
   /-/ready:
     get:
       operationId: checkReady
-      summary: Readiness check
+      summary: Prometheus Readiness check
       description: >-
         Returns 200 when Prometheus is ready to serve traffic, meaning it has
         finished startup and is serving queries. Returns 503 if not yet ready.
@@ -102,7 +102,7 @@ paths:
   /api/v1/admin/tsdb/snapshot:
     post:
       operationId: createTsdbSnapshot
-      summary: Create TSDB snapshot
+      summary: Prometheus Create TSDB snapshot
       description: >-
         Creates a snapshot of all current data into the snapshots/ directory
         under the data directory and returns the directory name. Requires
@@ -140,7 +140,7 @@ paths:
   /api/v1/admin/tsdb/delete_series:
     post:
       operationId: deleteTsdbSeries
-      summary: Delete series
+      summary: Prometheus Delete series
       description: >-
         Deletes data for a selection of series in a time range by creating
         tombstones. The series data is not immediately removed but marked for
@@ -177,7 +177,7 @@ paths:
   /api/v1/admin/tsdb/clean_tombstones:
     post:
       operationId: cleanTombstones
-      summary: Clean tombstones
+      summary: Prometheus Clean tombstones
       description: >-
         Removes the deleted data from disk and cleans up existing tombstones.
         This operation triggers a compaction on all blocks with tombstones.
