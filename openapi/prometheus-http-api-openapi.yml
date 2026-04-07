@@ -29,27 +29,27 @@ servers:
         default: '9090'
         description: Prometheus server port
 tags:
-  - name: Query
+  - name: Alerts
     description: >-
-      PromQL instant and range query endpoints for evaluating expressions against
-      the time series database.
+      Endpoints for listing currently firing and pending alerts.
   - name: Metadata
     description: >-
       Endpoints for querying label names, label values, series metadata, and
       metric metadata without executing PromQL expressions.
-  - name: Targets
+  - name: Query
     description: >-
-      Endpoints for discovering scrape targets and their current health status.
+      PromQL instant and range query endpoints for evaluating expressions against
+      the time series database.
   - name: Rules
     description: >-
       Endpoints for retrieving loaded recording rules and alerting rules.
-  - name: Alerts
-    description: >-
-      Endpoints for listing currently firing and pending alerts.
   - name: Status
     description: >-
       Endpoints for retrieving Prometheus server configuration, flags, build
       information, and TSDB statistics.
+  - name: Targets
+    description: >-
+      Endpoints for discovering scrape targets and their current health status.
   - name: TSDB
     description: >-
       Endpoints for querying TSDB statistics and deleting time series data.

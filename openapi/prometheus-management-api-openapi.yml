@@ -29,15 +29,15 @@ servers:
         default: '9090'
         description: Prometheus server port
 tags:
+  - name: Admin
+    description: >-
+      Administrative endpoints for TSDB management including snapshots and
+      tombstone cleanup. Requires --web.enable-admin-api flag.
   - name: Lifecycle
     description: >-
       Endpoints for managing the Prometheus server lifecycle including
       configuration reloads and graceful shutdown. Requires
       --web.enable-lifecycle flag.
-  - name: Admin
-    description: >-
-      Administrative endpoints for TSDB management including snapshots and
-      tombstone cleanup. Requires --web.enable-admin-api flag.
 paths:
   /-/reload:
     post:

@@ -1,16 +1,14 @@
 aid: prometheus
 name: Prometheus
-description: An open-source systems monitoring and alerting toolkit originally built
-  at SoundCloud. Prometheus collects and stores metrics as time series data and provides
-  a powerful query language (PromQL) for analysis.
+description: An open-source systems monitoring and alerting toolkit originally built at SoundCloud. Prometheus collects and stores metrics as time series data and provides a powerful query language (PromQL) for analysis.
 type: Index
 image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
 tags:
-  - Monitoring
-  - Metrics
   - Alerting
-  - Time Series
+  - Metrics
+  - Monitoring
   - Observability
+  - Time Series
 url: >-
   https://raw.githubusercontent.com/api-evangelist/prometheus/refs/heads/main/apis.yml
 created: '2024-01-01'
@@ -28,8 +26,8 @@ apis:
     humanURL: https://prometheus.io/docs/prometheus/latest/querying/api/
     tags:
       - Metrics
-      - Query
       - PromQL
+      - Query
       - Time Series
     properties:
       - type: Documentation
@@ -52,8 +50,8 @@ apis:
       --web.enable-lifecycle flag.
     humanURL: https://prometheus.io/docs/prometheus/latest/management_api/
     tags:
-      - Management
       - Administration
+      - Management
       - Monitoring
     properties:
       - type: Documentation
@@ -69,9 +67,9 @@ apis:
       Prometheus scraping until explicitly deleted.
     humanURL: https://github.com/prometheus/pushgateway
     tags:
-      - Pushgateway
-      - Metrics
       - Batch Jobs
+      - Metrics
+      - Pushgateway
     properties:
       - type: Documentation
         url: https://github.com/prometheus/pushgateway/blob/master/README.md
@@ -114,9 +112,9 @@ apis:
       semantics for interoperable remote write implementations.
     humanURL: https://prometheus.io/docs/specs/prw/remote_write_spec/
     tags:
+      - Integration
       - Remote Write
       - Storage
-      - Integration
       - Time Series
     properties:
       - type: Documentation
@@ -132,8 +130,8 @@ apis:
     tags:
       - Client Libraries
       - Instrumentation
-      - SDK
       - Metrics
+      - SDK
     properties:
       - type: Documentation
         url: https://prometheus.io/docs/instrumenting/clientlibs/

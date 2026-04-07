@@ -31,13 +31,13 @@ tags:
   - name: Alerts
     description: >-
       Endpoints for listing and creating alerts in the Alertmanager.
+  - name: Receivers
+    description: >-
+      Endpoints for listing configured alert receivers.
   - name: Silences
     description: >-
       Endpoints for creating, listing, updating, and expiring silences that
       mute matching alerts.
-  - name: Receivers
-    description: >-
-      Endpoints for listing configured alert receivers.
   - name: Status
     description: >-
       Endpoints for retrieving Alertmanager configuration, cluster status,
