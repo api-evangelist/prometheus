@@ -1,0 +1,13 @@
+{
+  "repo": "prometheus",
+  "feeds": [
+    {
+      "source": "https://prometheus.io/blog/",
+      "feed_url": "https://prometheus.io/blog/feed.xml",
+      "saved": 10,
+      "title": "Prometheus Blog"
+    }
+  ],
+  "post_count": 10,
+  "fetched": "2026-05-03T23:34:21Z"
+}
