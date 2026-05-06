@@ -4,111 +4,38 @@ schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main
 provider: Prometheus
 providerId: prometheus
 created: '2026-05-04'
-modified: '2026-05-04'
+modified: '2026-05-05'
+reconciled: true
 tags:
-  - Alerting
-  - Metrics
-  - Monitoring
   - Observability
-  - Time Series
+  - Monitoring
+  - Open Source
   - Rate Limiting
-  - Quotas
-  - Throttling
-description: Machine-readable rate limit definitions for the Prometheus API surface. Captures per-tier
-  quotas, burst behavior, response signaling, and recovery semantics. Defaults are scaffold values to
-  be replaced with published provider limits.
-headers:
-  limit: X-RateLimit-Limit
-  remaining: X-RateLimit-Remaining
-  reset: X-RateLimit-Reset
-  retryAfter: Retry-After
-  policy: RateLimit-Policy
-responseCodes:
-  throttled: 429
-  quotaExceeded: 429
-  serviceUnavailable: 503
+description: Prometheus is self-hosted; there is no upstream rate-limit policy. Throughput is bounded
+  by the operator's deployment — scrape interval, retention, query concurrency, remote-write throughput
+  — all tunable via the Prometheus configuration file and command-line flags.
+notes: As an Apache 2.0 self-hosted binary, Prometheus has no SaaS-vendor rate limits. The values that
+  do exist are operator-tunable via `--query.max-concurrency`, `--query.max-samples`, scrape intervals,
+  and remote-write queue settings.
+sources:
+  - https://prometheus.io/docs/prometheus/latest/configuration/configuration/
+  - https://prometheus.io/docs/prometheus/latest/command-line/prometheus/
 limits:
-  - tier: free
-    name: Free Tier Default
-    scope: api-key
-    metric: requests_per_minute
-    limit: 10
-    burst: 20
-    timeFrame: minute
-    applies:
-      - Prometheus HTTP API
-      - Prometheus Management API
-      - Prometheus Pushgateway API
-      - Prometheus Alertmanager API
-      - Prometheus Remote Write API
-      - Prometheus Client Libraries
-  - tier: free
-    name: Free Tier Monthly Quota
-    scope: api-key
-    metric: requests_per_month
-    limit: 1000
-    timeFrame: month
-    applies:
-      - Prometheus HTTP API
-      - Prometheus Management API
-      - Prometheus Pushgateway API
-      - Prometheus Alertmanager API
-      - Prometheus Remote Write API
-      - Prometheus Client Libraries
-  - tier: professional
-    name: Professional Tier Default
-    scope: api-key
-    metric: requests_per_minute
-    limit: 100
-    burst: 200
-    timeFrame: minute
-    applies:
-      - Prometheus HTTP API
-      - Prometheus Management API
-      - Prometheus Pushgateway API
-      - Prometheus Alertmanager API
-      - Prometheus Remote Write API
-      - Prometheus Client Libraries
-  - tier: professional
-    name: Professional Tier Monthly Quota
-    scope: api-key
-    metric: requests_per_month
-    limit: 100000
-    timeFrame: month
-    applies:
-      - Prometheus HTTP API
-      - Prometheus Management API
-      - Prometheus Pushgateway API
-      - Prometheus Alertmanager API
-      - Prometheus Remote Write API
-      - Prometheus Client Libraries
-  - tier: enterprise
-    name: Enterprise Negotiated Limit
-    scope: contract
-    metric: requests_per_minute
-    limit: 1000
-    burst: 5000
-    timeFrame: minute
-    applies:
-      - Prometheus HTTP API
-      - Prometheus Management API
-      - Prometheus Pushgateway API
-      - Prometheus Alertmanager API
-      - Prometheus Remote Write API
-      - Prometheus Client Libraries
+  - name: Operator-tuned query concurrency
+    scope: instance
+    metric: concurrent_requests
+    limit: 'configured via --query.max-concurrency (default 20)'
+  - name: Operator-tuned scrape interval
+    scope: instance
+    metric: varies
+    limit: 'configured via global.scrape_interval'
 policies:
-  - name: Backoff Strategy
-    description: Clients should implement exponential backoff with jitter, honoring the Retry-After header
-      when present.
-  - name: Burst Handling
-    description: Short bursts above the steady-state limit are tolerated up to the documented burst ceiling
-      before throttling engages.
-  - name: Quota Reset
-    description: Monthly quotas reset at the start of each calendar month in UTC. Per-minute and per-second
-      windows reset on a sliding-window basis.
-  - name: Fair Use
-    description: Even on uncapped enterprise tiers, sustained usage that materially impacts shared infrastructure
-      may be subject to fair-use throttling.
+  - name: Self-Hosted
+    description: All throughput and concurrency limits are owned by the operator running the binary;
+      there is no upstream throttler, no API key, and no per-tenant quota.
+  - name: Remote-Write Backpressure
+    description: When using remote_write, Prometheus enforces queue-based backpressure governed by the
+      `queue_config` block (capacity, max_samples_per_send, max_shards) — not a vendor-side rate limit.
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com
