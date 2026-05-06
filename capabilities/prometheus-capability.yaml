@@ -1,0 +1,407 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Prometheus Alertmanager API
+  description: The Prometheus Alertmanager HTTP API v2 provides endpoints for querying active alert status, creating and managing
+    silences, retrieving receiver configurations, and checking cluster peer status. Alertmanager deduplicates, groups, and
+    routes alert notifications to receivers such as email, PagerDuty, Slack, and OpsGenie. The API base path is /api/v2.
+  tags:
+  - Prometheus
+  - API
+  created: '2026-05-06'
+  modified: '2026-05-06'
+capability:
+  consumes:
+  - type: http
+    namespace: prometheus
+    baseUri: http://localhost:9093
+    description: Prometheus Alertmanager API HTTP API.
+    resources:
+    - name: api-v2-alerts
+      path: /api/v2/alerts
+      operations:
+      - name: getalerts
+        method: GET
+        description: Prometheus Get active alerts
+        inputParameters:
+        - name: active
+          in: query
+          type: boolean
+          description: Only return active (non-silenced, non-inhibited) alerts.
+        - name: silenced
+          in: query
+          type: boolean
+          description: Include silenced alerts in results.
+        - name: inhibited
+          in: query
+          type: boolean
+          description: Include inhibited alerts in results.
+        - name: unprocessed
+          in: query
+          type: boolean
+          description: Include unprocessed alerts that have not yet been routed.
+        - name: filter
+          in: query
+          type: array
+          description: A list of label matchers to filter alerts by. Matchers use the syntax label=value, label!=value, label=~regex,
+            or label!~regex.
+        - name: receiver
+          in: query
+          type: string
+          description: Filter by receiver name.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: postalerts
+        method: POST
+        description: Prometheus Post alerts
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: api-v2-silences
+      path: /api/v2/silences
+      operations:
+      - name: listsilences
+        method: GET
+        description: Prometheus List silences
+        inputParameters:
+        - name: filter
+          in: query
+          type: array
+          description: Label matchers to filter silences by.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: createsilence
+        method: POST
+        description: Prometheus Create or update silence
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: api-v2-silence-silenceid
+      path: /api/v2/silence/{silenceID}
+      operations:
+      - name: getsilence
+        method: GET
+        description: Prometheus Get silence by ID
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: deletesilence
+        method: DELETE
+        description: Prometheus Expire silence
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: api-v2-receivers
+      path: /api/v2/receivers
+      operations:
+      - name: listreceivers
+        method: GET
+        description: Prometheus List receivers
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: api-v2-status
+      path: /api/v2/status
+      operations:
+      - name: getstatus
+        method: GET
+        description: Prometheus Get Alertmanager status
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: api-v2-alerts-groups
+      path: /api/v2/alerts/groups
+      operations:
+      - name: getalertgroups
+        method: GET
+        description: Prometheus Get alert groups
+        inputParameters:
+        - name: active
+          in: query
+          type: boolean
+          description: Include active alerts.
+        - name: silenced
+          in: query
+          type: boolean
+          description: Include silenced alerts.
+        - name: inhibited
+          in: query
+          type: boolean
+          description: Include inhibited alerts.
+        - name: filter
+          in: query
+          type: array
+          description: Label matchers to filter by.
+        - name: receiver
+          in: query
+          type: string
+          description: Filter by receiver name.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+  exposes:
+  - type: rest
+    port: 8080
+    namespace: prometheus-rest
+    description: REST adapter for Prometheus Alertmanager API.
+    resources:
+    - path: /api/v2/alerts
+      name: getalerts
+      operations:
+      - method: GET
+        name: getalerts
+        description: Prometheus Get active alerts
+        call: prometheus.getalerts
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /api/v2/alerts
+      name: postalerts
+      operations:
+      - method: POST
+        name: postalerts
+        description: Prometheus Post alerts
+        call: prometheus.postalerts
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /api/v2/silences
+      name: listsilences
+      operations:
+      - method: GET
+        name: listsilences
+        description: Prometheus List silences
+        call: prometheus.listsilences
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /api/v2/silences
+      name: createsilence
+      operations:
+      - method: POST
+        name: createsilence
+        description: Prometheus Create or update silence
+        call: prometheus.createsilence
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /api/v2/silence/{silenceID}
+      name: getsilence
+      operations:
+      - method: GET
+        name: getsilence
+        description: Prometheus Get silence by ID
+        call: prometheus.getsilence
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /api/v2/silence/{silenceID}
+      name: deletesilence
+      operations:
+      - method: DELETE
+        name: deletesilence
+        description: Prometheus Expire silence
+        call: prometheus.deletesilence
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /api/v2/receivers
+      name: listreceivers
+      operations:
+      - method: GET
+        name: listreceivers
+        description: Prometheus List receivers
+        call: prometheus.listreceivers
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /api/v2/status
+      name: getstatus
+      operations:
+      - method: GET
+        name: getstatus
+        description: Prometheus Get Alertmanager status
+        call: prometheus.getstatus
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /api/v2/alerts/groups
+      name: getalertgroups
+      operations:
+      - method: GET
+        name: getalertgroups
+        description: Prometheus Get alert groups
+        call: prometheus.getalertgroups
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    port: 9090
+    namespace: prometheus-mcp
+    transport: http
+    description: MCP adapter for Prometheus Alertmanager API for AI agent use.
+    tools:
+    - name: getalerts
+      description: Prometheus Get active alerts
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: prometheus.getalerts
+      with:
+        active: tools.active
+        silenced: tools.silenced
+        inhibited: tools.inhibited
+        unprocessed: tools.unprocessed
+        filter: tools.filter
+        receiver: tools.receiver
+      inputParameters:
+      - name: active
+        type: boolean
+        description: Only return active (non-silenced, non-inhibited) alerts.
+      - name: silenced
+        type: boolean
+        description: Include silenced alerts in results.
+      - name: inhibited
+        type: boolean
+        description: Include inhibited alerts in results.
+      - name: unprocessed
+        type: boolean
+        description: Include unprocessed alerts that have not yet been routed.
+      - name: filter
+        type: array
+        description: A list of label matchers to filter alerts by. Matchers use the syntax label=value, label!=value, label=~regex,
+          or label!~regex.
+      - name: receiver
+        type: string
+        description: Filter by receiver name.
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: postalerts
+      description: Prometheus Post alerts
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: prometheus.postalerts
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: listsilences
+      description: Prometheus List silences
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: prometheus.listsilences
+      with:
+        filter: tools.filter
+      inputParameters:
+      - name: filter
+        type: array
+        description: Label matchers to filter silences by.
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: createsilence
+      description: Prometheus Create or update silence
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: prometheus.createsilence
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: getsilence
+      description: Prometheus Get silence by ID
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: prometheus.getsilence
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: deletesilence
+      description: Prometheus Expire silence
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: prometheus.deletesilence
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: listreceivers
+      description: Prometheus List receivers
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: prometheus.listreceivers
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: getstatus
+      description: Prometheus Get Alertmanager status
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: prometheus.getstatus
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: getalertgroups
+      description: Prometheus Get alert groups
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: prometheus.getalertgroups
+      with:
+        active: tools.active
+        silenced: tools.silenced
+        inhibited: tools.inhibited
+        filter: tools.filter
+        receiver: tools.receiver
+      inputParameters:
+      - name: active
+        type: boolean
+        description: Include active alerts.
+      - name: silenced
+        type: boolean
+        description: Include silenced alerts.
+      - name: inhibited
+        type: boolean
+        description: Include inhibited alerts.
+      - name: filter
+        type: array
+        description: Label matchers to filter by.
+      - name: receiver
+        type: string
+        description: Filter by receiver name.
+      outputParameters:
+      - type: object
+        mapping: $.
