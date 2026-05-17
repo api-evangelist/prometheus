@@ -36,7 +36,7 @@ apis:
         url: openapi/prometheus-http-api-openapi.yml
       - type: GitHubRepository
         url: https://github.com/prometheus/prometheus
-      - type: Change Log
+      - type: ChangeLog
         url: https://github.com/prometheus/prometheus/blob/main/CHANGELOG.md
       - type: JSONSchema
         url: json-schema/prometheus-metrics-schema.json
@@ -77,7 +77,7 @@ apis:
         url: openapi/prometheus-pushgateway-api-openapi.yml
       - type: GitHubRepository
         url: https://github.com/prometheus/pushgateway
-      - type: Change Log
+      - type: ChangeLog
         url: https://github.com/prometheus/pushgateway/releases
   - aid: prometheus:prometheus-alertmanager-api
     name: Prometheus Alertmanager API
@@ -100,7 +100,7 @@ apis:
         url: asyncapi/prometheus-alertmanager-webhook-asyncapi.yml
       - type: GitHubRepository
         url: https://github.com/prometheus/alertmanager
-      - type: Change Log
+      - type: ChangeLog
         url: https://github.com/prometheus/alertmanager/releases
   - aid: prometheus:prometheus-remote-write-api
     name: Prometheus Remote Write API
@@ -138,7 +138,7 @@ apis:
       - type: Reference
         url: https://prometheus.io/docs/instrumenting/writing_clientlibs/
 common:
-  - type: JSON-LD
+  - type: JSONLD
     url: json-ld/prometheus-context.jsonld
   - type: JSONSchema
     url: json-schema/prometheus-metrics-schema.json
@@ -146,9 +146,9 @@ common:
     url: https://prometheus.io
   - type: Documentation
     url: https://prometheus.io/docs/
-  - type: Getting Started
+  - type: GettingStarted
     url: https://prometheus.io/docs/introduction/getting_started/
-  - type: GitHub Organization
+  - type: GitHubOrganization
     url: https://github.com/prometheus
   - type: GitHubRepository
     url: https://github.com/prometheus/prometheus
@@ -156,9 +156,9 @@ common:
     url: https://prometheus.io/blog/
   - type: Community
     url: https://prometheus.io/community/
-  - type: Change Log
+  - type: ChangeLog
     url: https://github.com/prometheus/prometheus/releases
-  - type: Stack Overflow
+  - type: StackOverflow
     url: https://stackoverflow.com/questions/tagged/prometheus
 maintainers:
   - FN: Kin Lane
