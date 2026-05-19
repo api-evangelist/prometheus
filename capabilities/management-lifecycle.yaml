@@ -1,0 +1,163 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Prometheus Management API — Lifecycle
+  description: 'Prometheus Management API — Lifecycle. 4 operations. Lead operation: Prometheus Health check. Self-contained
+    Naftiko capability covering one Prometheus business surface.'
+  tags:
+  - Prometheus
+  - Lifecycle
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    PROMETHEUS_API_KEY: PROMETHEUS_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: management-lifecycle
+    baseUri: http://{host}:{port}
+    description: Prometheus Management API — Lifecycle business capability. Self-contained, no shared references.
+    resources:
+    - name: --healthy
+      path: /-/healthy
+      operations:
+      - name: checkhealth
+        method: GET
+        description: Prometheus Health check
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: --quit
+      path: /-/quit
+      operations:
+      - name: quitserver
+        method: POST
+        description: Prometheus Graceful shutdown
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: --ready
+      path: /-/ready
+      operations:
+      - name: checkready
+        method: GET
+        description: Prometheus Readiness check
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: --reload
+      path: /-/reload
+      operations:
+      - name: reloadconfig
+        method: POST
+        description: Prometheus Reload configuration
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+  exposes:
+  - type: rest
+    namespace: management-lifecycle-rest
+    port: 8080
+    description: REST adapter for Prometheus Management API — Lifecycle. One Spectral-compliant resource per consumed operation,
+      prefixed with /v1.
+    resources:
+    - path: /v1//healthy
+      name: healthy
+      description: REST surface for --healthy.
+      operations:
+      - method: GET
+        name: checkhealth
+        description: Prometheus Health check
+        call: management-lifecycle.checkhealth
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1//quit
+      name: quit
+      description: REST surface for --quit.
+      operations:
+      - method: POST
+        name: quitserver
+        description: Prometheus Graceful shutdown
+        call: management-lifecycle.quitserver
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1//ready
+      name: ready
+      description: REST surface for --ready.
+      operations:
+      - method: GET
+        name: checkready
+        description: Prometheus Readiness check
+        call: management-lifecycle.checkready
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1//reload
+      name: reload
+      description: REST surface for --reload.
+      operations:
+      - method: POST
+        name: reloadconfig
+        description: Prometheus Reload configuration
+        call: management-lifecycle.reloadconfig
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: management-lifecycle-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Prometheus Management API — Lifecycle. One tool per consumed operation, routed inline through
+      this capability's consumes block.
+    tools:
+    - name: prometheus-health-check
+      description: Prometheus Health check
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: management-lifecycle.checkhealth
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: prometheus-graceful-shutdown
+      description: Prometheus Graceful shutdown
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: management-lifecycle.quitserver
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: prometheus-readiness-check
+      description: Prometheus Readiness check
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: management-lifecycle.checkready
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: prometheus-reload-configuration
+      description: Prometheus Reload configuration
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: management-lifecycle.reloadconfig
+      outputParameters:
+      - type: object
+        mapping: $.

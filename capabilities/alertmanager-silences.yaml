@@ -1,0 +1,168 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Prometheus Alertmanager API — Silences
+  description: 'Prometheus Alertmanager API — Silences. 4 operations. Lead operation: Prometheus Get silence by ID. Self-contained
+    Naftiko capability covering one Prometheus business surface.'
+  tags:
+  - Prometheus
+  - Silences
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    PROMETHEUS_API_KEY: PROMETHEUS_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: alertmanager-silences
+    baseUri: http://{host}:{port}
+    description: Prometheus Alertmanager API — Silences business capability. Self-contained, no shared references.
+    resources:
+    - name: api-v2-silence-silenceID
+      path: /api/v2/silence/{silenceID}
+      operations:
+      - name: getsilence
+        method: GET
+        description: Prometheus Get silence by ID
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: deletesilence
+        method: DELETE
+        description: Prometheus Expire silence
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: api-v2-silences
+      path: /api/v2/silences
+      operations:
+      - name: listsilences
+        method: GET
+        description: Prometheus List silences
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: filter
+          in: query
+          type: array
+          description: Label matchers to filter silences by.
+      - name: createsilence
+        method: POST
+        description: Prometheus Create or update silence
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+  exposes:
+  - type: rest
+    namespace: alertmanager-silences-rest
+    port: 8080
+    description: REST adapter for Prometheus Alertmanager API — Silences. One Spectral-compliant resource per consumed operation,
+      prefixed with /v1.
+    resources:
+    - path: /v1/api/v2/silence/{silenceid}
+      name: api-v2-silence-silenceid
+      description: REST surface for api-v2-silence-silenceID.
+      operations:
+      - method: GET
+        name: getsilence
+        description: Prometheus Get silence by ID
+        call: alertmanager-silences.getsilence
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deletesilence
+        description: Prometheus Expire silence
+        call: alertmanager-silences.deletesilence
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/api/v2/silences
+      name: api-v2-silences
+      description: REST surface for api-v2-silences.
+      operations:
+      - method: GET
+        name: listsilences
+        description: Prometheus List silences
+        call: alertmanager-silences.listsilences
+        with:
+          filter: rest.filter
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: createsilence
+        description: Prometheus Create or update silence
+        call: alertmanager-silences.createsilence
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: alertmanager-silences-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Prometheus Alertmanager API — Silences. One tool per consumed operation, routed inline through
+      this capability's consumes block.
+    tools:
+    - name: prometheus-get-silence-id
+      description: Prometheus Get silence by ID
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: alertmanager-silences.getsilence
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: prometheus-expire-silence
+      description: Prometheus Expire silence
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: alertmanager-silences.deletesilence
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: prometheus-list-silences
+      description: Prometheus List silences
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: alertmanager-silences.listsilences
+      with:
+        filter: tools.filter
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: prometheus-create-update-silence
+      description: Prometheus Create or update silence
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: alertmanager-silences.createsilence
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.

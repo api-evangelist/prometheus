@@ -1,0 +1,227 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Prometheus HTTP API — Status
+  description: 'Prometheus HTTP API — Status. 6 operations. Lead operation: Prometheus Get Alertmanager discovery status.
+    Self-contained Naftiko capability covering one Prometheus business surface.'
+  tags:
+  - Prometheus
+  - Status
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    PROMETHEUS_API_KEY: PROMETHEUS_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: http-status
+    baseUri: http://{host}:{port}
+    description: Prometheus HTTP API — Status business capability. Self-contained, no shared references.
+    resources:
+    - name: api-v1-alertmanagers
+      path: /api/v1/alertmanagers
+      operations:
+      - name: getalertmanagers
+        method: GET
+        description: Prometheus Get Alertmanager discovery status
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: api-v1-status-buildinfo
+      path: /api/v1/status/buildinfo
+      operations:
+      - name: getbuildinfo
+        method: GET
+        description: Prometheus Get build information
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: api-v1-status-config
+      path: /api/v1/status/config
+      operations:
+      - name: getconfig
+        method: GET
+        description: Prometheus Get server configuration
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: api-v1-status-flags
+      path: /api/v1/status/flags
+      operations:
+      - name: getflags
+        method: GET
+        description: Prometheus Get command-line flags
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: api-v1-status-runtimeinfo
+      path: /api/v1/status/runtimeinfo
+      operations:
+      - name: getruntimeinfo
+        method: GET
+        description: Prometheus Get runtime information
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: api-v1-status-walreplay
+      path: /api/v1/status/walreplay
+      operations:
+      - name: getwalreplaystatus
+        method: GET
+        description: Prometheus Get WAL replay status
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+  exposes:
+  - type: rest
+    namespace: http-status-rest
+    port: 8080
+    description: REST adapter for Prometheus HTTP API — Status. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/api/v1/alertmanagers
+      name: api-v1-alertmanagers
+      description: REST surface for api-v1-alertmanagers.
+      operations:
+      - method: GET
+        name: getalertmanagers
+        description: Prometheus Get Alertmanager discovery status
+        call: http-status.getalertmanagers
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/api/v1/status/buildinfo
+      name: api-v1-status-buildinfo
+      description: REST surface for api-v1-status-buildinfo.
+      operations:
+      - method: GET
+        name: getbuildinfo
+        description: Prometheus Get build information
+        call: http-status.getbuildinfo
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/api/v1/status/config
+      name: api-v1-status-config
+      description: REST surface for api-v1-status-config.
+      operations:
+      - method: GET
+        name: getconfig
+        description: Prometheus Get server configuration
+        call: http-status.getconfig
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/api/v1/status/flags
+      name: api-v1-status-flags
+      description: REST surface for api-v1-status-flags.
+      operations:
+      - method: GET
+        name: getflags
+        description: Prometheus Get command-line flags
+        call: http-status.getflags
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/api/v1/status/runtimeinfo
+      name: api-v1-status-runtimeinfo
+      description: REST surface for api-v1-status-runtimeinfo.
+      operations:
+      - method: GET
+        name: getruntimeinfo
+        description: Prometheus Get runtime information
+        call: http-status.getruntimeinfo
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/api/v1/status/walreplay
+      name: api-v1-status-walreplay
+      description: REST surface for api-v1-status-walreplay.
+      operations:
+      - method: GET
+        name: getwalreplaystatus
+        description: Prometheus Get WAL replay status
+        call: http-status.getwalreplaystatus
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: http-status-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Prometheus HTTP API — Status. One tool per consumed operation, routed inline through this
+      capability's consumes block.
+    tools:
+    - name: prometheus-get-alertmanager-discovery-status
+      description: Prometheus Get Alertmanager discovery status
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: http-status.getalertmanagers
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: prometheus-get-build-information
+      description: Prometheus Get build information
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: http-status.getbuildinfo
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: prometheus-get-server-configuration
+      description: Prometheus Get server configuration
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: http-status.getconfig
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: prometheus-get-command-line-flags
+      description: Prometheus Get command-line flags
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: http-status.getflags
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: prometheus-get-runtime-information
+      description: Prometheus Get runtime information
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: http-status.getruntimeinfo
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: prometheus-get-wal-replay-status
+      description: Prometheus Get WAL replay status
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: http-status.getwalreplaystatus
+      outputParameters:
+      - type: object
+        mapping: $.

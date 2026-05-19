@@ -1,0 +1,271 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Prometheus Pushgateway API — Metrics
+  description: 'Prometheus Pushgateway API — Metrics. 7 operations. Lead operation: Prometheus List all pushed metrics. Self-contained
+    Naftiko capability covering one Prometheus business surface.'
+  tags:
+  - Prometheus
+  - Metrics
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    PROMETHEUS_API_KEY: PROMETHEUS_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: pushgateway-metrics
+    baseUri: http://{host}:{port}
+    description: Prometheus Pushgateway API — Metrics business capability. Self-contained, no shared references.
+    resources:
+    - name: api-v1-metrics
+      path: /api/v1/metrics
+      operations:
+      - name: listallmetrics
+        method: GET
+        description: Prometheus List all pushed metrics
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: metrics-job-job
+      path: /metrics/job/{job}
+      operations:
+      - name: replacejobmetrics
+        method: PUT
+        description: Prometheus Replace all metrics for a job
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+      - name: pushjobmetrics
+        method: POST
+        description: Prometheus Add or update metrics for a job
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+      - name: deletejobmetrics
+        method: DELETE
+        description: Prometheus Delete all metrics for a job
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: metrics-job-job-labels
+      path: /metrics/job/{job}/{labels}
+      operations:
+      - name: replacegroupedmetrics
+        method: PUT
+        description: Prometheus Replace metrics for a job with grouping labels
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+      - name: pushgroupedmetrics
+        method: POST
+        description: Prometheus Add or update metrics for a job with grouping labels
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+      - name: deletegroupedmetrics
+        method: DELETE
+        description: Prometheus Delete metrics for a job with grouping labels
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+  exposes:
+  - type: rest
+    namespace: pushgateway-metrics-rest
+    port: 8080
+    description: REST adapter for Prometheus Pushgateway API — Metrics. One Spectral-compliant resource per consumed operation,
+      prefixed with /v1.
+    resources:
+    - path: /v1/api/v1/metrics
+      name: api-v1-metrics
+      description: REST surface for api-v1-metrics.
+      operations:
+      - method: GET
+        name: listallmetrics
+        description: Prometheus List all pushed metrics
+        call: pushgateway-metrics.listallmetrics
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/metrics/job/{job}
+      name: metrics-job-job
+      description: REST surface for metrics-job-job.
+      operations:
+      - method: PUT
+        name: replacejobmetrics
+        description: Prometheus Replace all metrics for a job
+        call: pushgateway-metrics.replacejobmetrics
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: pushjobmetrics
+        description: Prometheus Add or update metrics for a job
+        call: pushgateway-metrics.pushjobmetrics
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deletejobmetrics
+        description: Prometheus Delete all metrics for a job
+        call: pushgateway-metrics.deletejobmetrics
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/metrics/job/{job}/{labels}
+      name: metrics-job-job-labels
+      description: REST surface for metrics-job-job-labels.
+      operations:
+      - method: PUT
+        name: replacegroupedmetrics
+        description: Prometheus Replace metrics for a job with grouping labels
+        call: pushgateway-metrics.replacegroupedmetrics
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: pushgroupedmetrics
+        description: Prometheus Add or update metrics for a job with grouping labels
+        call: pushgateway-metrics.pushgroupedmetrics
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deletegroupedmetrics
+        description: Prometheus Delete metrics for a job with grouping labels
+        call: pushgateway-metrics.deletegroupedmetrics
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: pushgateway-metrics-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Prometheus Pushgateway API — Metrics. One tool per consumed operation, routed inline through
+      this capability's consumes block.
+    tools:
+    - name: prometheus-list-all-pushed-metrics
+      description: Prometheus List all pushed metrics
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: pushgateway-metrics.listallmetrics
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: prometheus-replace-all-metrics-job
+      description: Prometheus Replace all metrics for a job
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: pushgateway-metrics.replacejobmetrics
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: prometheus-add-update-metrics-job
+      description: Prometheus Add or update metrics for a job
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: pushgateway-metrics.pushjobmetrics
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: prometheus-delete-all-metrics-job
+      description: Prometheus Delete all metrics for a job
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: pushgateway-metrics.deletejobmetrics
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: prometheus-replace-metrics-job-grouping
+      description: Prometheus Replace metrics for a job with grouping labels
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: pushgateway-metrics.replacegroupedmetrics
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: prometheus-add-update-metrics-job-2
+      description: Prometheus Add or update metrics for a job with grouping labels
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: pushgateway-metrics.pushgroupedmetrics
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: prometheus-delete-metrics-job-grouping
+      description: Prometheus Delete metrics for a job with grouping labels
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: pushgateway-metrics.deletegroupedmetrics
+      outputParameters:
+      - type: object
+        mapping: $.

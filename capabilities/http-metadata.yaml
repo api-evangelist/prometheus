@@ -1,0 +1,249 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Prometheus HTTP API — Metadata
+  description: 'Prometheus HTTP API — Metadata. 4 operations. Lead operation: Prometheus Get label values. Self-contained
+    Naftiko capability covering one Prometheus business surface.'
+  tags:
+  - Prometheus
+  - Metadata
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    PROMETHEUS_API_KEY: PROMETHEUS_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: http-metadata
+    baseUri: http://{host}:{port}
+    description: Prometheus HTTP API — Metadata business capability. Self-contained, no shared references.
+    resources:
+    - name: api-v1-label-label_name-values
+      path: /api/v1/label/{label_name}/values
+      operations:
+      - name: getlabelvalues
+        method: GET
+        description: Prometheus Get label values
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: label_name
+          in: path
+          type: string
+          description: The label name to retrieve values for.
+          required: true
+        - name: start
+          in: query
+          type: string
+          description: Start of the time range filter.
+        - name: end
+          in: query
+          type: string
+          description: End of the time range filter.
+        - name: match[]
+          in: query
+          type: array
+          description: Series selector(s) to restrict the label value results.
+    - name: api-v1-labels
+      path: /api/v1/labels
+      operations:
+      - name: getlabelnames
+        method: GET
+        description: Prometheus Get label names
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: start
+          in: query
+          type: string
+          description: Start of the time range filter.
+        - name: end
+          in: query
+          type: string
+          description: End of the time range filter.
+        - name: match[]
+          in: query
+          type: array
+          description: Series selector(s) to restrict the label results.
+    - name: api-v1-metadata
+      path: /api/v1/metadata
+      operations:
+      - name: getmetricmetadata
+        method: GET
+        description: Prometheus Get metric metadata
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: metric
+          in: query
+          type: string
+          description: Metric name to filter by. If omitted, all metrics are returned.
+        - name: limit_per_metric
+          in: query
+          type: integer
+          description: Maximum number of metadata entries to return per metric.
+    - name: api-v1-series
+      path: /api/v1/series
+      operations:
+      - name: queryseries
+        method: GET
+        description: Prometheus Query series
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: match[]
+          in: query
+          type: array
+          description: Series selector(s). At least one required.
+          required: true
+        - name: start
+          in: query
+          type: string
+          description: Start of the time range filter.
+        - name: end
+          in: query
+          type: string
+          description: End of the time range filter.
+  exposes:
+  - type: rest
+    namespace: http-metadata-rest
+    port: 8080
+    description: REST adapter for Prometheus HTTP API — Metadata. One Spectral-compliant resource per consumed operation,
+      prefixed with /v1.
+    resources:
+    - path: /v1/api/v1/label/{label-name}/values
+      name: api-v1-label-label-name-values
+      description: REST surface for api-v1-label-label_name-values.
+      operations:
+      - method: GET
+        name: getlabelvalues
+        description: Prometheus Get label values
+        call: http-metadata.getlabelvalues
+        with:
+          label_name: rest.label_name
+          start: rest.start
+          end: rest.end
+          match[]: rest.match[]
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/api/v1/labels
+      name: api-v1-labels
+      description: REST surface for api-v1-labels.
+      operations:
+      - method: GET
+        name: getlabelnames
+        description: Prometheus Get label names
+        call: http-metadata.getlabelnames
+        with:
+          start: rest.start
+          end: rest.end
+          match[]: rest.match[]
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/api/v1/metadata
+      name: api-v1-metadata
+      description: REST surface for api-v1-metadata.
+      operations:
+      - method: GET
+        name: getmetricmetadata
+        description: Prometheus Get metric metadata
+        call: http-metadata.getmetricmetadata
+        with:
+          metric: rest.metric
+          limit_per_metric: rest.limit_per_metric
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/api/v1/series
+      name: api-v1-series
+      description: REST surface for api-v1-series.
+      operations:
+      - method: GET
+        name: queryseries
+        description: Prometheus Query series
+        call: http-metadata.queryseries
+        with:
+          match[]: rest.match[]
+          start: rest.start
+          end: rest.end
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: http-metadata-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Prometheus HTTP API — Metadata. One tool per consumed operation, routed inline through this
+      capability's consumes block.
+    tools:
+    - name: prometheus-get-label-values
+      description: Prometheus Get label values
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: http-metadata.getlabelvalues
+      with:
+        label_name: tools.label_name
+        start: tools.start
+        end: tools.end
+        match[]: tools.match[]
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: prometheus-get-label-names
+      description: Prometheus Get label names
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: http-metadata.getlabelnames
+      with:
+        start: tools.start
+        end: tools.end
+        match[]: tools.match[]
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: prometheus-get-metric-metadata
+      description: Prometheus Get metric metadata
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: http-metadata.getmetricmetadata
+      with:
+        metric: tools.metric
+        limit_per_metric: tools.limit_per_metric
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: prometheus-query-series
+      description: Prometheus Query series
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: http-metadata.queryseries
+      with:
+        match[]: tools.match[]
+        start: tools.start
+        end: tools.end
+      outputParameters:
+      - type: object
+        mapping: $.

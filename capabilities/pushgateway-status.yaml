@@ -1,0 +1,131 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Prometheus Pushgateway API — Status
+  description: 'Prometheus Pushgateway API — Status. 3 operations. Lead operation: Prometheus Health check. Self-contained
+    Naftiko capability covering one Prometheus business surface.'
+  tags:
+  - Prometheus
+  - Status
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    PROMETHEUS_API_KEY: PROMETHEUS_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: pushgateway-status
+    baseUri: http://{host}:{port}
+    description: Prometheus Pushgateway API — Status business capability. Self-contained, no shared references.
+    resources:
+    - name: --healthy
+      path: /-/healthy
+      operations:
+      - name: checkhealth
+        method: GET
+        description: Prometheus Health check
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: --ready
+      path: /-/ready
+      operations:
+      - name: checkready
+        method: GET
+        description: Prometheus Readiness check
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: api-v1-status
+      path: /api/v1/status
+      operations:
+      - name: getstatus
+        method: GET
+        description: Prometheus Get Pushgateway status
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+  exposes:
+  - type: rest
+    namespace: pushgateway-status-rest
+    port: 8080
+    description: REST adapter for Prometheus Pushgateway API — Status. One Spectral-compliant resource per consumed operation,
+      prefixed with /v1.
+    resources:
+    - path: /v1//healthy
+      name: healthy
+      description: REST surface for --healthy.
+      operations:
+      - method: GET
+        name: checkhealth
+        description: Prometheus Health check
+        call: pushgateway-status.checkhealth
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1//ready
+      name: ready
+      description: REST surface for --ready.
+      operations:
+      - method: GET
+        name: checkready
+        description: Prometheus Readiness check
+        call: pushgateway-status.checkready
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/api/v1/status
+      name: api-v1-status
+      description: REST surface for api-v1-status.
+      operations:
+      - method: GET
+        name: getstatus
+        description: Prometheus Get Pushgateway status
+        call: pushgateway-status.getstatus
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: pushgateway-status-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Prometheus Pushgateway API — Status. One tool per consumed operation, routed inline through
+      this capability's consumes block.
+    tools:
+    - name: prometheus-health-check
+      description: Prometheus Health check
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: pushgateway-status.checkhealth
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: prometheus-readiness-check
+      description: Prometheus Readiness check
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: pushgateway-status.checkready
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: prometheus-get-pushgateway-status
+      description: Prometheus Get Pushgateway status
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: pushgateway-status.getstatus
+      outputParameters:
+      - type: object
+        mapping: $.

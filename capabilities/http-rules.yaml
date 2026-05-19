@@ -1,0 +1,94 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Prometheus HTTP API — Rules
+  description: 'Prometheus HTTP API — Rules. 1 operations. Lead operation: Prometheus Get rules. Self-contained Naftiko capability
+    covering one Prometheus business surface.'
+  tags:
+  - Prometheus
+  - Rules
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    PROMETHEUS_API_KEY: PROMETHEUS_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: http-rules
+    baseUri: http://{host}:{port}
+    description: Prometheus HTTP API — Rules business capability. Self-contained, no shared references.
+    resources:
+    - name: api-v1-rules
+      path: /api/v1/rules
+      operations:
+      - name: getrules
+        method: GET
+        description: Prometheus Get rules
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: type
+          in: query
+          type: string
+          description: Filter by rule type.
+        - name: rule_name[]
+          in: query
+          type: array
+          description: Filter by rule name.
+        - name: rule_group[]
+          in: query
+          type: array
+          description: Filter by rule group name.
+        - name: file[]
+          in: query
+          type: array
+          description: Filter by the file the rule group was loaded from.
+  exposes:
+  - type: rest
+    namespace: http-rules-rest
+    port: 8080
+    description: REST adapter for Prometheus HTTP API — Rules. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/api/v1/rules
+      name: api-v1-rules
+      description: REST surface for api-v1-rules.
+      operations:
+      - method: GET
+        name: getrules
+        description: Prometheus Get rules
+        call: http-rules.getrules
+        with:
+          type: rest.type
+          rule_name[]: rest.rule_name[]
+          rule_group[]: rest.rule_group[]
+          file[]: rest.file[]
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: http-rules-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Prometheus HTTP API — Rules. One tool per consumed operation, routed inline through this
+      capability's consumes block.
+    tools:
+    - name: prometheus-get-rules
+      description: Prometheus Get rules
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: http-rules.getrules
+      with:
+        type: tools.type
+        rule_name[]: tools.rule_name[]
+        rule_group[]: tools.rule_group[]
+        file[]: tools.file[]
+      outputParameters:
+      - type: object
+        mapping: $.
