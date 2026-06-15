@@ -1,0 +1,243 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Prometheus Alertmanager API",
+    "version": "v0.28.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Alerts",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Prometheus Get active alerts",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://{host}:{port}/api/v2/alerts",
+            "params": [
+              {
+                "name": "active",
+                "value": "",
+                "type": "query",
+                "description": "Only return active (non-silenced, non-inhibited) alerts."
+              },
+              {
+                "name": "silenced",
+                "value": "",
+                "type": "query",
+                "description": "Include silenced alerts in results."
+              },
+              {
+                "name": "inhibited",
+                "value": "",
+                "type": "query",
+                "description": "Include inhibited alerts in results."
+              },
+              {
+                "name": "unprocessed",
+                "value": "",
+                "type": "query",
+                "description": "Include unprocessed alerts that have not yet been routed."
+              },
+              {
+                "name": "filter",
+                "value": "",
+                "type": "query",
+                "description": "A list of label matchers to filter alerts by. Matchers use the syntax label=value, label!=value, label=~regex, or label!~regex."
+              },
+              {
+                "name": "receiver",
+                "value": "",
+                "type": "query",
+                "description": "Filter by receiver name."
+              }
+            ]
+          },
+          "docs": "Returns a list of active alerts currently managed by Alertmanager. Supports filtering by silenced, inhibited, active state, and label matchers."
+        },
+        {
+          "info": {
+            "name": "Prometheus Post alerts",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "http://{host}:{port}/api/v2/alerts",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates or updates alerts in Alertmanager. Prometheus typically calls this endpoint to send firing alerts. Each alert must include a labels map; generatorURL is optional but recommended for linking back to the triggering expression."
+        },
+        {
+          "info": {
+            "name": "Prometheus Get alert groups",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://{host}:{port}/api/v2/alerts/groups",
+            "params": [
+              {
+                "name": "active",
+                "value": "",
+                "type": "query",
+                "description": "Include active alerts."
+              },
+              {
+                "name": "silenced",
+                "value": "",
+                "type": "query",
+                "description": "Include silenced alerts."
+              },
+              {
+                "name": "inhibited",
+                "value": "",
+                "type": "query",
+                "description": "Include inhibited alerts."
+              },
+              {
+                "name": "filter",
+                "value": "",
+                "type": "query",
+                "description": "Label matchers to filter by."
+              },
+              {
+                "name": "receiver",
+                "value": "",
+                "type": "query",
+                "description": "Filter by receiver name."
+              }
+            ]
+          },
+          "docs": "Returns a list of alert groups. Alertmanager groups alerts by their group labels as configured in routing rules. Each group has a receiver and a set of alerts."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Silences",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Prometheus List silences",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://{host}:{port}/api/v2/silences",
+            "params": [
+              {
+                "name": "filter",
+                "value": "",
+                "type": "query",
+                "description": "Label matchers to filter silences by."
+              }
+            ]
+          },
+          "docs": "Returns a list of all silences including pending, active, and expired silences. Silences mute alerts matching their matchers for a defined time range."
+        },
+        {
+          "info": {
+            "name": "Prometheus Create or update silence",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "http://{host}:{port}/api/v2/silences",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new silence or updates an existing one. To update, include the ID of the existing silence. Silences mute all alerts whose labels match every matcher in the silence for the specified time period."
+        },
+        {
+          "info": {
+            "name": "Prometheus Get silence by ID",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://{host}:{port}/api/v2/silence/:silenceID",
+            "params": [
+              {
+                "name": "silenceID",
+                "value": "",
+                "type": "path",
+                "description": "UUID identifier of the silence."
+              }
+            ]
+          },
+          "docs": "Returns the silence with the specified ID, including its matchers, time range, creator, and current status."
+        },
+        {
+          "info": {
+            "name": "Prometheus Expire silence",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "http://{host}:{port}/api/v2/silence/:silenceID",
+            "params": [
+              {
+                "name": "silenceID",
+                "value": "",
+                "type": "path",
+                "description": "UUID identifier of the silence."
+              }
+            ]
+          },
+          "docs": "Expires a silence, setting its end time to now. Expired silences no longer mute alerts but remain visible until fully removed."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Receivers",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Prometheus List receivers",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://{host}:{port}/api/v2/receivers"
+          },
+          "docs": "Returns a list of all configured alert receivers. Receivers are the notification integrations (email, Slack, PagerDuty, etc.) configured in the Alertmanager configuration file."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Status",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Prometheus Get Alertmanager status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://{host}:{port}/api/v2/status"
+          },
+          "docs": "Returns the current status of the Alertmanager including the current loaded configuration, cluster peers, and version information."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

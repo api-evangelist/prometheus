@@ -1,0 +1,1753 @@
+{
+  "item": [
+    {
+      "id": "126bfd7a-b563-48d1-ab22-41c09b2753f6",
+      "name": "Alerts",
+      "description": {
+        "content": "Endpoints for listing and creating alerts in the Alertmanager.",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "d14513da-4b27-4423-9336-32b46eb9bc8a",
+          "name": "Prometheus Get active alerts",
+          "request": {
+            "name": "Prometheus Get active alerts",
+            "description": {
+              "content": "Returns a list of active alerts currently managed by Alertmanager. Supports filtering by silenced, inhibited, active state, and label matchers.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "v2",
+                "alerts"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "active",
+                  "value": "true",
+                  "description": "Only return active (non-silenced, non-inhibited) alerts."
+                },
+                {
+                  "disabled": false,
+                  "key": "silenced",
+                  "value": "false",
+                  "description": "Include silenced alerts in results."
+                },
+                {
+                  "disabled": false,
+                  "key": "inhibited",
+                  "value": "false",
+                  "description": "Include inhibited alerts in results."
+                },
+                {
+                  "disabled": false,
+                  "key": "unprocessed",
+                  "value": "false",
+                  "description": "Include unprocessed alerts that have not yet been routed."
+                },
+                {
+                  "disabled": false,
+                  "key": "filter",
+                  "value": "<string>",
+                  "description": "A list of label matchers to filter alerts by. Matchers use the syntax label=value, label!=value, label=~regex, or label!~regex."
+                },
+                {
+                  "disabled": false,
+                  "key": "filter",
+                  "value": "<string>",
+                  "description": "A list of label matchers to filter alerts by. Matchers use the syntax label=value, label!=value, label=~regex, or label!~regex."
+                },
+                {
+                  "disabled": false,
+                  "key": "receiver",
+                  "value": "<string>",
+                  "description": "Filter by receiver name."
+                }
+              ],
+              "variable": [
+                {
+                  "description": "Alertmanager server hostname",
+                  "type": "any",
+                  "value": "{{host}}",
+                  "key": "host"
+                },
+                {
+                  "description": "Alertmanager server port",
+                  "type": "any",
+                  "value": "{{port}}",
+                  "key": "port"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "5fa7da31-c07e-4aab-a8ba-494cb6fb0ef8",
+              "name": "Active alerts returned successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v2",
+                    "alerts"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "active",
+                      "value": "true"
+                    },
+                    {
+                      "key": "silenced",
+                      "value": "false"
+                    },
+                    {
+                      "key": "inhibited",
+                      "value": "false"
+                    },
+                    {
+                      "key": "unprocessed",
+                      "value": "false"
+                    },
+                    {
+                      "key": "filter",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "filter",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "receiver",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"labels\": {\n      \"key_0\": \"string\",\n      \"key_1\": \"string\"\n    },\n    \"annotations\": {\n      \"key_0\": \"string\",\n      \"key_1\": \"string\",\n      \"key_2\": \"string\",\n      \"key_3\": \"string\"\n    },\n    \"startsAt\": \"2021-07-27T01:52:42.870Z\",\n    \"endsAt\": \"1954-04-07T09:11:17.137Z\",\n    \"updatedAt\": \"1949-11-28T13:46:09.563Z\",\n    \"fingerprint\": \"string\",\n    \"receivers\": [\n      {\n        \"name\": \"string\"\n      },\n      {\n        \"name\": \"string\"\n      }\n    ],\n    \"status\": {\n      \"state\": \"active\",\n      \"silencedBy\": [\n        \"string\",\n        \"string\"\n      ],\n      \"inhibitedBy\": [\n        \"string\",\n        \"string\"\n      ]\n    },\n    \"generatorURL\": \"http://FcLm.koykaC3nPV0xF\"\n  },\n  {\n    \"labels\": {\n      \"key_0\": \"string\"\n    },\n    \"annotations\": {\n      \"key_0\": \"string\",\n      \"key_1\": \"string\",\n      \"key_2\": \"string\"\n    },\n    \"startsAt\": \"1996-05-19T16:13:15.157Z\",\n    \"endsAt\": \"2001-04-28T14:36:44.567Z\",\n    \"updatedAt\": \"2012-01-23T05:58:29.106Z\",\n    \"fingerprint\": \"string\",\n    \"receivers\": [\n      {\n        \"name\": \"string\"\n      },\n      {\n        \"name\": \"string\"\n      }\n    ],\n    \"status\": {\n      \"state\": \"unprocessed\",\n      \"silencedBy\": [\n        \"string\",\n        \"string\"\n      ],\n      \"inhibitedBy\": [\n        \"string\",\n        \"string\"\n      ]\n    },\n    \"generatorURL\": \"https://gXVF.azKmkXJPgB7h6t60duBTarBlGmtj8PR5\"\n  }\n]",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "e95fe817-0e89-441a-b57c-3ffd911285ef",
+              "name": "Bad request — invalid filter matchers",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v2",
+                    "alerts"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "active",
+                      "value": "true"
+                    },
+                    {
+                      "key": "silenced",
+                      "value": "false"
+                    },
+                    {
+                      "key": "inhibited",
+                      "value": "false"
+                    },
+                    {
+                      "key": "unprocessed",
+                      "value": "false"
+                    },
+                    {
+                      "key": "filter",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "filter",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "receiver",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "71671402-2ff4-42d1-8892-af05d3f464bc",
+          "name": "Prometheus Post alerts",
+          "request": {
+            "name": "Prometheus Post alerts",
+            "description": {
+              "content": "Creates or updates alerts in Alertmanager. Prometheus typically calls this endpoint to send firing alerts. Each alert must include a labels map; generatorURL is optional but recommended for linking back to the triggering expression.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "v2",
+                "alerts"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "description": "Alertmanager server hostname",
+                  "type": "any",
+                  "value": "{{host}}",
+                  "key": "host"
+                },
+                {
+                  "description": "Alertmanager server port",
+                  "type": "any",
+                  "value": "{{port}}",
+                  "key": "port"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"labels\": {\n      \"key_0\": \"<string>\",\n      \"key_1\": \"<string>\",\n      \"key_2\": \"<string>\"\n    },\n    \"annotations\": {\n      \"key_0\": \"<string>\",\n      \"key_1\": \"<string>\",\n      \"key_2\": \"<string>\"\n    },\n    \"startsAt\": \"<dateTime>\",\n    \"endsAt\": \"<dateTime>\",\n    \"generatorURL\": \"<uri>\"\n  },\n  {\n    \"labels\": {\n      \"key_0\": \"<string>\",\n      \"key_1\": \"<string>\"\n    },\n    \"annotations\": {\n      \"key_0\": \"<string>\"\n    },\n    \"startsAt\": \"<dateTime>\",\n    \"endsAt\": \"<dateTime>\",\n    \"generatorURL\": \"<uri>\"\n  }\n]",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "2bada913-09bb-49af-9aa3-d34dee2b66ec",
+              "name": "Alerts accepted",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v2",
+                    "alerts"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "[\n  {\n    \"labels\": {\n      \"key_0\": \"string\",\n      \"key_1\": \"string\"\n    },\n    \"annotations\": {\n      \"key_0\": \"string\",\n      \"key_1\": \"string\"\n    },\n    \"startsAt\": \"1958-10-05T10:36:53.023Z\",\n    \"endsAt\": \"1974-05-10T20:18:57.227Z\",\n    \"generatorURL\": \"http://rUlifKrUcJaokXn.foWpgASgJh1Nhc.\"\n  },\n  {\n    \"labels\": {\n      \"key_0\": \"string\",\n      \"key_1\": \"string\"\n    },\n    \"annotations\": {\n      \"key_0\": \"string\"\n    },\n    \"startsAt\": \"2006-12-13T11:40:00.246Z\",\n    \"endsAt\": \"1991-02-14T00:26:23.118Z\",\n    \"generatorURL\": \"https://JmcknsNnkoaZIPy.owbhTOhm7yeVb.TzAXm7,7IzQ9+4N7\"\n  }\n]",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "43229eca-65ae-41ab-99d2-b5907098cc89",
+              "name": "Bad request — invalid alert format",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v2",
+                    "alerts"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "[\n  {\n    \"labels\": {\n      \"key_0\": \"string\",\n      \"key_1\": \"string\"\n    },\n    \"annotations\": {\n      \"key_0\": \"string\",\n      \"key_1\": \"string\"\n    },\n    \"startsAt\": \"1958-10-05T10:36:53.023Z\",\n    \"endsAt\": \"1974-05-10T20:18:57.227Z\",\n    \"generatorURL\": \"http://rUlifKrUcJaokXn.foWpgASgJh1Nhc.\"\n  },\n  {\n    \"labels\": {\n      \"key_0\": \"string\",\n      \"key_1\": \"string\"\n    },\n    \"annotations\": {\n      \"key_0\": \"string\"\n    },\n    \"startsAt\": \"2006-12-13T11:40:00.246Z\",\n    \"endsAt\": \"1991-02-14T00:26:23.118Z\",\n    \"generatorURL\": \"https://JmcknsNnkoaZIPy.owbhTOhm7yeVb.TzAXm7,7IzQ9+4N7\"\n  }\n]",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "4be3a0fa-ce42-41f6-a46b-007a82d97a45",
+              "name": "Internal server error",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v2",
+                    "alerts"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "[\n  {\n    \"labels\": {\n      \"key_0\": \"string\",\n      \"key_1\": \"string\"\n    },\n    \"annotations\": {\n      \"key_0\": \"string\",\n      \"key_1\": \"string\"\n    },\n    \"startsAt\": \"1958-10-05T10:36:53.023Z\",\n    \"endsAt\": \"1974-05-10T20:18:57.227Z\",\n    \"generatorURL\": \"http://rUlifKrUcJaokXn.foWpgASgJh1Nhc.\"\n  },\n  {\n    \"labels\": {\n      \"key_0\": \"string\",\n      \"key_1\": \"string\"\n    },\n    \"annotations\": {\n      \"key_0\": \"string\"\n    },\n    \"startsAt\": \"2006-12-13T11:40:00.246Z\",\n    \"endsAt\": \"1991-02-14T00:26:23.118Z\",\n    \"generatorURL\": \"https://JmcknsNnkoaZIPy.owbhTOhm7yeVb.TzAXm7,7IzQ9+4N7\"\n  }\n]",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "5edd9635-88d7-4f7c-a96b-4b2ff4addd73",
+          "name": "Prometheus Get alert groups",
+          "request": {
+            "name": "Prometheus Get alert groups",
+            "description": {
+              "content": "Returns a list of alert groups. Alertmanager groups alerts by their group labels as configured in routing rules. Each group has a receiver and a set of alerts.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "v2",
+                "alerts",
+                "groups"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "active",
+                  "value": "true",
+                  "description": "Include active alerts."
+                },
+                {
+                  "disabled": false,
+                  "key": "silenced",
+                  "value": "false",
+                  "description": "Include silenced alerts."
+                },
+                {
+                  "disabled": false,
+                  "key": "inhibited",
+                  "value": "false",
+                  "description": "Include inhibited alerts."
+                },
+                {
+                  "disabled": false,
+                  "key": "filter",
+                  "value": "<string>",
+                  "description": "Label matchers to filter by."
+                },
+                {
+                  "disabled": false,
+                  "key": "filter",
+                  "value": "<string>",
+                  "description": "Label matchers to filter by."
+                },
+                {
+                  "disabled": false,
+                  "key": "receiver",
+                  "value": "<string>",
+                  "description": "Filter by receiver name."
+                }
+              ],
+              "variable": [
+                {
+                  "description": "Alertmanager server hostname",
+                  "type": "any",
+                  "value": "{{host}}",
+                  "key": "host"
+                },
+                {
+                  "description": "Alertmanager server port",
+                  "type": "any",
+                  "value": "{{port}}",
+                  "key": "port"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "1dc609a2-13bf-4809-88ba-e6f81d0eba3b",
+              "name": "Alert groups returned successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v2",
+                    "alerts",
+                    "groups"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "active",
+                      "value": "true"
+                    },
+                    {
+                      "key": "silenced",
+                      "value": "false"
+                    },
+                    {
+                      "key": "inhibited",
+                      "value": "false"
+                    },
+                    {
+                      "key": "filter",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "filter",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "receiver",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"labels\": {\n      \"key_0\": \"string\",\n      \"key_1\": \"string\",\n      \"key_2\": \"string\",\n      \"key_3\": \"string\"\n    },\n    \"groupLabels\": {\n      \"key_0\": \"string\",\n      \"key_1\": \"string\",\n      \"key_2\": \"string\"\n    },\n    \"commonLabels\": {\n      \"key_0\": \"string\"\n    },\n    \"commonAnnotations\": {\n      \"key_0\": \"string\",\n      \"key_1\": \"string\"\n    },\n    \"externalURL\": \"https://iZpRMZjOeQemSSNiGfPfAxSUp.agqfN5efTwAI5oQYHqppe.lQo4P+\",\n    \"receiver\": {\n      \"name\": \"string\"\n    },\n    \"alerts\": [\n      {\n        \"labels\": {\n          \"key_0\": \"string\",\n          \"key_1\": \"string\"\n        },\n        \"annotations\": {\n          \"key_0\": \"string\"\n        },\n        \"startsAt\": \"1955-09-23T06:56:32.333Z\",\n        \"endsAt\": \"2007-04-19T20:34:18.909Z\",\n        \"updatedAt\": \"1949-03-23T18:27:42.762Z\",\n        \"fingerprint\": \"string\",\n        \"receivers\": [\n          {\n            \"name\": \"string\"\n          },\n          {\n            \"name\": \"string\"\n          }\n        ],\n        \"status\": {\n          \"state\": \"active\",\n          \"silencedBy\": [\n            \"string\",\n            \"string\"\n          ],\n          \"inhibitedBy\": [\n            \"string\",\n            \"string\"\n          ]\n        },\n        \"generatorURL\": \"https://IxEVSmxBAUlTbUoKPVmKg.muATAnGYnU0V6XuP06nBqUNm\"\n      },\n      {\n        \"labels\": {\n          \"key_0\": \"string\",\n          \"key_1\": \"string\",\n          \"key_2\": \"string\"\n        },\n        \"annotations\": {\n          \"key_0\": \"string\",\n          \"key_1\": \"string\"\n        },\n        \"startsAt\": \"1979-06-08T17:42:25.790Z\",\n        \"endsAt\": \"1992-10-16T23:28:07.018Z\",\n        \"updatedAt\": \"1995-03-19T05:33:17.013Z\",\n        \"fingerprint\": \"string\",\n        \"receivers\": [\n          {\n            \"name\": \"string\"\n          },\n          {\n            \"name\": \"string\"\n          }\n        ],\n        \"status\": {\n          \"state\": \"unprocessed\",\n          \"silencedBy\": [\n            \"string\",\n            \"string\"\n          ],\n          \"inhibitedBy\": [\n            \"string\",\n            \"string\"\n          ]\n        },\n        \"generatorURL\": \"https://wDOoAVDhH.oyhaZ-ynXAW9zth7IP0D9L-AL94ITA0PDfIW8Qu0Nm2GnB,CIdisM3aFwJY0HQrWfvFQKnM\"\n      }\n    ]\n  },\n  {\n    \"labels\": {\n      \"key_0\": \"string\",\n      \"key_1\": \"string\",\n      \"key_2\": \"string\"\n    },\n    \"groupLabels\": {\n      \"key_0\": \"string\"\n    },\n    \"commonLabels\": {\n      \"key_0\": \"string\"\n    },\n    \"commonAnnotations\": {\n      \"key_0\": \"string\"\n    },\n    \"externalURL\": \"https://JKeFblUeig.hxng4u1OB4xxqYZOSc9s.3izqRJUa24,5knX\",\n    \"receiver\": {\n      \"name\": \"string\"\n    },\n    \"alerts\": [\n      {\n        \"labels\": {\n          \"key_0\": \"string\",\n          \"key_1\": \"string\"\n        },\n        \"annotations\": {\n          \"key_0\": \"string\"\n        },\n        \"startsAt\": \"1996-04-02T03:05:56.763Z\",\n        \"endsAt\": \"2018-03-28T06:51:54.409Z\",\n        \"updatedAt\": \"1971-05-04T08:12:46.829Z\",\n        \"fingerprint\": \"string\",\n        \"receivers\": [\n          {\n            \"name\": \"string\"\n          },\n          {\n            \"name\": \"string\"\n          }\n        ],\n        \"status\": {\n          \"state\": \"active\",\n          \"silencedBy\": [\n            \"string\",\n            \"string\"\n          ],\n          \"inhibitedBy\": [\n            \"string\",\n            \"string\"\n          ]\n        },\n        \"generatorURL\": \"https://XTKNVZNGTfivaOp.ckoti6ZB3An512lJEN-eTEn0NKOxde62Ajou,1APrpnncVbJJYL.LOUAc2xGQRZnb6O6rJms\"\n      },\n      {\n        \"labels\": {\n          \"key_0\": \"string\"\n        },\n        \"annotations\": {\n          \"key_0\": \"string\"\n        },\n        \"startsAt\": \"1996-02-27T05:01:18.227Z\",\n        \"endsAt\": \"1987-01-24T03:34:57.394Z\",\n        \"updatedAt\": \"2014-11-15T06:26:32.973Z\",\n        \"fingerprint\": \"string\",\n        \"receivers\": [\n          {\n            \"name\": \"string\"\n          },\n          {\n            \"name\": \"string\"\n          }\n        ],\n        \"status\": {\n          \"state\": \"active\",\n          \"silencedBy\": [\n            \"string\",\n            \"string\"\n          ],\n          \"inhibitedBy\": [\n            \"string\",\n            \"string\"\n          ]\n        },\n        \"generatorURL\": \"https://UKKgYyOQXLHnYqlbuHHkTULHOMACAHGk.wcEX9vc96yidySLm-EqR\"\n      }\n    ]\n  }\n]",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "5ac79116-b592-4df7-8cd1-fa98c638702c",
+              "name": "Bad request",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v2",
+                    "alerts",
+                    "groups"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "active",
+                      "value": "true"
+                    },
+                    {
+                      "key": "silenced",
+                      "value": "false"
+                    },
+                    {
+                      "key": "inhibited",
+                      "value": "false"
+                    },
+                    {
+                      "key": "filter",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "filter",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "receiver",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    },
+    {
+      "id": "af298633-b3e3-4415-9ab7-b90c8bd09d0e",
+      "name": "Receivers",
+      "description": {
+        "content": "Endpoints for listing configured alert receivers.",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "0b11232e-24a2-4416-be0e-225b6546e18d",
+          "name": "Prometheus List receivers",
+          "request": {
+            "name": "Prometheus List receivers",
+            "description": {
+              "content": "Returns a list of all configured alert receivers. Receivers are the notification integrations (email, Slack, PagerDuty, etc.) configured in the Alertmanager configuration file.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "v2",
+                "receivers"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "description": "Alertmanager server hostname",
+                  "type": "any",
+                  "value": "{{host}}",
+                  "key": "host"
+                },
+                {
+                  "description": "Alertmanager server port",
+                  "type": "any",
+                  "value": "{{port}}",
+                  "key": "port"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "6abb000c-75cd-4e13-9c68-a9ffe1ce9dd7",
+              "name": "Receivers returned successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v2",
+                    "receivers"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"name\": \"string\"\n  },\n  {\n    \"name\": \"string\"\n  }\n]",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    },
+    {
+      "id": "6f614343-b6dd-47d0-b1cb-54e5db1767b9",
+      "name": "Silences",
+      "description": {
+        "content": "Endpoints for creating, listing, updating, and expiring silences that mute matching alerts.",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "0dea0bc9-1ec2-438a-bf4a-808caf34f2a7",
+          "name": "Prometheus List silences",
+          "request": {
+            "name": "Prometheus List silences",
+            "description": {
+              "content": "Returns a list of all silences including pending, active, and expired silences. Silences mute alerts matching their matchers for a defined time range.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "v2",
+                "silences"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "filter",
+                  "value": "<string>",
+                  "description": "Label matchers to filter silences by."
+                },
+                {
+                  "disabled": false,
+                  "key": "filter",
+                  "value": "<string>",
+                  "description": "Label matchers to filter silences by."
+                }
+              ],
+              "variable": [
+                {
+                  "description": "Alertmanager server hostname",
+                  "type": "any",
+                  "value": "{{host}}",
+                  "key": "host"
+                },
+                {
+                  "description": "Alertmanager server port",
+                  "type": "any",
+                  "value": "{{port}}",
+                  "key": "port"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "e6599860-a633-44f9-9af0-d0022b74c2a6",
+              "name": "Silences returned successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v2",
+                    "silences"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "filter",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "filter",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"id\": \"7449f820-b4d1-df5b-fbad-bb1ad7a0668c\",\n    \"status\": {\n      \"state\": \"expired\"\n    },\n    \"updatedAt\": \"1990-02-07T05:08:45.872Z\",\n    \"matchers\": [\n      {\n        \"name\": \"string\",\n        \"value\": \"string\",\n        \"isRegex\": true,\n        \"isEqual\": true\n      },\n      {\n        \"name\": \"string\",\n        \"value\": \"string\",\n        \"isRegex\": true,\n        \"isEqual\": true\n      }\n    ],\n    \"startsAt\": \"1966-01-14T09:59:14.117Z\",\n    \"endsAt\": \"2007-03-29T04:53:31.047Z\",\n    \"createdBy\": \"string\",\n    \"comment\": \"string\"\n  },\n  {\n    \"id\": \"7b844dc0-bfce-c9cc-cea8-ac339ddd2c24\",\n    \"status\": {\n      \"state\": \"expired\"\n    },\n    \"updatedAt\": \"1989-09-28T03:23:59.701Z\",\n    \"matchers\": [\n      {\n        \"name\": \"string\",\n        \"value\": \"string\",\n        \"isRegex\": false,\n        \"isEqual\": true\n      },\n      {\n        \"name\": \"string\",\n        \"value\": \"string\",\n        \"isRegex\": false,\n        \"isEqual\": true\n      }\n    ],\n    \"startsAt\": \"2012-10-29T08:08:40.681Z\",\n    \"endsAt\": \"2003-08-20T06:50:36.884Z\",\n    \"createdBy\": \"string\",\n    \"comment\": \"string\"\n  }\n]",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "f20e98bb-e697-45c3-a573-fbcd3f25c722",
+              "name": "Bad request",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v2",
+                    "silences"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "filter",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "filter",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "6447c644-c2bf-4669-a90a-dde03456f064",
+          "name": "Prometheus Create or update silence",
+          "request": {
+            "name": "Prometheus Create or update silence",
+            "description": {
+              "content": "Creates a new silence or updates an existing one. To update, include the ID of the existing silence. Silences mute all alerts whose labels match every matcher in the silence for the specified time period.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "v2",
+                "silences"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "description": "Alertmanager server hostname",
+                  "type": "any",
+                  "value": "{{host}}",
+                  "key": "host"
+                },
+                {
+                  "description": "Alertmanager server port",
+                  "type": "any",
+                  "value": "{{port}}",
+                  "key": "port"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"matchers\": [\n    {\n      \"name\": \"<string>\",\n      \"value\": \"<string>\",\n      \"isRegex\": \"<boolean>\",\n      \"isEqual\": true\n    },\n    {\n      \"name\": \"<string>\",\n      \"value\": \"<string>\",\n      \"isRegex\": \"<boolean>\",\n      \"isEqual\": true\n    }\n  ],\n  \"startsAt\": \"<dateTime>\",\n  \"endsAt\": \"<dateTime>\",\n  \"createdBy\": \"<string>\",\n  \"comment\": \"<string>\",\n  \"id\": \"<uuid>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "6636e3e9-120d-4743-ac07-8bec224f2ad8",
+              "name": "Silence created or updated",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v2",
+                    "silences"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"matchers\": [\n    {\n      \"name\": \"string\",\n      \"value\": \"string\",\n      \"isRegex\": false,\n      \"isEqual\": true\n    },\n    {\n      \"name\": \"string\",\n      \"value\": \"string\",\n      \"isRegex\": true,\n      \"isEqual\": true\n    }\n  ],\n  \"startsAt\": \"<dateTime>\",\n  \"endsAt\": \"<dateTime>\",\n  \"createdBy\": \"<string>\",\n  \"comment\": \"<string>\",\n  \"id\": \"<uuid>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"silenceID\": \"e5943977-afb6-933a-3984-d436539b7ebb\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "20a9f493-9ede-495e-b884-eabf8281c503",
+              "name": "Bad request — invalid silence definition",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v2",
+                    "silences"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"matchers\": [\n    {\n      \"name\": \"string\",\n      \"value\": \"string\",\n      \"isRegex\": false,\n      \"isEqual\": true\n    },\n    {\n      \"name\": \"string\",\n      \"value\": \"string\",\n      \"isRegex\": true,\n      \"isEqual\": true\n    }\n  ],\n  \"startsAt\": \"<dateTime>\",\n  \"endsAt\": \"<dateTime>\",\n  \"createdBy\": \"<string>\",\n  \"comment\": \"<string>\",\n  \"id\": \"<uuid>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "366868f9-8e42-4f3c-b75b-fc61bb5ac915",
+              "name": "Silence not found (when updating by ID)",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v2",
+                    "silences"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"matchers\": [\n    {\n      \"name\": \"string\",\n      \"value\": \"string\",\n      \"isRegex\": false,\n      \"isEqual\": true\n    },\n    {\n      \"name\": \"string\",\n      \"value\": \"string\",\n      \"isRegex\": true,\n      \"isEqual\": true\n    }\n  ],\n  \"startsAt\": \"<dateTime>\",\n  \"endsAt\": \"<dateTime>\",\n  \"createdBy\": \"<string>\",\n  \"comment\": \"<string>\",\n  \"id\": \"<uuid>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "5ef72e89-f650-4923-af0d-ffca454a6b89",
+          "name": "Prometheus Get silence by ID",
+          "request": {
+            "name": "Prometheus Get silence by ID",
+            "description": {
+              "content": "Returns the silence with the specified ID, including its matchers, time range, creator, and current status.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "v2",
+                "silence",
+                ":silenceID"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<uuid>",
+                  "key": "silenceID",
+                  "description": "(Required) UUID identifier of the silence."
+                },
+                {
+                  "description": "Alertmanager server hostname",
+                  "type": "any",
+                  "value": "{{host}}",
+                  "key": "host"
+                },
+                {
+                  "description": "Alertmanager server port",
+                  "type": "any",
+                  "value": "{{port}}",
+                  "key": "port"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "5782bc1f-a74f-4c76-8e10-caca581c9a33",
+              "name": "Silence returned successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v2",
+                    "silence",
+                    ":silenceID"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "silenceID",
+                      "description": "(Required) UUID identifier of the silence."
+                    },
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"39070c78-d24f-1843-d8d4-3bf1f25e62d1\",\n  \"status\": {\n    \"state\": \"active\"\n  },\n  \"updatedAt\": \"1959-01-17T13:48:49.861Z\",\n  \"matchers\": [\n    {\n      \"name\": \"string\",\n      \"value\": \"string\",\n      \"isRegex\": false,\n      \"isEqual\": true\n    },\n    {\n      \"name\": \"string\",\n      \"value\": \"string\",\n      \"isRegex\": false,\n      \"isEqual\": true\n    }\n  ],\n  \"startsAt\": \"2024-02-04T18:53:03.762Z\",\n  \"endsAt\": \"1947-01-11T06:32:18.417Z\",\n  \"createdBy\": \"string\",\n  \"comment\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "29e5680e-3d63-49a4-ad61-2dd5055a1c06",
+              "name": "Silence not found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v2",
+                    "silence",
+                    ":silenceID"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "silenceID",
+                      "description": "(Required) UUID identifier of the silence."
+                    },
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "fa47484b-8998-443e-b73b-4ebc71c4c82c",
+          "name": "Prometheus Expire silence",
+          "request": {
+            "name": "Prometheus Expire silence",
+            "description": {
+              "content": "Expires a silence, setting its end time to now. Expired silences no longer mute alerts but remain visible until fully removed.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "v2",
+                "silence",
+                ":silenceID"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<uuid>",
+                  "key": "silenceID",
+                  "description": "(Required) UUID identifier of the silence."
+                },
+                {
+                  "description": "Alertmanager server hostname",
+                  "type": "any",
+                  "value": "{{host}}",
+                  "key": "host"
+                },
+                {
+                  "description": "Alertmanager server port",
+                  "type": "any",
+                  "value": "{{port}}",
+                  "key": "port"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "bb755552-a7e4-4d88-9a3e-01f20014526e",
+              "name": "Silence expired successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v2",
+                    "silence",
+                    ":silenceID"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "silenceID",
+                      "description": "(Required) UUID identifier of the silence."
+                    },
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "6636ab4d-bfbd-4692-8a9e-fdc8d9381289",
+              "name": "Silence not found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v2",
+                    "silence",
+                    ":silenceID"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "silenceID",
+                      "description": "(Required) UUID identifier of the silence."
+                    },
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "5a699e03-78ce-4941-a5f9-94f8f432fd63",
+              "name": "Internal error expiring silence",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v2",
+                    "silence",
+                    ":silenceID"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "silenceID",
+                      "description": "(Required) UUID identifier of the silence."
+                    },
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    },
+    {
+      "id": "90c6c5c5-be25-40ca-94bc-797820b7abd9",
+      "name": "Status",
+      "description": {
+        "content": "Endpoints for retrieving Alertmanager configuration, cluster status, and version information.",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "9c6a8687-0e58-460a-ae1a-4c9310f8e7ac",
+          "name": "Prometheus Get Alertmanager status",
+          "request": {
+            "name": "Prometheus Get Alertmanager status",
+            "description": {
+              "content": "Returns the current status of the Alertmanager including the current loaded configuration, cluster peers, and version information.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "v2",
+                "status"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "description": "Alertmanager server hostname",
+                  "type": "any",
+                  "value": "{{host}}",
+                  "key": "host"
+                },
+                {
+                  "description": "Alertmanager server port",
+                  "type": "any",
+                  "value": "{{port}}",
+                  "key": "port"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "d4c47511-7e17-4690-ae81-07ab11d23a82",
+              "name": "Status returned successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v2",
+                    "status"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"cluster\": {\n    \"name\": \"string\",\n    \"status\": \"disabled\",\n    \"peers\": [\n      {\n        \"name\": \"string\",\n        \"address\": \"string\"\n      },\n      {\n        \"name\": \"string\",\n        \"address\": \"string\"\n      }\n    ]\n  },\n  \"versionInfo\": {\n    \"version\": \"string\",\n    \"revision\": \"string\",\n    \"branch\": \"string\",\n    \"buildUser\": \"string\",\n    \"buildDate\": \"string\",\n    \"goVersion\": \"string\"\n  },\n  \"config\": {\n    \"original\": \"string\"\n  },\n  \"uptime\": \"1946-09-04T20:19:08.686Z\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "description": {
+        "content": "Alertmanager server hostname",
+        "type": "text/plain"
+      },
+      "type": "any",
+      "value": "localhost",
+      "key": "host"
+    },
+    {
+      "description": {
+        "content": "Alertmanager server port",
+        "type": "text/plain"
+      },
+      "type": "any",
+      "value": "9093",
+      "key": "port"
+    },
+    {
+      "type": "string",
+      "value": "http://{{host}}:{{port}}",
+      "key": "baseUrl"
+    }
+  ],
+  "info": {
+    "_postman_id": "ff2f501a-761a-4edb-b97c-88b9fe357a3a",
+    "name": "Prometheus Alertmanager API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "The Prometheus Alertmanager HTTP API v2 provides endpoints for querying active alert status, creating and managing silences, retrieving receiver configurations, and checking cluster peer status. Alertmanager deduplicates, groups, and routes alert notifications to receivers such as email, PagerDuty, Slack, and OpsGenie. The API base path is /api/v2.\n\nContact Support:\n Name: Prometheus Project",
+      "type": "text/plain"
+    }
+  }
+}

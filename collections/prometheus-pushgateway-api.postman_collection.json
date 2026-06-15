@@ -1,0 +1,1487 @@
+{
+  "item": [
+    {
+      "id": "6b58e61d-1827-440c-95ae-50161255e4bf",
+      "name": "Metrics",
+      "description": {
+        "content": "Endpoints for pushing, replacing, and deleting metric groups. Metrics are grouped by job and optional additional labels.",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "e4336447-483d-4855-8555-be48b48b95d1",
+          "name": "Prometheus Replace all metrics for a job",
+          "request": {
+            "name": "Prometheus Replace all metrics for a job",
+            "description": {
+              "content": "Replaces all metrics for the specified job with the metrics in the request body. The entire group of metrics for the job is atomically replaced. Use PUT when you want to fully overwrite the existing metric set for a job.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "metrics",
+                "job",
+                ":job"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "job",
+                  "description": "(Required) The job label value for this metric group. This is the primary grouping key for pushed metrics."
+                },
+                {
+                  "description": "Pushgateway server hostname",
+                  "type": "any",
+                  "value": "{{host}}",
+                  "key": "host"
+                },
+                {
+                  "description": "Pushgateway server port",
+                  "type": "any",
+                  "value": "{{port}}",
+                  "key": "port"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/plain"
+              }
+            ],
+            "method": "PUT",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "<string>"
+            }
+          },
+          "response": [
+            {
+              "id": "2113bd41-ab0b-4477-96e2-f8394bed7b62",
+              "name": "Metrics replaced successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "metrics",
+                    "job",
+                    ":job"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "job",
+                      "description": "(Required) The job label value for this metric group. This is the primary grouping key for pushed metrics."
+                    },
+                    {
+                      "description": "Pushgateway server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Pushgateway server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "# HELP batch_job_duration_seconds Duration of a batch job.\n# TYPE batch_job_duration_seconds gauge\nbatch_job_duration_seconds 42.0\n"
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "7fc90123-d249-460e-b930-223cd08d662b",
+              "name": "Bad request — invalid metric format or labels",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "metrics",
+                    "job",
+                    ":job"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "job",
+                      "description": "(Required) The job label value for this metric group. This is the primary grouping key for pushed metrics."
+                    },
+                    {
+                      "description": "Pushgateway server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Pushgateway server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "# HELP batch_job_duration_seconds Duration of a batch job.\n# TYPE batch_job_duration_seconds gauge\nbatch_job_duration_seconds 42.0\n"
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "59cef25e-772d-42c0-889f-d0e9d59ba836",
+          "name": "Prometheus Add or update metrics for a job",
+          "request": {
+            "name": "Prometheus Add or update metrics for a job",
+            "description": {
+              "content": "Adds new metrics for the specified job or updates existing metrics. Unlike PUT, POST only updates the metrics that are present in the request body while leaving other metrics in the group untouched.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "metrics",
+                "job",
+                ":job"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "job",
+                  "description": "(Required) The job label value for this metric group. This is the primary grouping key for pushed metrics."
+                },
+                {
+                  "description": "Pushgateway server hostname",
+                  "type": "any",
+                  "value": "{{host}}",
+                  "key": "host"
+                },
+                {
+                  "description": "Pushgateway server port",
+                  "type": "any",
+                  "value": "{{port}}",
+                  "key": "port"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/plain"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "<string>"
+            }
+          },
+          "response": [
+            {
+              "id": "9f3d6995-3fe5-4348-b7fb-a1710484dfc2",
+              "name": "Metrics added or updated successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "metrics",
+                    "job",
+                    ":job"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "job",
+                      "description": "(Required) The job label value for this metric group. This is the primary grouping key for pushed metrics."
+                    },
+                    {
+                      "description": "Pushgateway server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Pushgateway server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "<string>"
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "1143dd38-3ac5-4e8d-ab39-bb34e4290d88",
+              "name": "Bad request — invalid metric format or labels",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "metrics",
+                    "job",
+                    ":job"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "job",
+                      "description": "(Required) The job label value for this metric group. This is the primary grouping key for pushed metrics."
+                    },
+                    {
+                      "description": "Pushgateway server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Pushgateway server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "<string>"
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "909ce9a2-14d0-4ac4-9481-31c2c313788f",
+          "name": "Prometheus Delete all metrics for a job",
+          "request": {
+            "name": "Prometheus Delete all metrics for a job",
+            "description": {
+              "content": "Deletes all metrics for the specified job from the Pushgateway. After deletion, Prometheus will no longer scrape any metrics for this job label combination.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "metrics",
+                "job",
+                ":job"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "job",
+                  "description": "(Required) The job label value for this metric group. This is the primary grouping key for pushed metrics."
+                },
+                {
+                  "description": "Pushgateway server hostname",
+                  "type": "any",
+                  "value": "{{host}}",
+                  "key": "host"
+                },
+                {
+                  "description": "Pushgateway server port",
+                  "type": "any",
+                  "value": "{{port}}",
+                  "key": "port"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "cb31473a-a6e4-41c9-8f11-c404a51089f6",
+              "name": "Metrics deletion accepted",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "metrics",
+                    "job",
+                    ":job"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "job",
+                      "description": "(Required) The job label value for this metric group. This is the primary grouping key for pushed metrics."
+                    },
+                    {
+                      "description": "Pushgateway server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Pushgateway server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Accepted",
+              "code": 202,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "497cf3c4-c6bc-4199-be21-f7deeda3f6db",
+              "name": "Bad request — invalid job label value",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "metrics",
+                    "job",
+                    ":job"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "job",
+                      "description": "(Required) The job label value for this metric group. This is the primary grouping key for pushed metrics."
+                    },
+                    {
+                      "description": "Pushgateway server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Pushgateway server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "b1ebaeb5-da09-41f9-ab5c-9190049b7bb7",
+          "name": "Prometheus Replace metrics for a job with grouping labels",
+          "request": {
+            "name": "Prometheus Replace metrics for a job with grouping labels",
+            "description": {
+              "content": "Replaces all metrics for the specified job and grouping label combination. Grouping labels are additional key-value pairs appended to the path as alternating label name and value segments (e.g., /metrics/job/myjob/instance/myinstance).",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "metrics",
+                "job",
+                ":job",
+                ":labels"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "job",
+                  "description": "(Required) The job label value for this metric group. This is the primary grouping key for pushed metrics."
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "labels",
+                  "description": "(Required) Additional grouping labels as alternating label-name/label-value path segments (e.g., instance/host1/datacenter/eu)."
+                },
+                {
+                  "description": "Pushgateway server hostname",
+                  "type": "any",
+                  "value": "{{host}}",
+                  "key": "host"
+                },
+                {
+                  "description": "Pushgateway server port",
+                  "type": "any",
+                  "value": "{{port}}",
+                  "key": "port"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/plain"
+              }
+            ],
+            "method": "PUT",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "<string>"
+            }
+          },
+          "response": [
+            {
+              "id": "33a07985-a68e-4ef9-9aa6-21f712ec0dab",
+              "name": "Metrics replaced successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "metrics",
+                    "job",
+                    ":job",
+                    ":labels"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "job",
+                      "description": "(Required) The job label value for this metric group. This is the primary grouping key for pushed metrics."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "labels",
+                      "description": "(Required) Additional grouping labels as alternating label-name/label-value path segments (e.g., instance/host1/datacenter/eu)."
+                    },
+                    {
+                      "description": "Pushgateway server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Pushgateway server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "<string>"
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "f207358b-0370-4a40-a2c9-ec3b593f4ff7",
+              "name": "Bad request — invalid metric format or label names",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "metrics",
+                    "job",
+                    ":job",
+                    ":labels"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "job",
+                      "description": "(Required) The job label value for this metric group. This is the primary grouping key for pushed metrics."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "labels",
+                      "description": "(Required) Additional grouping labels as alternating label-name/label-value path segments (e.g., instance/host1/datacenter/eu)."
+                    },
+                    {
+                      "description": "Pushgateway server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Pushgateway server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "<string>"
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "a92d35a2-51b2-4ef4-9211-7251d68ae184",
+          "name": "Prometheus Add or update metrics for a job with grouping labels",
+          "request": {
+            "name": "Prometheus Add or update metrics for a job with grouping labels",
+            "description": {
+              "content": "Adds or updates metrics for the specified job and grouping label combination. Only metrics included in the request body are changed; other metrics in the group are preserved.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "metrics",
+                "job",
+                ":job",
+                ":labels"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "job",
+                  "description": "(Required) The job label value for this metric group. This is the primary grouping key for pushed metrics."
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "labels",
+                  "description": "(Required) Additional grouping labels as alternating label-name/label-value path segments (e.g., instance/host1/datacenter/eu)."
+                },
+                {
+                  "description": "Pushgateway server hostname",
+                  "type": "any",
+                  "value": "{{host}}",
+                  "key": "host"
+                },
+                {
+                  "description": "Pushgateway server port",
+                  "type": "any",
+                  "value": "{{port}}",
+                  "key": "port"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/plain"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "<string>"
+            }
+          },
+          "response": [
+            {
+              "id": "cc0ca3f9-4bbe-4c10-9f80-7bbcbd12b883",
+              "name": "Metrics added or updated successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "metrics",
+                    "job",
+                    ":job",
+                    ":labels"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "job",
+                      "description": "(Required) The job label value for this metric group. This is the primary grouping key for pushed metrics."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "labels",
+                      "description": "(Required) Additional grouping labels as alternating label-name/label-value path segments (e.g., instance/host1/datacenter/eu)."
+                    },
+                    {
+                      "description": "Pushgateway server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Pushgateway server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "<string>"
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "c7cf9cfa-804d-405f-b9e1-bc0395e1a17d",
+              "name": "Bad request",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "metrics",
+                    "job",
+                    ":job",
+                    ":labels"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "job",
+                      "description": "(Required) The job label value for this metric group. This is the primary grouping key for pushed metrics."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "labels",
+                      "description": "(Required) Additional grouping labels as alternating label-name/label-value path segments (e.g., instance/host1/datacenter/eu)."
+                    },
+                    {
+                      "description": "Pushgateway server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Pushgateway server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "<string>"
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "a00759c1-803a-49ad-b0dd-51d6a496bfe3",
+          "name": "Prometheus Delete metrics for a job with grouping labels",
+          "request": {
+            "name": "Prometheus Delete metrics for a job with grouping labels",
+            "description": {
+              "content": "Deletes all metrics for the specified job and grouping label combination. Only metrics with the exact label set specified in the path are deleted.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "metrics",
+                "job",
+                ":job",
+                ":labels"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "job",
+                  "description": "(Required) The job label value for this metric group. This is the primary grouping key for pushed metrics."
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "labels",
+                  "description": "(Required) Additional grouping labels as alternating label-name/label-value path segments (e.g., instance/host1/datacenter/eu)."
+                },
+                {
+                  "description": "Pushgateway server hostname",
+                  "type": "any",
+                  "value": "{{host}}",
+                  "key": "host"
+                },
+                {
+                  "description": "Pushgateway server port",
+                  "type": "any",
+                  "value": "{{port}}",
+                  "key": "port"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "35e16137-8bde-4408-b111-f26dc3f68cb0",
+              "name": "Metrics deletion accepted",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "metrics",
+                    "job",
+                    ":job",
+                    ":labels"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "job",
+                      "description": "(Required) The job label value for this metric group. This is the primary grouping key for pushed metrics."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "labels",
+                      "description": "(Required) Additional grouping labels as alternating label-name/label-value path segments (e.g., instance/host1/datacenter/eu)."
+                    },
+                    {
+                      "description": "Pushgateway server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Pushgateway server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Accepted",
+              "code": 202,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "7e54c7b1-667e-4d1f-8169-42b022e9b925",
+              "name": "Bad request",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "metrics",
+                    "job",
+                    ":job",
+                    ":labels"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "job",
+                      "description": "(Required) The job label value for this metric group. This is the primary grouping key for pushed metrics."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "labels",
+                      "description": "(Required) Additional grouping labels as alternating label-name/label-value path segments (e.g., instance/host1/datacenter/eu)."
+                    },
+                    {
+                      "description": "Pushgateway server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Pushgateway server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "81c3ca52-f050-477a-8047-d23cb036d38e",
+          "name": "Prometheus List all pushed metrics",
+          "request": {
+            "name": "Prometheus List all pushed metrics",
+            "description": {
+              "content": "Returns all currently stored metric families in JSON format, grouped by job and grouping labels. This endpoint provides a structured view of all metrics available for Prometheus to scrape.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "v1",
+                "metrics"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "description": "Pushgateway server hostname",
+                  "type": "any",
+                  "value": "{{host}}",
+                  "key": "host"
+                },
+                {
+                  "description": "Pushgateway server port",
+                  "type": "any",
+                  "value": "{{port}}",
+                  "key": "port"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "a83fe0ef-25d0-4f2d-acfc-e8a08b4f0e20",
+              "name": "All pushed metrics returned successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "metrics"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "description": "Pushgateway server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Pushgateway server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"status\": \"success\",\n  \"data\": [\n    {\n      \"labels\": {\n        \"key_0\": \"string\"\n      },\n      \"lastPushedAt\": \"1947-09-09T14:22:25.707Z\",\n      \"metricFamilies\": {\n        \"key_0\": {\n          \"name\": \"string\",\n          \"help\": \"string\",\n          \"type\": \"COUNTER\",\n          \"metric\": [\n            {\n              \"label\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"gauge\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"counter\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"timestampMs\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            },\n            {\n              \"label\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"gauge\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"counter\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"timestampMs\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            }\n          ]\n        },\n        \"key_1\": {\n          \"name\": \"string\",\n          \"help\": \"string\",\n          \"type\": \"COUNTER\",\n          \"metric\": [\n            {\n              \"label\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"gauge\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"counter\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"timestampMs\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            },\n            {\n              \"label\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"gauge\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"counter\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"timestampMs\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            }\n          ]\n        },\n        \"key_2\": {\n          \"name\": \"string\",\n          \"help\": \"string\",\n          \"type\": \"COUNTER\",\n          \"metric\": [\n            {\n              \"label\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"gauge\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"counter\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"timestampMs\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            },\n            {\n              \"label\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"gauge\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"counter\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"timestampMs\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            }\n          ]\n        },\n        \"key_3\": {\n          \"name\": \"string\",\n          \"help\": \"string\",\n          \"type\": \"GAUGE\",\n          \"metric\": [\n            {\n              \"label\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"gauge\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"counter\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"timestampMs\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            },\n            {\n              \"label\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"gauge\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"counter\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"timestampMs\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            }\n          ]\n        },\n        \"key_4\": {\n          \"name\": \"string\",\n          \"help\": \"string\",\n          \"type\": \"SUMMARY\",\n          \"metric\": [\n            {\n              \"label\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"gauge\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"counter\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"timestampMs\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            },\n            {\n              \"label\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"gauge\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"counter\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"timestampMs\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            }\n          ]\n        }\n      }\n    },\n    {\n      \"labels\": {\n        \"key_0\": \"string\",\n        \"key_1\": \"string\"\n      },\n      \"lastPushedAt\": \"1958-05-09T10:16:35.114Z\",\n      \"metricFamilies\": {\n        \"key_0\": {\n          \"name\": \"string\",\n          \"help\": \"string\",\n          \"type\": \"GAUGE\",\n          \"metric\": [\n            {\n              \"label\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"gauge\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"counter\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"timestampMs\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            },\n            {\n              \"label\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"gauge\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"counter\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"timestampMs\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            }\n          ]\n        },\n        \"key_1\": {\n          \"name\": \"string\",\n          \"help\": \"string\",\n          \"type\": \"GAUGE\",\n          \"metric\": [\n            {\n              \"label\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"gauge\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"counter\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"timestampMs\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            },\n            {\n              \"label\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"gauge\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"counter\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"timestampMs\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            }\n          ]\n        }\n      }\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    },
+    {
+      "id": "9ad7a672-5c13-44ea-9e50-a211e9d307ee",
+      "name": "Status",
+      "description": {
+        "content": "Endpoints for checking Pushgateway health and retrieving build information.",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "4420e66e-7919-46cb-8ae3-f7561aa9ea51",
+          "name": "Prometheus Health check",
+          "request": {
+            "name": "Prometheus Health check",
+            "description": {
+              "content": "Returns 200 if the Pushgateway is healthy and ready to accept pushed metrics. Used for liveness probes in Kubernetes deployments.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "-",
+                "healthy"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "description": "Pushgateway server hostname",
+                  "type": "any",
+                  "value": "{{host}}",
+                  "key": "host"
+                },
+                {
+                  "description": "Pushgateway server port",
+                  "type": "any",
+                  "value": "{{port}}",
+                  "key": "port"
+                }
+              ]
+            },
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "1dd5ba47-5748-4455-9d2f-dc700222740c",
+              "name": "Pushgateway is healthy",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "-",
+                    "healthy"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "description": "Pushgateway server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Pushgateway server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "5bc133ee-e85b-46ef-9861-33a56ed6ab56",
+          "name": "Prometheus Readiness check",
+          "request": {
+            "name": "Prometheus Readiness check",
+            "description": {
+              "content": "Returns 200 when the Pushgateway is ready to serve traffic. Used for readiness probes in Kubernetes deployments.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "-",
+                "ready"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "description": "Pushgateway server hostname",
+                  "type": "any",
+                  "value": "{{host}}",
+                  "key": "host"
+                },
+                {
+                  "description": "Pushgateway server port",
+                  "type": "any",
+                  "value": "{{port}}",
+                  "key": "port"
+                }
+              ]
+            },
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "3945210d-31d1-42c7-b54c-8a297d61acd0",
+              "name": "Pushgateway is ready",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "-",
+                    "ready"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "description": "Pushgateway server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Pushgateway server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "727341c7-271e-4e5d-a506-1fb232a740d8",
+          "name": "Prometheus Get Pushgateway status",
+          "request": {
+            "name": "Prometheus Get Pushgateway status",
+            "description": {
+              "content": "Returns build information and runtime status for the Pushgateway server including version, revision, and configuration flags.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "v1",
+                "status"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "description": "Pushgateway server hostname",
+                  "type": "any",
+                  "value": "{{host}}",
+                  "key": "host"
+                },
+                {
+                  "description": "Pushgateway server port",
+                  "type": "any",
+                  "value": "{{port}}",
+                  "key": "port"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "ce6f9506-1ad0-4448-85e6-1acb84d0a3a0",
+              "name": "Status returned successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "status"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "description": "Pushgateway server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Pushgateway server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"status\": \"success\",\n  \"data\": {\n    \"version\": \"string\",\n    \"revision\": \"string\",\n    \"branch\": \"string\",\n    \"buildUser\": \"string\",\n    \"buildDate\": \"string\",\n    \"goVersion\": \"string\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "description": {
+        "content": "Pushgateway server hostname",
+        "type": "text/plain"
+      },
+      "type": "any",
+      "value": "localhost",
+      "key": "host"
+    },
+    {
+      "description": {
+        "content": "Pushgateway server port",
+        "type": "text/plain"
+      },
+      "type": "any",
+      "value": "9091",
+      "key": "port"
+    },
+    {
+      "type": "string",
+      "value": "http://{{host}}:{{port}}",
+      "key": "baseUrl"
+    }
+  ],
+  "info": {
+    "_postman_id": "554b9d0a-a3f4-4656-a687-52c73ca87b6b",
+    "name": "Prometheus Pushgateway API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "The Prometheus Pushgateway API accepts metrics pushed from short-lived batch jobs and ephemeral processes that cannot be scraped by Prometheus directly. Metrics are organized by job label and optional grouping labels. Pushed metrics are exposed via a /metrics endpoint for Prometheus to scrape until explicitly deleted. The Pushgateway supports the Prometheus text exposition format and OpenMetrics format for metric payloads.\n\nContact Support:\n Name: Prometheus Project",
+      "type": "text/plain"
+    }
+  }
+}

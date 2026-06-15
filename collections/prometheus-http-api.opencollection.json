@@ -1,0 +1,597 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Prometheus HTTP API",
+    "version": "v3.1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Query",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Prometheus Execute instant query",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://{host}:{port}/api/v1/query",
+            "params": [
+              {
+                "name": "query",
+                "value": "",
+                "type": "query",
+                "description": "PromQL expression to evaluate."
+              },
+              {
+                "name": "time",
+                "value": "",
+                "type": "query",
+                "description": "Evaluation timestamp as a Unix timestamp or RFC3339 string. Defaults to current server time."
+              },
+              {
+                "name": "timeout",
+                "value": "",
+                "type": "query",
+                "description": "Evaluation timeout as a duration string (e.g., 30s)."
+              }
+            ]
+          },
+          "docs": "Evaluates a PromQL expression at a single point in time. Returns a vector of time series with their values at the specified time. If the time parameter is omitted, the current server time is used."
+        },
+        {
+          "info": {
+            "name": "Prometheus Execute instant query (POST)",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "http://{host}:{port}/api/v1/query",
+            "body": {
+              "type": "form-urlencoded",
+              "data": [
+                {
+                  "name": "query",
+                  "value": ""
+                },
+                {
+                  "name": "time",
+                  "value": ""
+                },
+                {
+                  "name": "timeout",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "docs": "Evaluates a PromQL expression at a single point in time using a POST request body. Use POST when query parameters exceed URL length limits."
+        },
+        {
+          "info": {
+            "name": "Prometheus Execute range query",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://{host}:{port}/api/v1/query_range",
+            "params": [
+              {
+                "name": "query",
+                "value": "",
+                "type": "query",
+                "description": "PromQL expression to evaluate."
+              },
+              {
+                "name": "start",
+                "value": "",
+                "type": "query",
+                "description": "Start of the time range as a Unix timestamp or RFC3339 string."
+              },
+              {
+                "name": "end",
+                "value": "",
+                "type": "query",
+                "description": "End of the time range as a Unix timestamp or RFC3339 string."
+              },
+              {
+                "name": "step",
+                "value": "",
+                "type": "query",
+                "description": "Query resolution step width as a duration string (e.g., 15s, 1m, 1h)."
+              },
+              {
+                "name": "timeout",
+                "value": "",
+                "type": "query",
+                "description": "Evaluation timeout as a duration string (e.g., 30s)."
+              }
+            ]
+          },
+          "docs": "Evaluates a PromQL expression over a range of time, returning a matrix of time series with values at each step interval. Used for generating graphs and time-based analysis."
+        },
+        {
+          "info": {
+            "name": "Prometheus Execute range query (POST)",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "http://{host}:{port}/api/v1/query_range",
+            "body": {
+              "type": "form-urlencoded",
+              "data": [
+                {
+                  "name": "query",
+                  "value": ""
+                },
+                {
+                  "name": "start",
+                  "value": ""
+                },
+                {
+                  "name": "end",
+                  "value": ""
+                },
+                {
+                  "name": "step",
+                  "value": ""
+                },
+                {
+                  "name": "timeout",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "docs": "Evaluates a PromQL expression over a range of time using a POST request body. Use POST when query parameters exceed URL length limits."
+        },
+        {
+          "info": {
+            "name": "Prometheus Query exemplars",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://{host}:{port}/api/v1/query_exemplars",
+            "params": [
+              {
+                "name": "query",
+                "value": "",
+                "type": "query",
+                "description": "PromQL expression to evaluate."
+              },
+              {
+                "name": "start",
+                "value": "",
+                "type": "query",
+                "description": "Start of the time range."
+              },
+              {
+                "name": "end",
+                "value": "",
+                "type": "query",
+                "description": "End of the time range."
+              }
+            ]
+          },
+          "docs": "Returns a list of exemplars for a given PromQL expression over a time range. Exemplars are specific trace or log IDs attached to high-value metric observations that link metrics to traces."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Metadata",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Prometheus Get label names",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://{host}:{port}/api/v1/labels",
+            "params": [
+              {
+                "name": "start",
+                "value": "",
+                "type": "query",
+                "description": "Start of the time range filter."
+              },
+              {
+                "name": "end",
+                "value": "",
+                "type": "query",
+                "description": "End of the time range filter."
+              },
+              {
+                "name": "match[]",
+                "value": "",
+                "type": "query",
+                "description": "Series selector(s) to restrict the label results."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Maximum number of items to return."
+              }
+            ]
+          },
+          "docs": "Returns a list of label names present in the TSDB. Optionally filtered by a time range or series selectors. Useful for building autocomplete in query UIs."
+        },
+        {
+          "info": {
+            "name": "Prometheus Get label values",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://{host}:{port}/api/v1/label/:label_name/values",
+            "params": [
+              {
+                "name": "label_name",
+                "value": "",
+                "type": "path",
+                "description": "The label name to retrieve values for."
+              },
+              {
+                "name": "start",
+                "value": "",
+                "type": "query",
+                "description": "Start of the time range filter."
+              },
+              {
+                "name": "end",
+                "value": "",
+                "type": "query",
+                "description": "End of the time range filter."
+              },
+              {
+                "name": "match[]",
+                "value": "",
+                "type": "query",
+                "description": "Series selector(s) to restrict the label value results."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Maximum number of items to return."
+              }
+            ]
+          },
+          "docs": "Returns a list of values for a given label name. Optionally filtered by a time range or series selectors. The special label name __name__ returns all metric names."
+        },
+        {
+          "info": {
+            "name": "Prometheus Query series",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://{host}:{port}/api/v1/series",
+            "params": [
+              {
+                "name": "match[]",
+                "value": "",
+                "type": "query",
+                "description": "Series selector(s). At least one required."
+              },
+              {
+                "name": "start",
+                "value": "",
+                "type": "query",
+                "description": "Start of the time range filter."
+              },
+              {
+                "name": "end",
+                "value": "",
+                "type": "query",
+                "description": "End of the time range filter."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Maximum number of items to return."
+              }
+            ]
+          },
+          "docs": "Returns the list of time series that match a certain label set. The response contains the label sets identifying each time series. At least one match[] selector must be provided."
+        },
+        {
+          "info": {
+            "name": "Prometheus Get metric metadata",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://{host}:{port}/api/v1/metadata",
+            "params": [
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Maximum number of items to return."
+              },
+              {
+                "name": "metric",
+                "value": "",
+                "type": "query",
+                "description": "Metric name to filter by. If omitted, all metrics are returned."
+              },
+              {
+                "name": "limit_per_metric",
+                "value": "",
+                "type": "query",
+                "description": "Maximum number of metadata entries to return per metric."
+              }
+            ]
+          },
+          "docs": "Returns metadata about metrics currently scraped from targets. Metadata includes the metric type (counter, gauge, histogram, summary, untyped) and help string. Multiple targets may provide metadata for the same metric."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "TSDB",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Prometheus Delete series",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "http://{host}:{port}/api/v1/series",
+            "params": [
+              {
+                "name": "match[]",
+                "value": "",
+                "type": "query",
+                "description": "Series selector(s) to delete. At least one required."
+              },
+              {
+                "name": "start",
+                "value": "",
+                "type": "query",
+                "description": "Start of the time range. Defaults to minimum possible time."
+              },
+              {
+                "name": "end",
+                "value": "",
+                "type": "query",
+                "description": "End of the time range. Defaults to maximum possible time."
+              }
+            ]
+          },
+          "docs": "Deletes data for a selection of series in a time range. This only creates tombstones in the TSDB; actual deletion happens on the next compaction. Requires --web.enable-admin-api flag."
+        },
+        {
+          "info": {
+            "name": "Prometheus Get TSDB statistics",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://{host}:{port}/api/v1/status/tsdb",
+            "params": [
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Maximum number of items to return."
+              }
+            ]
+          },
+          "docs": "Returns a set of properties about the Prometheus TSDB including the top series by label count, top chunks by label, most frequently changing metrics, and head statistics."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Targets",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Prometheus Get scrape targets",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://{host}:{port}/api/v1/targets",
+            "params": [
+              {
+                "name": "state",
+                "value": "",
+                "type": "query",
+                "description": "Filter targets by state."
+              }
+            ]
+          },
+          "docs": "Returns an overview of the current state of the Prometheus target discovery including active and dropped targets, their labels, and scrape health status."
+        },
+        {
+          "info": {
+            "name": "Prometheus Get target metadata",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://{host}:{port}/api/v1/targets/metadata",
+            "params": [
+              {
+                "name": "match_target",
+                "value": "",
+                "type": "query",
+                "description": "Label selectors matching target labels."
+              },
+              {
+                "name": "metric",
+                "value": "",
+                "type": "query",
+                "description": "Metric name to filter by."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Maximum number of items to return."
+              }
+            ]
+          },
+          "docs": "Returns metadata about metrics for individual targets. Allows filtering by target label matchers and metric name to retrieve per-target metadata contributed by scrape pools."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Rules",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Prometheus Get rules",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://{host}:{port}/api/v1/rules",
+            "params": [
+              {
+                "name": "type",
+                "value": "",
+                "type": "query",
+                "description": "Filter by rule type."
+              },
+              {
+                "name": "rule_name[]",
+                "value": "",
+                "type": "query",
+                "description": "Filter by rule name."
+              },
+              {
+                "name": "rule_group[]",
+                "value": "",
+                "type": "query",
+                "description": "Filter by rule group name."
+              },
+              {
+                "name": "file[]",
+                "value": "",
+                "type": "query",
+                "description": "Filter by the file the rule group was loaded from."
+              }
+            ]
+          },
+          "docs": "Returns a list of alerting and recording rules currently loaded. Rules include the rule expression, their last evaluation time, and any active alerts for alerting rules."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Alerts",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Prometheus Get alerts",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://{host}:{port}/api/v1/alerts"
+          },
+          "docs": "Returns a list of all active alerts currently firing or pending in Prometheus. Alerts include their labels, state, and timestamps."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Status",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Prometheus Get Alertmanager discovery status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://{host}:{port}/api/v1/alertmanagers"
+          },
+          "docs": "Returns an overview of the current state of the Prometheus Alertmanager service discovery including active and dropped Alertmanager instances."
+        },
+        {
+          "info": {
+            "name": "Prometheus Get server configuration",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://{host}:{port}/api/v1/status/config"
+          },
+          "docs": "Returns the currently loaded configuration file as a YAML string. Includes the full Prometheus configuration including scrape configs, rule files, and alerting configuration."
+        },
+        {
+          "info": {
+            "name": "Prometheus Get command-line flags",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://{host}:{port}/api/v1/status/flags"
+          },
+          "docs": "Returns the values of all command-line flag settings currently in use by the Prometheus server."
+        },
+        {
+          "info": {
+            "name": "Prometheus Get build information",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://{host}:{port}/api/v1/status/buildinfo"
+          },
+          "docs": "Returns build and version information for the Prometheus server, including version, revision, branch, build user, build date, and Go version."
+        },
+        {
+          "info": {
+            "name": "Prometheus Get runtime information",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://{host}:{port}/api/v1/status/runtimeinfo"
+          },
+          "docs": "Returns various runtime properties about the Prometheus server including the start time, storage retention, TSDB stats summary, and corruptible chunk count."
+        },
+        {
+          "info": {
+            "name": "Prometheus Get WAL replay status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://{host}:{port}/api/v1/status/walreplay"
+          },
+          "docs": "Returns the current status of the WAL (Write-Ahead Log) replay. WAL replay occurs during Prometheus startup to recover data from the most recent checkpoint."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

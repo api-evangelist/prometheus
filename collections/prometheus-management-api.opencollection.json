@@ -1,0 +1,131 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Prometheus Management API",
+    "version": "v3.1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Lifecycle",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Prometheus Reload configuration",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "http://{host}:{port}/-/reload"
+          },
+          "docs": "Triggers a reload of the Prometheus configuration file and rule files. Returns 200 when the reload is successful and 500 if the reload fails. Requires --web.enable-lifecycle flag. Also triggered by sending SIGHUP to the Prometheus process."
+        },
+        {
+          "info": {
+            "name": "Prometheus Graceful shutdown",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "http://{host}:{port}/-/quit"
+          },
+          "docs": "Triggers a graceful shutdown of the Prometheus server. Returns 200 immediately while the shutdown proceeds asynchronously. Requires --web.enable-lifecycle flag. Also triggered by sending SIGTERM to the Prometheus process."
+        },
+        {
+          "info": {
+            "name": "Prometheus Health check",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://{host}:{port}/-/healthy"
+          },
+          "docs": "Returns 200 when Prometheus is healthy and ready to serve requests. Returns 500 if Prometheus is not ready. Used for Kubernetes liveness probes."
+        },
+        {
+          "info": {
+            "name": "Prometheus Readiness check",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://{host}:{port}/-/ready"
+          },
+          "docs": "Returns 200 when Prometheus is ready to serve traffic, meaning it has finished startup and is serving queries. Returns 503 if not yet ready. Used for Kubernetes readiness probes."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Admin",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Prometheus Create TSDB snapshot",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "http://{host}:{port}/api/v1/admin/tsdb/snapshot",
+            "params": [
+              {
+                "name": "skip_head",
+                "value": "",
+                "type": "query",
+                "description": "Skip data present in the head block if true. Defaults to false."
+              }
+            ]
+          },
+          "docs": "Creates a snapshot of all current data into the snapshots/ directory under the data directory and returns the directory name. Requires --web.enable-admin-api flag."
+        },
+        {
+          "info": {
+            "name": "Prometheus Delete series",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "http://{host}:{port}/api/v1/admin/tsdb/delete_series",
+            "params": [
+              {
+                "name": "match[]",
+                "value": "",
+                "type": "query",
+                "description": "Repeated label matcher argument to select series to delete."
+              },
+              {
+                "name": "start",
+                "value": "",
+                "type": "query",
+                "description": "Start of the time range to delete. Defaults to minimum time."
+              },
+              {
+                "name": "end",
+                "value": "",
+                "type": "query",
+                "description": "End of the time range to delete. Defaults to maximum time."
+              }
+            ]
+          },
+          "docs": "Deletes data for a selection of series in a time range by creating tombstones. The series data is not immediately removed but marked for deletion during the next compaction cycle. Requires --web.enable-admin-api flag."
+        },
+        {
+          "info": {
+            "name": "Prometheus Clean tombstones",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "http://{host}:{port}/api/v1/admin/tsdb/clean_tombstones"
+          },
+          "docs": "Removes the deleted data from disk and cleans up existing tombstones. This operation triggers a compaction on all blocks with tombstones. Requires --web.enable-admin-api flag."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
