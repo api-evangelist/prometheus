@@ -131,6 +131,8 @@ apis:
       - type: Reference
         url: https://prometheus.io/docs/instrumenting/writing_clientlibs/
 common:
+  - type: DomainSecurity
+    url: security/prometheus-domain-security.yml
   - type: JSONLD
     url: json-ld/prometheus-context.jsonld
   - type: JSONSchema
