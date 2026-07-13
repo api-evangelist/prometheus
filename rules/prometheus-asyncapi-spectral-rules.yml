@@ -1,0 +1,33 @@
+# prometheus — AsyncAPI Spectral ruleset (strengthened)
+# Plain Spectral. Rules measured from this provider's own AsyncAPI event
+# conventions by strengthen_asyncapi.py, then self-validated against the spec.
+#
+# Provenance:
+#   - server-secure-protocol: 100% of servers already secure
+#   - payload-property-casing: camel @ 56% (n=27)
+extends:
+  - spectral:asyncapi
+rules:
+  server-secure-protocol:
+    description: Servers should use a secure protocol (this API's convention).
+    severity: error
+    given: $.servers[*].protocol
+    then:
+      function: pattern
+      functionOptions:
+        match: ^(amqps|https|ibmmq|jms|kafka-secure|mqtts|secure-mqtt|stomps|wss)$
+  payload-property-casing:
+    description: Message payload properties should be camelCase (the dominant convention in this API).
+    severity: info
+    given: $.components.schemas[*].properties
+    then:
+      field: '@key'
+      function: pattern
+      functionOptions:
+        match: ^[a-z][A-Za-z0-9]*$
+  no-empty-descriptions:
+    description: Descriptions must not be empty strings.
+    severity: warn
+    given: $..description
+    then:
+      function: truthy
