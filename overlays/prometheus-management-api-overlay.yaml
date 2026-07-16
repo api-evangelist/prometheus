@@ -1,0 +1,15 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for Prometheus Management API
+  version: 1.0.0
+extends: openapi/prometheus-management-api-openapi.yml
+actions:
+  - target: $.info
+    update:
+      x-apievangelist-provider: prometheus
+      x-apievangelist-api: prometheus-management-api
+      x-apievangelist-artifacts:
+        conventions: conventions/prometheus-conventions.yml
+        errors: errors/prometheus-problem-types.yml
+        lifecycle: lifecycle/prometheus-lifecycle.yml
+        authentication: authentication/prometheus-authentication.yml

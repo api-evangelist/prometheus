@@ -1,0 +1,59 @@
+generated: '2026-06-20'
+method: derived
+status: candidate
+source: openapi/prometheus-http-api-openapi.yml
+notes: >-
+  The Prometheus project publishes no official/first-party MCP server. The tools below
+  are a candidate surface DERIVED one-per-operation from the Prometheus HTTP API OpenAPI,
+  scoped to the read/query operations most useful to an agent. Several third-party MCP
+  servers exist (listed under community_servers) but none are maintained by the
+  Prometheus project.
+server:
+  name: prometheus
+  transport: http
+  url: null
+tools:
+  - name: query_instant
+    description: Evaluate a PromQL expression at a single point in time.
+    source_operation: openapi/prometheus-http-api-openapi.yml#queryInstant
+  - name: query_range
+    description: Evaluate a PromQL expression over a time range with a fixed step.
+    source_operation: openapi/prometheus-http-api-openapi.yml#queryRange
+  - name: query_series
+    description: Find series by label matchers within a time range.
+    source_operation: openapi/prometheus-http-api-openapi.yml#querySeries
+  - name: get_label_names
+    description: List label names present in the TSDB.
+    source_operation: openapi/prometheus-http-api-openapi.yml#getLabelNames
+  - name: get_label_values
+    description: List values for a given label.
+    source_operation: openapi/prometheus-http-api-openapi.yml#getLabelValues
+  - name: get_metric_metadata
+    description: Retrieve metric metadata (type, help, unit) scraped from targets.
+    source_operation: openapi/prometheus-http-api-openapi.yml#getMetricMetadata
+  - name: get_targets
+    description: List scrape targets and their current health status.
+    source_operation: openapi/prometheus-http-api-openapi.yml#getTargets
+  - name: get_rules
+    description: Retrieve loaded recording and alerting rules.
+    source_operation: openapi/prometheus-http-api-openapi.yml#getRules
+  - name: get_alerts
+    description: List currently firing and pending alerts.
+    source_operation: openapi/prometheus-http-api-openapi.yml#getAlerts
+  - name: get_tsdb_status
+    description: Retrieve TSDB cardinality and head statistics.
+    source_operation: openapi/prometheus-http-api-openapi.yml#getTsdbStatus
+  - name: get_build_info
+    description: Retrieve Prometheus server build and version information.
+    source_operation: openapi/prometheus-http-api-openapi.yml#getBuildInfo
+community_servers:
+  - name: pab1it0/prometheus-mcp-server
+    url: https://github.com/pab1it0/prometheus-mcp-server
+    official: false
+  - name: idanfishman/prometheus-mcp
+    url: https://github.com/idanfishman/prometheus-mcp
+    official: false
+  - name: aws/amazon-managed-prometheus-mcp
+    url: https://aws.amazon.com/blogs/mt/prometheus-mcp-server-ai-driven-monitoring-intelligence-for-aws-users/
+    official: false
+    note: Amazon Managed Service for Prometheus MCP server.

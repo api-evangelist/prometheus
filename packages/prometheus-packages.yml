@@ -1,0 +1,71 @@
+generated: '2026-06-20'
+method: searched
+source: https://prometheus.io/docs/instrumenting/clientlibs/
+description: >-
+  Official Prometheus client instrumentation libraries and first-party command-line
+  binaries. Client libraries implement the Prometheus metric types (Counter, Gauge,
+  Histogram, Summary) and expose metrics over an HTTP endpoint for scraping. Only the
+  five libraries under github.com/prometheus/* are official; many community libraries
+  exist for other languages.
+packages:
+  - language: go
+    registry: pkg.go.dev
+    name: github.com/prometheus/client_golang
+    url: https://pkg.go.dev/github.com/prometheus/client_golang
+    install: go get github.com/prometheus/client_golang
+    source: https://github.com/prometheus/client_golang
+    official: true
+  - language: java
+    registry: maven
+    name: io.prometheus:prometheus-metrics-core
+    url: https://central.sonatype.com/artifact/io.prometheus/prometheus-metrics-core
+    install: implementation 'io.prometheus:prometheus-metrics-core'
+    source: https://github.com/prometheus/client_java
+    official: true
+  - language: python
+    registry: pypi
+    name: prometheus-client
+    url: https://pypi.org/project/prometheus-client/
+    install: pip install prometheus-client
+    source: https://github.com/prometheus/client_python
+    official: true
+  - language: ruby
+    registry: rubygems
+    name: prometheus-client
+    url: https://rubygems.org/gems/prometheus-client
+    install: gem install prometheus-client
+    source: https://github.com/prometheus/client_ruby
+    official: true
+  - language: rust
+    registry: crates.io
+    name: prometheus-client
+    url: https://crates.io/crates/prometheus-client
+    install: cargo add prometheus-client
+    source: https://github.com/prometheus/client_rust
+    official: true
+binaries:
+  - name: prometheus
+    description: Prometheus server binary (scraper, TSDB, PromQL, HTTP API).
+    distribution: github-releases
+    url: https://github.com/prometheus/prometheus/releases
+    docker: prom/prometheus
+    official: true
+  - name: promtool
+    description: >-
+      First-party CLI shipped alongside the server for config/rule validation,
+      querying, TSDB inspection, and PromQL formatting. See cli/prometheus-cli.yml.
+    distribution: github-releases
+    url: https://github.com/prometheus/prometheus/releases
+    official: true
+  - name: pushgateway
+    description: Prometheus Pushgateway server binary for batch-job metrics.
+    distribution: github-releases
+    url: https://github.com/prometheus/pushgateway/releases
+    docker: prom/pushgateway
+    official: true
+  - name: alertmanager
+    description: Prometheus Alertmanager server binary for alert routing and silencing.
+    distribution: github-releases
+    url: https://github.com/prometheus/alertmanager/releases
+    docker: prom/alertmanager
+    official: true

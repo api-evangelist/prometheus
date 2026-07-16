@@ -1,0 +1,52 @@
+generated: '2026-06-20'
+method: derived
+source: openapi/, https://prometheus.io/docs/prometheus/latest/stability/
+notes: >-
+  Which cross-cutting / industry standards the Prometheus APIs conform to, derived from
+  the OpenAPI specs and the project's published exposition and remote-write standards.
+  Note: Prometheus also runs its own "Prometheus Conformance Program" that certifies
+  third-party products as Prometheus-compatible — that is a separate, vendor-facing
+  effort from this per-API conformance assertion.
+standards:
+  - id: openmetrics
+    conforms: true
+    evidence: >-
+      Prometheus exposition and the client libraries implement the OpenMetrics text
+      format; promtool can import OpenMetrics into TSDB blocks.
+  - id: prometheus-remote-write-1.0
+    conforms: true
+    evidence: openapi + grpc/prometheus-remote.proto — Snappy-compressed protobuf remote write.
+  - id: prometheus-remote-write-2.0
+    conforms: true
+    evidence: grpc/prometheus-write-v2-types.proto (io.prometheus.write.v2).
+  - id: promql
+    conforms: true
+    evidence: HTTP API query/query_range operations evaluate PromQL expressions.
+  - id: oauth2
+    conforms: false
+    evidence: No oauth2 securityScheme in any OpenAPI; Prometheus ships no built-in auth.
+  - id: oidc
+    conforms: false
+    evidence: No openIdConnect securityScheme; delegated to reverse proxy if used.
+  - id: rfc9457-problem-details
+    conforms: false
+    evidence: >-
+      Errors use the Prometheus JSON envelope {status, errorType, error, warnings}
+      with application/json, not application/problem+json.
+  - id: json-api
+    conforms: false
+    evidence: Custom status/data envelope, not JSON:API.
+  - id: pagination
+    conforms: false
+    evidence: >-
+      Query and metadata endpoints return full result sets; no cursor/offset pagination
+      (limit parameters exist on some metadata endpoints but no page tokens).
+  - id: idempotency
+    conforms: false
+    evidence: No Idempotency-Key header; write paths (Pushgateway PUT, delete_series) rely on HTTP method semantics.
+  - id: fhir-r4
+    conforms: false
+  - id: scim
+    conforms: false
+  - id: odata
+    conforms: false

@@ -1,0 +1,80 @@
+generated: '2026-06-20'
+method: derived
+source: openapi/prometheus-http-api-openapi.yml, openapi/prometheus-alertmanager-api-openapi.yml
+description: >-
+  Entity-relationship view derived from the Prometheus HTTP API and Alertmanager API
+  OpenAPI schemas. Prometheus has no id-prefixed resource identifiers (data is keyed by
+  metric name + label set); relationships are conceptual, drawn from schema $ref links and
+  the label/rule/alert domain model.
+entities:
+  - name: TimeSeries
+    description: A stream of timestamped samples uniquely identified by a metric name and a set of labels.
+    identity: metric name + label set
+    source: openapi/prometheus-http-api-openapi.yml
+  - name: Label
+    description: A key/value pair that qualifies a time series (e.g. job, instance).
+    source: openapi/prometheus-http-api-openapi.yml
+  - name: Target
+    description: A scrape endpoint discovered or configured for Prometheus to collect metrics from.
+    identity: instance + job labels
+    source: openapi/prometheus-http-api-openapi.yml
+  - name: RuleGroup
+    description: A named collection of recording and alerting rules evaluated together at an interval.
+    source: openapi/prometheus-http-api-openapi.yml
+  - name: Rule
+    description: A recording rule (precomputed series) or alerting rule (fires alerts on a PromQL condition).
+    source: openapi/prometheus-http-api-openapi.yml
+  - name: Alert
+    description: An active (pending or firing) alert produced by an alerting rule.
+    source: openapi/prometheus-http-api-openapi.yml
+  - name: Alertmanager
+    description: A configured Alertmanager instance that Prometheus dispatches alerts to.
+    source: openapi/prometheus-http-api-openapi.yml
+  - name: Silence
+    description: An Alertmanager mute rule that suppresses matching alerts for a time window.
+    identity: silence id (UUID)
+    source: openapi/prometheus-alertmanager-api-openapi.yml
+  - name: Receiver
+    description: An Alertmanager notification destination (email, Slack, PagerDuty, webhook, etc.).
+    source: openapi/prometheus-alertmanager-api-openapi.yml
+relationships:
+  - from: TimeSeries
+    to: Label
+    kind: has_many
+    via: labels
+  - from: Target
+    to: Label
+    kind: has_many
+    via: labels
+  - from: Target
+    to: TimeSeries
+    kind: has_many
+    via: scrape
+  - from: RuleGroup
+    to: Rule
+    kind: has_many
+    via: rules
+  - from: Rule
+    to: Alert
+    kind: has_many
+    via: alerts
+  - from: Alert
+    to: Label
+    kind: has_many
+    via: labels
+  - from: Prometheus
+    to: Alertmanager
+    kind: has_many
+    via: alertmanagers
+  - from: Alertmanager
+    to: Silence
+    kind: has_many
+    via: silences
+  - from: Alertmanager
+    to: Receiver
+    kind: has_many
+    via: receivers
+  - from: Silence
+    to: Alert
+    kind: has_many
+    via: matchers

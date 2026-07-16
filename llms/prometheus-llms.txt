@@ -1,0 +1,40 @@
+# Prometheus
+
+> Open-source systems monitoring and alerting toolkit originally built at SoundCloud and now a graduated CNCF project. Prometheus scrapes and stores metrics as time series, and provides the PromQL query language for analysis, alerting, and dashboarding. This is an API Evangelist catalog profile; llms.txt is generated from the repo (the project does not publish its own).
+
+## APIs
+
+- [Prometheus HTTP API](https://prometheus.io/docs/prometheus/latest/querying/api/): Instant and range PromQL queries, label/series/metadata lookup, targets, rules, alerts, and TSDB status under /api/v1.
+- [Prometheus Management API](https://prometheus.io/docs/prometheus/latest/management_api/): Administrative lifecycle endpoints — config reload, TSDB snapshot, delete series, clean tombstones, graceful shutdown (require --web.enable-lifecycle / --web.enable-admin-api).
+- [Prometheus Pushgateway API](https://github.com/prometheus/pushgateway): Accepts metrics pushed from short-lived batch jobs, grouped by job and labels.
+- [Prometheus Alertmanager API](https://prometheus.io/docs/alerting/latest/alertmanager/): Alertmanager v2 API for alert status, silences, receivers, and cluster status.
+- [Prometheus Remote Write API](https://prometheus.io/docs/specs/prw/remote_write_spec/): Protocol for shipping time series to remote storage via Snappy-compressed protobuf over HTTP POST.
+- [Prometheus Client Libraries](https://prometheus.io/docs/instrumenting/clientlibs/): Official instrumentation libraries for Go, Java/Scala, Python, Ruby, and Rust.
+
+## Specs
+
+- [HTTP API OpenAPI 3.1](https://raw.githubusercontent.com/api-evangelist/prometheus/refs/heads/main/openapi/prometheus-http-api-openapi.yml)
+- [Management API OpenAPI](https://raw.githubusercontent.com/api-evangelist/prometheus/refs/heads/main/openapi/prometheus-management-api-openapi.yml)
+- [Pushgateway API OpenAPI](https://raw.githubusercontent.com/api-evangelist/prometheus/refs/heads/main/openapi/prometheus-pushgateway-api-openapi.yml)
+- [Alertmanager API OpenAPI](https://raw.githubusercontent.com/api-evangelist/prometheus/refs/heads/main/openapi/prometheus-alertmanager-api-openapi.yml)
+- [Alertmanager webhook AsyncAPI](https://raw.githubusercontent.com/api-evangelist/prometheus/refs/heads/main/asyncapi/prometheus-alertmanager-webhook-asyncapi.yml)
+- [Remote Write protobuf (v1)](https://raw.githubusercontent.com/api-evangelist/prometheus/refs/heads/main/grpc/prometheus-remote.proto)
+- [Remote Write protobuf types (v1)](https://raw.githubusercontent.com/api-evangelist/prometheus/refs/heads/main/grpc/prometheus-types.proto)
+- [Remote Write protobuf types (v2)](https://raw.githubusercontent.com/api-evangelist/prometheus/refs/heads/main/grpc/prometheus-write-v2-types.proto)
+- [Metrics JSON Schema](https://raw.githubusercontent.com/api-evangelist/prometheus/refs/heads/main/json-schema/prometheus-metrics-schema.json)
+
+## Docs
+
+- [Documentation](https://prometheus.io/docs/)
+- [Getting Started](https://prometheus.io/docs/introduction/getting_started/)
+- [API stability guarantees](https://prometheus.io/docs/prometheus/latest/stability/)
+- [promtool CLI reference](https://prometheus.io/docs/prometheus/latest/command-line/promtool/)
+- [Instrumenting client libraries](https://prometheus.io/docs/instrumenting/clientlibs/)
+- [Blog](https://prometheus.io/blog/)
+- [Community](https://prometheus.io/community/)
+
+## Source
+
+- [GitHub organization](https://github.com/prometheus)
+- [prometheus/prometheus](https://github.com/prometheus/prometheus)
+- [Releases / changelog](https://github.com/prometheus/prometheus/releases)

@@ -1,0 +1,47 @@
+generated: '2026-06-20'
+method: searched
+source: https://prometheus.io/docs/prometheus/latest/command-line/promtool/
+name: promtool
+description: >-
+  First-party command-line tool shipped with the Prometheus server for validating
+  configuration and rules, linting metrics, running one-off queries against a server,
+  inspecting and manipulating the TSDB, and formatting PromQL. The binary is catalogued in
+  packages/prometheus-packages.yml.
+install:
+  - method: github-releases
+    detail: Bundled in the prometheus release tarball at https://github.com/prometheus/prometheus/releases
+  - method: docker
+    detail: docker run --rm prom/prometheus promtool --help
+  - method: homebrew
+    detail: brew install prometheus (installs prometheus and promtool)
+commands:
+  - group: check
+    description: Validate configuration, web-config, rules, metrics, and service discovery.
+    subcommands: [service-discovery, config, web-config, healthy, ready, rules, metrics]
+  - group: query
+    description: Run one-off queries against a running Prometheus server.
+    subcommands: [instant, range, series, labels, analyze]
+  - group: debug
+    description: Fetch debugging information (pprof, metrics) from a server.
+    subcommands: [pprof, metrics, all]
+  - group: push
+    description: Push metrics to a Pushgateway.
+    subcommands: [metrics]
+  - group: test
+    description: Unit-test recording and alerting rules.
+    subcommands: [rules]
+  - group: tsdb
+    description: Inspect and manipulate the on-disk time series database.
+    subcommands: [bench, analyze, list, dump, dump-openmetrics, create-blocks-from]
+  - group: promql
+    description: Format and edit PromQL expressions.
+    subcommands: [format, label-matchers]
+key_flows:
+  - name: CI config validation
+    detail: promtool check config prometheus.yml && promtool check rules rules/*.yml
+  - name: Rule unit testing
+    detail: promtool test rules tests/*.yml
+  - name: Metric linting
+    detail: cat metrics.txt | promtool check metrics
+  - name: Backfill from OpenMetrics
+    detail: promtool tsdb create-blocks-from openmetrics data.om ./data

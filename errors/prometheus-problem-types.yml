@@ -1,0 +1,80 @@
+generated: '2026-06-20'
+method: derived
+source: openapi/prometheus-http-api-openapi.yml, openapi/prometheus-management-api-openapi.yml, openapi/prometheus-pushgateway-api-openapi.yml, openapi/prometheus-alertmanager-api-openapi.yml
+format: prometheus-json-envelope
+docs: https://prometheus.io/docs/prometheus/latest/querying/api/
+envelope:
+  media_type: application/json
+  description: >-
+    Prometheus does not use RFC 9457 problem+json. Errors are returned in the standard
+    JSON envelope with status "error" plus an errorType category and a human-readable
+    error message; warnings may accompany successful or failed responses.
+  fields:
+    status: Always "error" for failures.
+    errorType: Category of the error (see error_types below).
+    error: Human-readable error message.
+    warnings: Array of non-fatal warning strings.
+error_types:
+  - type: timeout
+    meaning: The query exceeded the configured or requested evaluation timeout.
+  - type: canceled
+    meaning: The request was canceled (client disconnect or server shutdown).
+  - type: execution
+    meaning: An error occurred while executing the query against the TSDB.
+  - type: bad_data
+    meaning: The request parameters or PromQL expression were invalid.
+  - type: internal
+    meaning: An internal server error occurred.
+  - type: unavailable
+    meaning: The server or a required subsystem is temporarily unavailable.
+  - type: not_found
+    meaning: The requested resource (e.g. a silence) does not exist.
+problems:
+  - status: 400
+    errorType: bad_data
+    title: Bad request — invalid query expression or parameters
+    source_operation: openapi/prometheus-http-api-openapi.yml#queryInstant
+  - status: 422
+    errorType: execution
+    title: Unprocessable entity — expression cannot be executed
+    source_operation: openapi/prometheus-http-api-openapi.yml#queryInstant
+  - status: 503
+    errorType: timeout
+    title: Query timed out or was aborted
+    source_operation: openapi/prometheus-http-api-openapi.yml#queryInstant
+  - status: 403
+    errorType: internal
+    title: Forbidden — admin API disabled (requires --web.enable-admin-api)
+    source_operation: openapi/prometheus-http-api-openapi.yml#deleteSeries
+  - status: 400
+    errorType: bad_data
+    title: Bad request — invalid label matchers or time bounds
+    source_operation: openapi/prometheus-http-api-openapi.yml#querySeries
+  - status: 404
+    errorType: not_found
+    title: Series not found
+    source_operation: openapi/prometheus-http-api-openapi.yml#getMetricMetadata
+  - status: 500
+    errorType: internal
+    title: Configuration reload failed
+    source_operation: openapi/prometheus-management-api-openapi.yml#reloadConfig
+  - status: 503
+    errorType: unavailable
+    title: Server not healthy
+    source_operation: openapi/prometheus-management-api-openapi.yml#checkHealth
+  - status: 403
+    errorType: internal
+    title: Forbidden — lifecycle/admin API disabled
+    source_operation: openapi/prometheus-management-api-openapi.yml#createTsdbSnapshot
+  - status: 400
+    errorType: bad_data
+    title: Bad request — malformed metric text or grouping labels
+    source_operation: openapi/prometheus-pushgateway-api-openapi.yml#pushJobMetrics
+  - status: 404
+    errorType: not_found
+    title: Silence not found
+    source_operation: openapi/prometheus-alertmanager-api-openapi.yml#getSilence
+  - status: 500
+    errorType: internal
+    title: Internal Alertmanager error
+    source_operation: openapi/prometheus-alertmanager-api-openapi.yml#createSilence

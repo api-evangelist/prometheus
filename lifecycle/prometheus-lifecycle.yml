@@ -1,0 +1,39 @@
+generated: '2026-06-20'
+method: searched
+source: https://prometheus.io/docs/prometheus/latest/stability/
+versioning:
+  scheme: uri-path
+  current: v1
+  docs: https://prometheus.io/docs/prometheus/latest/querying/api/
+  notes: >-
+    The HTTP API is served under /api/v1 and is stable within a Prometheus major
+    version; non-breaking additions land under the same path. Alertmanager exposes a
+    separate /api/v2. Server releases follow semantic versioning (current major is 3.x).
+stability:
+  policy_url: https://prometheus.io/docs/prometheus/latest/stability/
+  summary: >-
+    Prometheus promises API stability within a major version and avoids breaking changes
+    for key features. Cosmetic, experimental, or third-party-dependent features are
+    excluded. The /alerts and /rules HTTP API endpoints carry weaker guarantees than the
+    overarching v1 API because they are newer.
+  experimental_features_excluded: true
+deprecation:
+  policy_url: https://prometheus.io/docs/prometheus/latest/stability/
+  sunset_header: false
+  deprecation_header: false
+  notes: >-
+    Breaking changes are reserved for major version bumps and documented in the migration
+    guide. Prometheus does not emit RFC 8594 Sunset/Deprecation HTTP headers.
+migration_guide: https://prometheus.io/docs/prometheus/latest/migration/
+sla:
+  url: null
+  uptime_target: null
+  notes: Prometheus is self-hosted open-source software; there is no hosted SLA or uptime target.
+status_page: null
+support:
+  lts: true
+  notes: >-
+    Prometheus designates periodic Long-Term Support (LTS) minor releases (e.g. 3.13 LTS)
+    that receive extended bugfix and security backports.
+  eol_reference: https://endoflife.date/prometheus
+deprecated_operations: []

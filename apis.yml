@@ -13,7 +13,7 @@ tags:
   - Time Series
 url: https://raw.githubusercontent.com/api-evangelist/prometheus/refs/heads/main/apis.yml
 created: '2024-01-01'
-modified: '2026-05-19'
+modified: '2026-06-20'
 specificationVersion: '0.19'
 apis:
   - aid: prometheus:prometheus-http-api
@@ -33,6 +33,8 @@ apis:
         url: https://prometheus.io/docs/prometheus/latest/querying/api/
       - type: OpenAPI
         url: openapi/prometheus-http-api-openapi.yml
+      - type: Overlay
+        url: overlays/prometheus-http-api-overlay.yaml
       - type: GitHubRepository
         url: https://github.com/prometheus/prometheus
       - type: ChangeLog
@@ -55,6 +57,8 @@ apis:
         url: https://prometheus.io/docs/prometheus/latest/management_api/
       - type: OpenAPI
         url: openapi/prometheus-management-api-openapi.yml
+      - type: Overlay
+        url: overlays/prometheus-management-api-overlay.yaml
   - aid: prometheus:prometheus-pushgateway-api
     name: Prometheus Pushgateway API
     description: >-
@@ -71,6 +75,8 @@ apis:
         url: https://github.com/prometheus/pushgateway/blob/master/README.md
       - type: OpenAPI
         url: openapi/prometheus-pushgateway-api-openapi.yml
+      - type: Overlay
+        url: overlays/prometheus-pushgateway-api-overlay.yaml
       - type: GitHubRepository
         url: https://github.com/prometheus/pushgateway
       - type: ChangeLog
@@ -91,6 +97,8 @@ apis:
         url: https://prometheus.io/docs/alerting/latest/alertmanager/
       - type: OpenAPI
         url: openapi/prometheus-alertmanager-api-openapi.yml
+      - type: Overlay
+        url: overlays/prometheus-alertmanager-api-overlay.yaml
       - type: AsyncAPI
         url: asyncapi/prometheus-alertmanager-webhook-asyncapi.yml
       - type: GitHubRepository
@@ -113,6 +121,12 @@ apis:
     properties:
       - type: Documentation
         url: https://prometheus.io/docs/specs/prw/remote_write_spec/
+      - type: Protobuf
+        url: grpc/prometheus-remote.proto
+      - type: Protobuf
+        url: grpc/prometheus-types.proto
+      - type: Protobuf
+        url: grpc/prometheus-write-v2-types.proto
   - aid: prometheus:prometheus-client-libraries
     name: Prometheus Client Libraries
     description: >-
@@ -135,6 +149,28 @@ common:
     url: agentic-access/prometheus-agentic-access.yml
   - type: DomainSecurity
     url: security/prometheus-domain-security.yml
+  - type: Packages
+    url: packages/prometheus-packages.yml
+  - type: MCPServer
+    url: mcp/prometheus-mcp.yml
+  - type: LLMsTxt
+    url: llms/prometheus-llms.txt
+  - type: Conformance
+    url: conformance/prometheus-conformance.yml
+  - type: ErrorCatalog
+    url: errors/prometheus-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/prometheus-lifecycle.yml
+  - type: Authentication
+    url: authentication/prometheus-authentication.yml
+  - type: Conventions
+    url: conventions/prometheus-conventions.yml
+  - type: ChangeLog
+    url: changelog/prometheus-changelog.yml
+  - type: CLI
+    url: cli/prometheus-cli.yml
+  - type: DataModel
+    url: data-model/prometheus-data-model.yml
   - type: JSONLD
     url: json-ld/prometheus-context.jsonld
   - type: JSONSchema

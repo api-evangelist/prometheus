@@ -1,0 +1,46 @@
+generated: '2026-06-20'
+method: searched
+source: https://github.com/prometheus/prometheus/releases
+scheme: semver
+current: 3.13.1
+changelog_url: https://github.com/prometheus/prometheus/releases
+changelog_file: https://github.com/prometheus/prometheus/blob/main/CHANGELOG.md
+window: recent
+entries:
+  - version: 3.13.1
+    date: '2026-07-10'
+    type: patch
+    breaking: false
+    highlights: Bugfix release for the 3.13 LTS line addressing head-chunk cache issues in TSDB range queries.
+  - version: 3.13.0
+    date: '2026-07-01'
+    type: minor
+    lts: true
+    breaking: true
+    highlights: >-
+      LTS release with PromQL, service discovery, and TSDB enhancements. Breaking:
+      credentials no longer forwarded on cross-host redirects; rule group pagination
+      tokens now use SHA-256.
+  - version: 3.12.0
+    date: '2026-05-28'
+    type: minor
+    breaking: false
+    highlights: >-
+      New experimental PromQL functions (start, end, range, step); DigitalOcean and
+      Outscale service discovery; TSDB performance work; security fixes for snappy
+      decompression DoS and STACKIT secret exposure.
+  - version: 3.11.3
+    date: '2026-04-27'
+    type: patch
+    breaking: false
+    highlights: Security patch — AzureAD OAuth exposure, snappy decode vulnerabilities, and UI XSS fixes.
+  - version: 3.5.5
+    date: '2026-07-09'
+    type: patch
+    breaking: false
+    highlights: Security update fixing CVE-2026-53606 in a bundled dependency (older 3.5 line).
+  - version: 3.5.4
+    date: '2026-06-17'
+    type: patch
+    breaking: false
+    highlights: Security fixes for credential exposure in STACKIT service discovery and dependency vulnerabilities.

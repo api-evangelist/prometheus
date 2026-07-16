@@ -1,0 +1,54 @@
+generated: '2026-06-20'
+method: derived
+source: openapi/, https://prometheus.io/docs/prometheus/latest/querying/api/
+description: >-
+  Cross-cutting request/response semantics for the Prometheus HTTP API, derived from the
+  OpenAPI specs and the query API documentation.
+authentication:
+  style: none-built-in
+  detail: See authentication/prometheus-authentication.yml — no app-level auth by default; optional web-config basic-auth/TLS or a reverse proxy.
+response_envelope:
+  media_type: application/json
+  shape: "{ status, data, errorType?, error?, warnings? }"
+  success_status: success
+  error_status: error
+  detail: See errors/prometheus-problem-types.yml for errorType categories.
+request_encoding:
+  get: query-string parameters
+  post: application/x-www-form-urlencoded (query/query_range accept POST when params exceed URL length)
+  remote_write: "Snappy-compressed protobuf body with Content-Encoding: snappy (see grpc/)."
+pagination:
+  style: none
+  detail: >-
+    Query and metadata endpoints return complete result sets. Some metadata endpoints
+    (label names/values, series) accept a `limit` parameter to cap results, but there are
+    no cursors or page tokens.
+idempotency:
+  header: null
+  detail: >-
+    No Idempotency-Key support. Write semantics follow HTTP methods — Pushgateway PUT
+    replaces a group, POST merges, DELETE removes; delete_series is inherently idempotent.
+metadata:
+  detail: Metric metadata (type, help, unit) is queryable via /api/v1/metadata and /api/v1/targets/metadata.
+request_tracing:
+  header: null
+  detail: No standard request-id/correlation header is defined by the API.
+versioning:
+  style: uri-path
+  detail: /api/v1 (Prometheus & Pushgateway); Alertmanager uses /api/v2. See lifecycle/prometheus-lifecycle.yml.
+rate_limiting:
+  signaling: none
+  detail: >-
+    No RateLimit headers or 429 responses in the specs. Query load is bounded server-side
+    by --query.max-concurrency and --query.timeout rather than per-client quotas. See
+    rate-limits/prometheus-rate-limits.yml.
+content_negotiation:
+  formats: [application/json]
+  detail: >-
+    HTTP API responses are JSON. The separate scrape/exposition surface uses the
+    OpenMetrics/Prometheus text format, and remote write uses protobuf.
+cross_reference:
+  errors: errors/prometheus-problem-types.yml
+  lifecycle: lifecycle/prometheus-lifecycle.yml
+  authentication: authentication/prometheus-authentication.yml
+  rate_limits: rate-limits/prometheus-rate-limits.yml
