@@ -1,0 +1,151 @@
+arazzo: 1.0.1
+info:
+  title: Prometheus Discover and Query a Metric
+  summary: Walk from "what metrics exist?" to an evaluated PromQL result.
+  description: >-
+    The onboarding path every new Prometheus integrator takes. The workflow
+    lists the metric names present in the TSDB, reads the type and help text for
+    the metric of interest, enumerates the label names that metric carries,
+    resolves the concrete series behind a selector, and finally evaluates a
+    PromQL expression against it. Every step spells out its request inline so the
+    flow can be read and executed without opening the underlying OpenAPI
+    description.
+  version: 1.0.0
+sourceDescriptions:
+- name: httpApi
+  url: ../openapi/prometheus-http-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: discover-and-query-metric
+  summary: Discover a metric, inspect its metadata and labels, then evaluate it.
+  description: >-
+    Uses the metadata endpoints to learn the shape of a metric before spending a
+    query on it, which is the cheapest way to avoid writing a PromQL expression
+    against a metric name or label that does not exist.
+  inputs:
+    type: object
+    required:
+    - metricName
+    - seriesSelector
+    - query
+    properties:
+      metricName:
+        type: string
+        description: The metric name to inspect (e.g. http_requests_total).
+      seriesSelector:
+        type: string
+        description: >-
+          A series selector used to resolve concrete series (e.g.
+          http_requests_total{job="api"}).
+      query:
+        type: string
+        description: >-
+          The PromQL expression to evaluate (e.g. rate(http_requests_total[5m])).
+      evaluationTime:
+        type: string
+        description: >-
+          Optional evaluation timestamp as a Unix timestamp or RFC3339 string.
+          Defaults to current server time when omitted.
+  steps:
+  - stepId: listMetricNames
+    description: >-
+      List every metric name in the TSDB by reading the values of the special
+      __name__ label. This is how query UIs build metric autocomplete.
+    operationId: getLabelValues
+    parameters:
+    - name: label_name
+      in: path
+      value: __name__
+    - name: limit
+      in: query
+      value: 5000
+    successCriteria:
+    - condition: $statusCode == 200
+    - condition: $response.body#/status == "success"
+    outputs:
+      metricNames: $response.body#/data
+  - stepId: describeMetric
+    description: >-
+      Read the metric type (counter, gauge, histogram, summary) and help string
+      scraped from the targets exposing this metric. The type decides whether
+      rate(), increase(), or a bare selector is the correct query.
+    operationId: getMetricMetadata
+    parameters:
+    - name: metric
+      in: query
+      value: $inputs.metricName
+    - name: limit_per_metric
+      in: query
+      value: 1
+    successCriteria:
+    - condition: $statusCode == 200
+    - condition: $response.body#/status == "success"
+    outputs:
+      metadata: $response.body#/data
+  - stepId: listLabelNames
+    description: >-
+      List the label names actually present on this metric, restricted by the
+      series selector so the result is scoped to the metric under investigation.
+    operationId: getLabelNames
+    parameters:
+    - name: "match[]"
+      in: query
+      value:
+      - $inputs.seriesSelector
+    - name: limit
+      in: query
+      value: 500
+    successCriteria:
+    - condition: $statusCode == 200
+    - condition: $response.body#/status == "success"
+    outputs:
+      labelNames: $response.body#/data
+  - stepId: resolveSeries
+    description: >-
+      Resolve the selector to the concrete label sets it matches. An empty result
+      here means the selector matches nothing and any query built on it will
+      return no data.
+    operationId: querySeries
+    parameters:
+    - name: "match[]"
+      in: query
+      value:
+      - $inputs.seriesSelector
+    - name: limit
+      in: query
+      value: 100
+    successCriteria:
+    - condition: $statusCode == 200
+    - condition: $response.body#/status == "success"
+    outputs:
+      seriesLabelSets: $response.body#/data
+      firstSeries: $response.body#/data/0
+  - stepId: evaluateExpression
+    description: >-
+      Evaluate the PromQL expression at a single point in time and return the
+      resulting vector.
+    operationId: queryInstant
+    parameters:
+    - name: query
+      in: query
+      value: $inputs.query
+    - name: time
+      in: query
+      value: $inputs.evaluationTime
+    - name: timeout
+      in: query
+      value: 30s
+    successCriteria:
+    - condition: $statusCode == 200
+    - condition: $response.body#/status == "success"
+    outputs:
+      resultType: $response.body#/data/resultType
+      result: $response.body#/data/result
+      firstValue: $response.body#/data/result/0/value/1
+  outputs:
+    metricNames: $steps.listMetricNames.outputs.metricNames
+    metadata: $steps.describeMetric.outputs.metadata
+    labelNames: $steps.listLabelNames.outputs.labelNames
+    seriesLabelSets: $steps.resolveSeries.outputs.seriesLabelSets
+    resultType: $steps.evaluateExpression.outputs.resultType
+    result: $steps.evaluateExpression.outputs.result

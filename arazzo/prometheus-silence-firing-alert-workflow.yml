@@ -1,0 +1,174 @@
+arazzo: 1.0.1
+info:
+  title: Prometheus Silence a Firing Alert
+  summary: Find a firing alert, silence it by its labels, and confirm the silence took hold.
+  description: >-
+    The standard incident-response action: an alert is firing, the cause is
+    known and being worked, and the page needs to stop without touching the
+    rule. The workflow locates the firing alert to harvest its real labels,
+    creates a time-boxed silence whose matchers target those labels, reads the
+    silence back to confirm it is active rather than pending, and then re-reads
+    the alert to prove Alertmanager now reports it suppressed. Every step spells
+    out its request inline so the flow can be read and executed without opening
+    the underlying OpenAPI description.
+  version: 1.0.0
+sourceDescriptions:
+- name: alertmanagerApi
+  url: ../openapi/prometheus-alertmanager-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: silence-firing-alert
+  summary: Create a silence for a firing alert and verify it is suppressed.
+  description: >-
+    Reading the alert first matters — silences match on labels, and a matcher
+    written from memory rather than from the alert's actual label set is the
+    usual reason a silence appears to do nothing.
+  inputs:
+    type: object
+    required:
+    - alertName
+    - alertNameMatcher
+    - instance
+    - startsAt
+    - endsAt
+    - createdBy
+    - comment
+    properties:
+      alertName:
+        type: string
+        description: The alertname label value to silence (e.g. HighRequestLatency).
+      alertNameMatcher:
+        type: string
+        description: >-
+          The alert expressed as a label matcher for filtering (e.g.
+          alertname="HighRequestLatency").
+      instance:
+        type: string
+        description: >-
+          The instance label value to scope the silence to a single target
+          rather than every instance of the alert.
+      startsAt:
+        type: string
+        description: When the silence takes effect, as an RFC3339 timestamp.
+      endsAt:
+        type: string
+        description: >-
+          When the silence expires, as an RFC3339 timestamp. Always set this to
+          a real bound so the silence cannot outlive the incident.
+      createdBy:
+        type: string
+        description: The person or system creating the silence.
+      comment:
+        type: string
+        description: The reason for the silence, including a ticket reference.
+  steps:
+  - stepId: findFiringAlert
+    description: >-
+      Locate the firing alert and capture the label set Alertmanager is actually
+      holding for it. The fingerprint identifies this unique label combination.
+    operationId: getAlerts
+    parameters:
+    - name: filter
+      in: query
+      value:
+      - $inputs.alertNameMatcher
+    - name: active
+      in: query
+      value: true
+    - name: silenced
+      in: query
+      value: false
+    - name: inhibited
+      in: query
+      value: false
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      alerts: $response.body
+      fingerprint: $response.body#/0/fingerprint
+      labels: $response.body#/0/labels
+      startedAt: $response.body#/0/startsAt
+  - stepId: listReceivers
+    description: >-
+      List the configured receivers so the operator can record which
+      notification integrations this silence is about to mute.
+    operationId: listReceivers
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      receivers: $response.body
+      firstReceiverName: $response.body#/0/name
+  - stepId: createSilence
+    description: >-
+      Create the silence. Every matcher must match for an alert to be
+      suppressed, so alertname plus instance scopes this to the one firing
+      target and leaves the same alert on other instances still paging.
+    operationId: createSilence
+    requestBody:
+      contentType: application/json
+      payload:
+        matchers:
+        - name: alertname
+          value: $inputs.alertName
+          isRegex: false
+          isEqual: true
+        - name: instance
+          value: $inputs.instance
+          isRegex: false
+          isEqual: true
+        startsAt: $inputs.startsAt
+        endsAt: $inputs.endsAt
+        createdBy: $inputs.createdBy
+        comment: $inputs.comment
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      silenceID: $response.body#/silenceID
+  - stepId: confirmSilence
+    description: >-
+      Read the silence back by its id and check its state. A state of pending
+      means startsAt is in the future and the alert will keep paging until then.
+    operationId: getSilence
+    parameters:
+    - name: silenceID
+      in: path
+      value: $steps.createSilence.outputs.silenceID
+    successCriteria:
+    - condition: $statusCode == 200
+    - condition: $response.body#/status/state == "active"
+    outputs:
+      silenceId: $response.body#/id
+      state: $response.body#/status/state
+      matchers: $response.body#/matchers
+      expiresAt: $response.body#/endsAt
+  - stepId: verifyAlertSuppressed
+    description: >-
+      Re-read the alert including silenced alerts and confirm Alertmanager now
+      reports it suppressed and attributes the suppression to this silence.
+    operationId: getAlerts
+    parameters:
+    - name: filter
+      in: query
+      value:
+      - $inputs.alertNameMatcher
+    - name: active
+      in: query
+      value: false
+    - name: silenced
+      in: query
+      value: true
+    - name: inhibited
+      in: query
+      value: false
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      suppressedAlerts: $response.body
+      statusState: $response.body#/0/status/state
+      silencedBy: $response.body#/0/status/silencedBy
+  outputs:
+    fingerprint: $steps.findFiringAlert.outputs.fingerprint
+    silenceID: $steps.createSilence.outputs.silenceID
+    state: $steps.confirmSilence.outputs.state
+    expiresAt: $steps.confirmSilence.outputs.expiresAt
+    silencedBy: $steps.verifyAlertSuppressed.outputs.silencedBy

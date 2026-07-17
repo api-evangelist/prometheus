@@ -1,0 +1,87 @@
+arazzo: 1.0.1
+info:
+  title: Prometheus Run a Large PromQL Expression via POST
+  summary: Evaluate an expression too long for a URL, first instant then across a range.
+  description: >-
+    Long PromQL expressions — generated recording rules, wide label-matcher
+    unions, or machine-composed queries — routinely exceed the URL length limits
+    enforced by proxies and load balancers in front of Prometheus. Both query
+    endpoints accept a form-encoded POST body for exactly this reason. The
+    workflow validates the expression with an instant POST query and then
+    evaluates it over a range with a range POST query. Every step spells out its
+    request inline so the flow can be read and executed without opening the
+    underlying OpenAPI description.
+  version: 1.0.0
+sourceDescriptions:
+- name: httpApi
+  url: ../openapi/prometheus-http-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: large-promql-query-post
+  summary: Evaluate a long PromQL expression through the POST query endpoints.
+  description: >-
+    Identical semantics to the GET query endpoints, with the expression carried
+    in an application/x-www-form-urlencoded body instead of the query string.
+  inputs:
+    type: object
+    required:
+    - query
+    - start
+    - end
+    - step
+    properties:
+      query:
+        type: string
+        description: >-
+          The PromQL expression to evaluate. Typically long enough that URL
+          encoding it would breach a proxy's request-line limit.
+      start:
+        type: string
+        description: Start of the range as a Unix timestamp or RFC3339 string.
+      end:
+        type: string
+        description: End of the range as a Unix timestamp or RFC3339 string.
+      step:
+        type: string
+        description: Resolution step width as a duration string (e.g. 1m).
+  steps:
+  - stepId: evaluateInstantViaPost
+    description: >-
+      Evaluate the expression at a single point in time, sending it in the
+      request body so no URL length limit applies.
+    operationId: queryInstantPost
+    requestBody:
+      contentType: application/x-www-form-urlencoded
+      payload:
+        query: $inputs.query
+        time: $inputs.end
+        timeout: 60s
+    successCriteria:
+    - condition: $statusCode == 200
+    - condition: $response.body#/status == "success"
+    outputs:
+      resultType: $response.body#/data/resultType
+      result: $response.body#/data/result
+  - stepId: evaluateRangeViaPost
+    description: >-
+      Evaluate the same expression across the full time range, again through the
+      request body, producing the matrix used for charting or export.
+    operationId: queryRangePost
+    requestBody:
+      contentType: application/x-www-form-urlencoded
+      payload:
+        query: $inputs.query
+        start: $inputs.start
+        end: $inputs.end
+        step: $inputs.step
+        timeout: 120s
+    successCriteria:
+    - condition: $statusCode == 200
+    - condition: $response.body#/status == "success"
+    - condition: $response.body#/data/resultType == "matrix"
+    outputs:
+      resultType: $response.body#/data/resultType
+      series: $response.body#/data/result
+  outputs:
+    instantResult: $steps.evaluateInstantViaPost.outputs.result
+    rangeSeries: $steps.evaluateRangeViaPost.outputs.series

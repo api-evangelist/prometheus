@@ -1,0 +1,88 @@
+arazzo: 1.0.1
+info:
+  title: Prometheus Take a TSDB Snapshot for Backup
+  summary: Size the TSDB, snapshot it, and capture the snapshot directory name.
+  description: >-
+    Snapshotting is how a Prometheus TSDB gets backed up or cloned into a
+    staging environment for investigation. The workflow reads the runtime and
+    TSDB statistics first so the snapshot is taken with the head block size and
+    series count known rather than discovered afterwards, then creates the
+    snapshot and captures the generated directory name the backup job needs to
+    collect. Every step spells out its request inline so the flow can be read
+    and executed without opening the underlying OpenAPI description.
+  version: 1.0.0
+sourceDescriptions:
+- name: httpApi
+  url: ../openapi/prometheus-http-api-openapi.yml
+  type: openapi
+- name: managementApi
+  url: ../openapi/prometheus-management-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: tsdb-snapshot-backup
+  summary: Create a TSDB snapshot and return its directory name.
+  description: >-
+    The snapshot endpoint requires the --web.enable-admin-api flag and returns
+    403 without it. The snapshot lands in the snapshots/ directory under the
+    data directory and uses hard links where possible, so it is cheap to create
+    but still occupies the same filesystem as the live data.
+  inputs:
+    type: object
+    properties:
+      skipHead:
+        type: boolean
+        description: >-
+          Whether to exclude the in-memory head block from the snapshot.
+          Defaults to false; leaving it false includes the most recent, not yet
+          persisted data at the cost of a slower snapshot.
+  steps:
+  - stepId: checkRuntimeInfo
+    description: >-
+      Read the runtime properties, including the working directory the snapshot
+      will be written beneath and the storage retention in force.
+    operationId: getRuntimeInfo
+    successCriteria:
+    - condition: $statusCode == 200
+    - condition: $response.body#/status == "success"
+    outputs:
+      cwd: $response.body#/data/CWD
+      startTime: $response.body#/data/startTime
+      corruptionCount: $response.body#/data/corruptionCount
+  - stepId: measureTsdb
+    description: >-
+      Read the TSDB statistics. The head block series and chunk counts are the
+      best available estimate of how large the snapshot will be and how long it
+      will take to write.
+    operationId: getTsdbStatus
+    parameters:
+    - name: limit
+      in: query
+      value: 10
+    successCriteria:
+    - condition: $statusCode == 200
+    - condition: $response.body#/status == "success"
+    outputs:
+      headStats: $response.body#/data/headStats
+      numSeries: $response.body#/data/headStats/numSeries
+      numLabelPairs: $response.body#/data/headStats/numLabelPairs
+      chunkCount: $response.body#/data/headStats/chunkCount
+  - stepId: createSnapshot
+    description: >-
+      Create the snapshot and capture the generated directory name. That name is
+      the handle the backup job needs — nothing else in the API will report it
+      afterwards.
+    operationId: createTsdbSnapshot
+    parameters:
+    - name: skip_head
+      in: query
+      value: $inputs.skipHead
+    successCriteria:
+    - condition: $statusCode == 200
+    - condition: $response.body#/status == "success"
+    outputs:
+      snapshotName: $response.body#/data/name
+  outputs:
+    cwd: $steps.checkRuntimeInfo.outputs.cwd
+    numSeries: $steps.measureTsdb.outputs.numSeries
+    headStats: $steps.measureTsdb.outputs.headStats
+    snapshotName: $steps.createSnapshot.outputs.snapshotName

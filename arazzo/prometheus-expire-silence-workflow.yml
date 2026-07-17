@@ -1,0 +1,115 @@
+arazzo: 1.0.1
+info:
+  title: Prometheus Expire a Silence Early
+  summary: Find an active silence, inspect what it mutes, expire it, and confirm it is gone.
+  description: >-
+    The other half of the incident lifecycle: the fix has shipped, and the
+    silence needs to come off before its scheduled end so the alert can page
+    again if the problem returns. The workflow finds the silence by matcher,
+    inspects it to confirm the right one is about to be lifted, expires it, and
+    reads it back to prove the state moved to expired. Every step spells out its
+    request inline so the flow can be read and executed without opening the
+    underlying OpenAPI description.
+  version: 1.0.0
+sourceDescriptions:
+- name: alertmanagerApi
+  url: ../openapi/prometheus-alertmanager-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: expire-silence
+  summary: Expire an active silence and verify the alert can fire again.
+  description: >-
+    Expiring a silence sets its end time to now; it does not delete it. The
+    silence stays visible in listings as an audit record of what was muted, by
+    whom, and why.
+  inputs:
+    type: object
+    required:
+    - silenceMatcher
+    properties:
+      silenceMatcher:
+        type: string
+        description: >-
+          Label matcher identifying the silence to lift (e.g.
+          alertname="HighRequestLatency").
+  steps:
+  - stepId: findSilence
+    description: >-
+      List the silences whose matchers cover this label matcher and take the
+      first. Silences in the expired state are still returned here, which is why
+      the next step checks the state before expiring anything.
+    operationId: listSilences
+    parameters:
+    - name: filter
+      in: query
+      value:
+      - $inputs.silenceMatcher
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      silences: $response.body
+      silenceId: $response.body#/0/id
+    onSuccess:
+    - name: silenceFound
+      type: goto
+      stepId: inspectSilence
+      criteria:
+      - context: $response.body
+        condition: $.length > 0
+        type: jsonpath
+    - name: noSilenceFound
+      type: end
+      criteria:
+      - context: $response.body
+        condition: $.length == 0
+        type: jsonpath
+  - stepId: inspectSilence
+    description: >-
+      Read the silence in full before lifting it. The comment and createdBy
+      fields are what confirm this is the silence from this incident and not a
+      long-standing maintenance window someone else owns.
+    operationId: getSilence
+    parameters:
+    - name: silenceID
+      in: path
+      value: $steps.findSilence.outputs.silenceId
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      silenceId: $response.body#/id
+      state: $response.body#/status/state
+      matchers: $response.body#/matchers
+      createdBy: $response.body#/createdBy
+      comment: $response.body#/comment
+      endsAt: $response.body#/endsAt
+  - stepId: expireSilence
+    description: >-
+      Expire the silence by setting its end time to now. Alerts matching it
+      resume notifying on the next Alertmanager evaluation.
+    operationId: deleteSilence
+    parameters:
+    - name: silenceID
+      in: path
+      value: $steps.inspectSilence.outputs.silenceId
+    successCriteria:
+    - condition: $statusCode == 200
+  - stepId: verifyExpired
+    description: >-
+      Read the silence back and confirm its state is now expired rather than
+      active or pending.
+    operationId: getSilence
+    parameters:
+    - name: silenceID
+      in: path
+      value: $steps.inspectSilence.outputs.silenceId
+    successCriteria:
+    - condition: $statusCode == 200
+    - condition: $response.body#/status/state == "expired"
+    outputs:
+      state: $response.body#/status/state
+      endsAt: $response.body#/endsAt
+  outputs:
+    silenceId: $steps.inspectSilence.outputs.silenceId
+    previousState: $steps.inspectSilence.outputs.state
+    finalState: $steps.verifyExpired.outputs.state
+    expiredAt: $steps.verifyExpired.outputs.endsAt

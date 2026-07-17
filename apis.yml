@@ -193,6 +193,51 @@ common:
     url: https://github.com/prometheus/prometheus/releases
   - type: StackOverflow
     url: https://stackoverflow.com/questions/tagged/prometheus
+  - type: Arazzo
+    url: arazzo/prometheus-discover-and-query-metric-workflow.yml
+    name: Prometheus Discover and Query a Metric
+  - type: Arazzo
+    url: arazzo/prometheus-range-query-with-exemplars-workflow.yml
+    name: Prometheus Chart a Range Query and Pull Its Exemplars
+  - type: Arazzo
+    url: arazzo/prometheus-large-promql-query-post-workflow.yml
+    name: Prometheus Run a Large PromQL Expression via POST
+  - type: Arazzo
+    url: arazzo/prometheus-troubleshoot-scrape-target-workflow.yml
+    name: Prometheus Troubleshoot a Missing Scrape Target
+  - type: Arazzo
+    url: arazzo/prometheus-alert-notification-triage-workflow.yml
+    name: Prometheus Triage an Alert That Never Notified
+  - type: Arazzo
+    url: arazzo/prometheus-silence-firing-alert-workflow.yml
+    name: Prometheus Silence a Firing Alert
+  - type: Arazzo
+    url: arazzo/prometheus-expire-silence-workflow.yml
+    name: Prometheus Expire a Silence Early
+  - type: Arazzo
+    url: arazzo/prometheus-test-alert-routing-workflow.yml
+    name: Prometheus Test an Alertmanager Routing Path
+  - type: Arazzo
+    url: arazzo/prometheus-push-batch-job-metrics-workflow.yml
+    name: Prometheus Push Batch Job Metrics to the Pushgateway
+  - type: Arazzo
+    url: arazzo/prometheus-push-grouped-metrics-lifecycle-workflow.yml
+    name: Prometheus Manage a Grouped Metric Group End to End
+  - type: Arazzo
+    url: arazzo/prometheus-purge-retired-job-metrics-workflow.yml
+    name: Prometheus Purge a Retired Job's Pushed Metrics
+  - type: Arazzo
+    url: arazzo/prometheus-reload-config-verify-workflow.yml
+    name: Prometheus Reload Configuration and Verify It Applied
+  - type: Arazzo
+    url: arazzo/prometheus-server-restart-readiness-workflow.yml
+    name: Prometheus Verify Server Readiness After a Restart
+  - type: Arazzo
+    url: arazzo/prometheus-tsdb-snapshot-backup-workflow.yml
+    name: Prometheus Take a TSDB Snapshot for Backup
+  - type: Arazzo
+    url: arazzo/prometheus-delete-series-reclaim-space-workflow.yml
+    name: Prometheus Delete Series and Reclaim the Space
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com

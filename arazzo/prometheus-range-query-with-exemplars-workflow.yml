@@ -1,0 +1,126 @@
+arazzo: 1.0.1
+info:
+  title: Prometheus Chart a Range Query and Pull Its Exemplars
+  summary: Validate an expression, graph it over a time range, then link the spikes to traces.
+  description: >-
+    The flow behind every Prometheus-backed dashboard panel that supports
+    click-through to tracing. The workflow validates the PromQL expression with a
+    cheap instant query, evaluates it across the full time range at a step
+    interval to produce the matrix a chart needs, and then retrieves the
+    exemplars over the same window so high-value samples can be linked to their
+    trace IDs. Every step spells out its request inline so the flow can be read
+    and executed without opening the underlying OpenAPI description.
+  version: 1.0.0
+sourceDescriptions:
+- name: httpApi
+  url: ../openapi/prometheus-http-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: range-query-with-exemplars
+  summary: Evaluate a PromQL expression over a time range and fetch its exemplars.
+  description: >-
+    Validating the expression with an instant query before issuing the range
+    query keeps a malformed or overly expensive expression from being evaluated
+    at every step across the whole window.
+  inputs:
+    type: object
+    required:
+    - query
+    - start
+    - end
+    - step
+    properties:
+      query:
+        type: string
+        description: >-
+          The PromQL expression to chart (e.g.
+          histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[5m]))).
+      start:
+        type: string
+        description: Start of the range as a Unix timestamp or RFC3339 string.
+      end:
+        type: string
+        description: End of the range as a Unix timestamp or RFC3339 string.
+      step:
+        type: string
+        description: Resolution step width as a duration string (e.g. 15s, 1m, 1h).
+  steps:
+  - stepId: validateExpression
+    description: >-
+      Evaluate the expression once at the end of the window. A 400 or 422 here
+      means the expression is malformed and the range query would fail the same
+      way, only after far more work on the server.
+    operationId: queryInstant
+    parameters:
+    - name: query
+      in: query
+      value: $inputs.query
+    - name: time
+      in: query
+      value: $inputs.end
+    - name: timeout
+      in: query
+      value: 30s
+    successCriteria:
+    - condition: $statusCode == 200
+    - condition: $response.body#/status == "success"
+    outputs:
+      resultType: $response.body#/data/resultType
+      sampleCount: $response.body#/data/result
+  - stepId: evaluateRange
+    description: >-
+      Evaluate the expression at every step across the range, producing the
+      matrix of time series a chart renders.
+    operationId: queryRange
+    parameters:
+    - name: query
+      in: query
+      value: $inputs.query
+    - name: start
+      in: query
+      value: $inputs.start
+    - name: end
+      in: query
+      value: $inputs.end
+    - name: step
+      in: query
+      value: $inputs.step
+    - name: timeout
+      in: query
+      value: 60s
+    successCriteria:
+    - condition: $statusCode == 200
+    - condition: $response.body#/status == "success"
+    - condition: $response.body#/data/resultType == "matrix"
+    outputs:
+      resultType: $response.body#/data/resultType
+      series: $response.body#/data/result
+      firstSeriesMetric: $response.body#/data/result/0/metric
+      firstSeriesValues: $response.body#/data/result/0/values
+  - stepId: fetchExemplars
+    description: >-
+      Retrieve exemplars over the same window. Exemplars carry the trace or log
+      IDs attached to individual observations, which is what turns a latency
+      spike on the chart into a specific trace to open.
+    operationId: queryExemplars
+    parameters:
+    - name: query
+      in: query
+      value: $inputs.query
+    - name: start
+      in: query
+      value: $inputs.start
+    - name: end
+      in: query
+      value: $inputs.end
+    successCriteria:
+    - condition: $statusCode == 200
+    - condition: $response.body#/status == "success"
+    outputs:
+      exemplarData: $response.body#/data
+      firstSeriesLabels: $response.body#/data/0/seriesLabels
+      firstExemplars: $response.body#/data/0/exemplars
+  outputs:
+    series: $steps.evaluateRange.outputs.series
+    resultType: $steps.evaluateRange.outputs.resultType
+    exemplarData: $steps.fetchExemplars.outputs.exemplarData

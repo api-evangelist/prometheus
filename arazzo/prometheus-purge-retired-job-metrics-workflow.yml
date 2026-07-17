@@ -1,0 +1,89 @@
+arazzo: 1.0.1
+info:
+  title: Prometheus Purge a Retired Job's Pushed Metrics
+  summary: Find a stale metric group left by a decommissioned job and delete it.
+  description: >-
+    The Pushgateway is deliberately not a metrics store with a retention policy
+    — it holds whatever was last pushed to it, forever, until something deletes
+    it. A job that is decommissioned without cleaning up leaves its final values
+    being scraped indefinitely, and those frozen numbers look exactly like a
+    healthy job reporting steady state. The workflow lists the stored groups to
+    confirm the group is genuinely stale by its last push time, deletes it, and
+    reads the groups back to prove it is gone. Every step spells out its request
+    inline so the flow can be read and executed without opening the underlying
+    OpenAPI description.
+  version: 1.0.0
+sourceDescriptions:
+- name: pushgatewayApi
+  url: ../openapi/prometheus-pushgateway-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: purge-retired-job-metrics
+  summary: Delete every metric for a retired job after confirming the group is stale.
+  description: >-
+    Checking lastPushedAt before deleting is the whole point of the first step:
+    it separates a genuinely abandoned group from one belonging to a job that is
+    merely infrequent and would notice its metrics vanishing.
+  inputs:
+    type: object
+    required:
+    - jobName
+    properties:
+      jobName:
+        type: string
+        description: >-
+          The job label of the retired job whose metrics should be purged (e.g.
+          legacy-nightly-export).
+  steps:
+  - stepId: findStaleGroup
+    description: >-
+      List every stored metric group and read the labels and last push time.
+      A lastPushedAt far in the past is the evidence that this group belongs to
+      a job that no longer runs rather than one that runs rarely.
+    operationId: listAllMetrics
+    successCriteria:
+    - condition: $statusCode == 200
+    - condition: $response.body#/status == "success"
+    outputs:
+      metricGroups: $response.body#/data
+      firstGroupLabels: $response.body#/data/0/labels
+      firstGroupLastPushedAt: $response.body#/data/0/lastPushedAt
+    onSuccess:
+    - name: groupsPresent
+      type: goto
+      stepId: deleteJobMetrics
+      criteria:
+      - context: $response.body
+        condition: $.data.length > 0
+        type: jsonpath
+    - name: nothingToPurge
+      type: end
+      criteria:
+      - context: $response.body
+        condition: $.data.length == 0
+        type: jsonpath
+  - stepId: deleteJobMetrics
+    description: >-
+      Delete every metric stored under this job label. Prometheus stops seeing
+      the job's series on its next scrape of the Pushgateway.
+    operationId: deleteJobMetrics
+    parameters:
+    - name: job
+      in: path
+      value: $inputs.jobName
+    successCriteria:
+    - condition: $statusCode == 202
+  - stepId: verifyPurged
+    description: >-
+      Read the stored groups back and confirm the retired job's group is no
+      longer among them.
+    operationId: listAllMetrics
+    successCriteria:
+    - condition: $statusCode == 200
+    - condition: $response.body#/status == "success"
+    outputs:
+      remainingGroups: $response.body#/data
+  outputs:
+    purgedGroupLabels: $steps.findStaleGroup.outputs.firstGroupLabels
+    purgedGroupLastPushedAt: $steps.findStaleGroup.outputs.firstGroupLastPushedAt
+    remainingGroups: $steps.verifyPurged.outputs.remainingGroups

@@ -1,0 +1,142 @@
+arazzo: 1.0.1
+info:
+  title: Prometheus Troubleshoot a Missing Scrape Target
+  summary: Work out why a target's metrics are missing — dropped, down, or never configured.
+  description: >-
+    The first thing an operator does when a service's metrics stop appearing.
+    The workflow reads the current target discovery state and branches: when
+    targets are active it inspects the per-target metadata and evaluates the up
+    metric to separate "discovered but failing to scrape" from "scraping fine",
+    and when nothing is active at all it falls back to reading the loaded
+    configuration to find out whether the scrape job was ever configured. Every
+    step spells out its request inline so the flow can be read and executed
+    without opening the underlying OpenAPI description.
+  version: 1.0.0
+sourceDescriptions:
+- name: httpApi
+  url: ../openapi/prometheus-http-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: troubleshoot-scrape-target
+  summary: Diagnose why a scrape target is not producing metrics.
+  description: >-
+    Distinguishes the three failure modes that look identical from a dashboard:
+    the target was relabelled away and dropped, the target is active but the
+    scrape is erroring, or the scrape job is not in the configuration at all.
+  inputs:
+    type: object
+    required:
+    - targetMatcher
+    - metricName
+    - upQuery
+    properties:
+      targetMatcher:
+        type: string
+        description: >-
+          Label selector matching the target's labels (e.g. {job="api"}).
+      metricName:
+        type: string
+        description: >-
+          A metric the target is expected to expose (e.g. http_requests_total).
+      upQuery:
+        type: string
+        description: >-
+          PromQL expression selecting the up metric for this target (e.g.
+          up{job="api"}). A value of 0 means the scrape is failing.
+  steps:
+  - stepId: listTargets
+    description: >-
+      Read the full target discovery state, including targets dropped by
+      relabelling. The health and lastError fields on an active target say
+      whether the last scrape succeeded and why it did not.
+    operationId: getTargets
+    parameters:
+    - name: state
+      in: query
+      value: any
+    successCriteria:
+    - condition: $statusCode == 200
+    - condition: $response.body#/status == "success"
+    outputs:
+      activeTargets: $response.body#/data/activeTargets
+      droppedTargets: $response.body#/data/droppedTargets
+      firstTargetHealth: $response.body#/data/activeTargets/0/health
+      firstTargetLastError: $response.body#/data/activeTargets/0/lastError
+      firstTargetScrapeUrl: $response.body#/data/activeTargets/0/scrapeUrl
+    onSuccess:
+    - name: targetsDiscovered
+      type: goto
+      stepId: inspectTargetMetadata
+      criteria:
+      - context: $response.body
+        condition: $.data.activeTargets.length > 0
+        type: jsonpath
+    - name: noTargetsDiscovered
+      type: goto
+      stepId: inspectConfig
+      criteria:
+      - context: $response.body
+        condition: $.data.activeTargets.length == 0
+        type: jsonpath
+  - stepId: inspectTargetMetadata
+    description: >-
+      Ask what metadata the matched targets are contributing for the expected
+      metric. An empty result means the target is being scraped but is not
+      exposing this metric at all.
+    operationId: getTargetMetadata
+    parameters:
+    - name: match_target
+      in: query
+      value: $inputs.targetMatcher
+    - name: metric
+      in: query
+      value: $inputs.metricName
+    - name: limit
+      in: query
+      value: 100
+    successCriteria:
+    - condition: $statusCode == 200
+    - condition: $response.body#/status == "success"
+    outputs:
+      targetMetadata: $response.body#/data
+      firstMetricType: $response.body#/data/0/type
+      firstMetricHelp: $response.body#/data/0/help
+  - stepId: evaluateUpMetric
+    description: >-
+      Evaluate the up metric for this target. A sample value of 1 means the last
+      scrape succeeded, 0 means Prometheus reached the scrape cycle and failed,
+      and no sample at all means the target is not being scraped.
+    operationId: queryInstant
+    parameters:
+    - name: query
+      in: query
+      value: $inputs.upQuery
+    - name: timeout
+      in: query
+      value: 30s
+    successCriteria:
+    - condition: $statusCode == 200
+    - condition: $response.body#/status == "success"
+    outputs:
+      upResult: $response.body#/data/result
+      upValue: $response.body#/data/result/0/value/1
+    onSuccess:
+    - name: diagnosisComplete
+      type: end
+  - stepId: inspectConfig
+    description: >-
+      Read the loaded configuration as YAML. Reached when service discovery
+      produced no active targets at all, which usually means the scrape job is
+      missing from the configuration or its discovery block matches nothing.
+    operationId: getConfig
+    successCriteria:
+    - condition: $statusCode == 200
+    - condition: $response.body#/status == "success"
+    outputs:
+      configYaml: $response.body#/data/yaml
+  outputs:
+    activeTargets: $steps.listTargets.outputs.activeTargets
+    droppedTargets: $steps.listTargets.outputs.droppedTargets
+    targetMetadata: $steps.inspectTargetMetadata.outputs.targetMetadata
+    upValue: $steps.evaluateUpMetric.outputs.upValue
+    configYaml: $steps.inspectConfig.outputs.configYaml

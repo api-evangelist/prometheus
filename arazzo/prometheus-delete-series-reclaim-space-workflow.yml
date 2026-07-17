@@ -1,0 +1,174 @@
+arazzo: 1.0.1
+info:
+  title: Prometheus Delete Series and Reclaim the Space
+  summary: Preview what a selector matches, delete it, clean the tombstones, and verify.
+  description: >-
+    Deleting series is the answer to a leaked secret in a label value, a
+    cardinality explosion from a bad instrumentation deploy, or a data subject
+    request. It is also irreversible, which is why this workflow previews the
+    selector before acting on it. The delete only writes tombstones; the data
+    stays on disk until a compaction removes it, so the workflow explicitly
+    cleans the tombstones and then re-runs the preview to prove the series are
+    gone. Every step spells out its request inline so the flow can be read and
+    executed without opening the underlying OpenAPI description.
+  version: 1.0.0
+sourceDescriptions:
+- name: httpApi
+  url: ../openapi/prometheus-http-api-openapi.yml
+  type: openapi
+- name: managementApi
+  url: ../openapi/prometheus-management-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: delete-series-reclaim-space
+  summary: Safely delete matching series and force the space to be reclaimed.
+  description: >-
+    Both admin endpoints require the --web.enable-admin-api flag and return 403
+    without it. The preview step is not optional in practice — a selector that
+    is broader than intended deletes far more than expected, and there is no
+    undo.
+  inputs:
+    type: object
+    required:
+    - seriesSelector
+    properties:
+      seriesSelector:
+        type: string
+        description: >-
+          The series selector identifying what to delete (e.g.
+          http_requests_total{job="deprecated-api"}). Verify this against the
+          preview before trusting it.
+      start:
+        type: string
+        description: >-
+          Start of the deletion time range. Defaults to the minimum possible
+          time when omitted, meaning all history.
+      end:
+        type: string
+        description: >-
+          End of the deletion time range. Defaults to the maximum possible time
+          when omitted, meaning all future data already ingested.
+  steps:
+  - stepId: previewSeries
+    description: >-
+      Resolve the selector to the exact label sets it matches. This is the last
+      chance to catch a selector that is broader than intended, and the count
+      here is precisely what the delete will destroy.
+    operationId: querySeries
+    parameters:
+    - name: "match[]"
+      in: query
+      value:
+      - $inputs.seriesSelector
+    - name: start
+      in: query
+      value: $inputs.start
+    - name: end
+      in: query
+      value: $inputs.end
+    - name: limit
+      in: query
+      value: 1000
+    successCriteria:
+    - condition: $statusCode == 200
+    - condition: $response.body#/status == "success"
+    outputs:
+      matchedSeries: $response.body#/data
+      firstSeries: $response.body#/data/0
+    onSuccess:
+    - name: seriesMatched
+      type: goto
+      stepId: measureBefore
+      criteria:
+      - context: $response.body
+        condition: $.data.length > 0
+        type: jsonpath
+    - name: nothingMatched
+      type: end
+      criteria:
+      - context: $response.body
+        condition: $.data.length == 0
+        type: jsonpath
+  - stepId: measureBefore
+    description: >-
+      Record the TSDB head statistics before the deletion so the reclaimed
+      series count can be shown rather than assumed.
+    operationId: getTsdbStatus
+    parameters:
+    - name: limit
+      in: query
+      value: 10
+    successCriteria:
+    - condition: $statusCode == 200
+    - condition: $response.body#/status == "success"
+    outputs:
+      numSeriesBefore: $response.body#/data/headStats/numSeries
+      chunkCountBefore: $response.body#/data/headStats/chunkCount
+  - stepId: deleteSeries
+    description: >-
+      Create deletion tombstones for the matched series. This returns 204 and
+      the data becomes unqueryable immediately, but nothing has actually left
+      the disk yet.
+    operationId: deleteTsdbSeries
+    parameters:
+    - name: "match[]"
+      in: query
+      value:
+      - $inputs.seriesSelector
+    - name: start
+      in: query
+      value: $inputs.start
+    - name: end
+      in: query
+      value: $inputs.end
+    successCriteria:
+    - condition: $statusCode == 204
+  - stepId: cleanTombstones
+    description: >-
+      Force the tombstoned data off disk rather than waiting for the next
+      natural compaction. This triggers a compaction of every block carrying
+      tombstones and is the step that actually reclaims the space.
+    operationId: cleanTombstones
+    successCriteria:
+    - condition: $statusCode == 204
+  - stepId: verifyDeleted
+    description: >-
+      Re-run the preview selector and confirm it now matches nothing, proving
+      the deletion took effect rather than silently failing.
+    operationId: querySeries
+    parameters:
+    - name: "match[]"
+      in: query
+      value:
+      - $inputs.seriesSelector
+    - name: start
+      in: query
+      value: $inputs.start
+    - name: end
+      in: query
+      value: $inputs.end
+    successCriteria:
+    - condition: $statusCode == 200
+    - condition: $response.body#/status == "success"
+    outputs:
+      remainingSeries: $response.body#/data
+  - stepId: measureAfter
+    description: >-
+      Read the TSDB head statistics again so the before and after series counts
+      quantify what the deletion actually reclaimed.
+    operationId: getTsdbStatus
+    parameters:
+    - name: limit
+      in: query
+      value: 10
+    successCriteria:
+    - condition: $statusCode == 200
+    - condition: $response.body#/status == "success"
+    outputs:
+      numSeriesAfter: $response.body#/data/headStats/numSeries
+      chunkCountAfter: $response.body#/data/headStats/chunkCount
+  outputs:
+    matchedSeries: $steps.previewSeries.outputs.matchedSeries
+    remainingSeries: $steps.verifyDeleted.outputs.remainingSeries
+    numSeriesBefore: $steps.measureBefore.outputs.numSeriesBefore
+    numSeriesAfter: $steps.measureAfter.outputs.numSeriesAfter

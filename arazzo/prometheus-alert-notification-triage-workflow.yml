@@ -1,0 +1,147 @@
+arazzo: 1.0.1
+info:
+  title: Prometheus Triage an Alert That Never Notified
+  summary: Follow one alert from its rule, through Prometheus, into Alertmanager, to find where it stopped.
+  description: >-
+    "The alert is firing but nobody got paged" is the single most common
+    Prometheus support question, and the answer is always at one of four
+    handoffs. The workflow checks that the alerting rule is loaded and
+    evaluating, that Prometheus itself considers the alert firing, that
+    Prometheus has actually discovered an Alertmanager to send to, that the
+    alert arrived on the Alertmanager side, and finally whether a silence is
+    swallowing it. Every step spells out its request inline so the flow can be
+    read and executed without opening the underlying OpenAPI description.
+  version: 1.0.0
+sourceDescriptions:
+- name: httpApi
+  url: ../openapi/prometheus-http-api-openapi.yml
+  type: openapi
+- name: alertmanagerApi
+  url: ../openapi/prometheus-alertmanager-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: alert-notification-triage
+  summary: Locate the handoff where an alert stopped on its way to a notification.
+  description: >-
+    Both APIs expose an operation named getAlerts and they answer different
+    questions — the Prometheus one reports what the rule engine is firing, the
+    Alertmanager one reports what actually arrived for routing. This workflow
+    calls both and qualifies each with its source description, because the bare
+    operation id is ambiguous across the two specs referenced here.
+  inputs:
+    type: object
+    required:
+    - alertName
+    properties:
+      alertName:
+        type: string
+        description: >-
+          The alertname label of the alert under investigation (e.g.
+          HighRequestLatency).
+      alertNameMatcher:
+        type: string
+        description: >-
+          The same alert expressed as an Alertmanager label matcher (e.g.
+          alertname="HighRequestLatency").
+  steps:
+  - stepId: confirmRuleLoaded
+    description: >-
+      Confirm the alerting rule is loaded and check its last evaluation. A rule
+      missing here was never loaded from disk, and a stale lastEvaluation means
+      the rule group is not being evaluated on schedule.
+    operationId: getRules
+    parameters:
+    - name: type
+      in: query
+      value: alert
+    - name: "rule_name[]"
+      in: query
+      value:
+      - $inputs.alertName
+    successCriteria:
+    - condition: $statusCode == 200
+    - condition: $response.body#/status == "success"
+    outputs:
+      ruleGroups: $response.body#/data/groups
+      firstGroupName: $response.body#/data/groups/0/name
+      firstGroupFile: $response.body#/data/groups/0/file
+      firstGroupLastEvaluation: $response.body#/data/groups/0/lastEvaluation
+  - stepId: checkPrometheusAlerts
+    description: >-
+      Ask Prometheus which alerts its rule engine currently considers pending or
+      firing. If the alert is absent here the expression is simply not matching
+      and the problem is upstream of any notification path.
+    operationId: $sourceDescriptions.httpApi.getAlerts
+    successCriteria:
+    - condition: $statusCode == 200
+    - condition: $response.body#/status == "success"
+    outputs:
+      prometheusAlerts: $response.body#/data/alerts
+      firstAlertState: $response.body#/data/alerts/0/state
+      firstAlertLabels: $response.body#/data/alerts/0/labels
+  - stepId: checkAlertmanagerDiscovery
+    description: >-
+      Confirm Prometheus has discovered at least one Alertmanager to dispatch
+      to. An empty activeAlertmanagers list means firing alerts have nowhere to
+      go, no matter how correct the rule is.
+    operationId: getAlertmanagers
+    successCriteria:
+    - condition: $statusCode == 200
+    - condition: $response.body#/status == "success"
+    outputs:
+      activeAlertmanagers: $response.body#/data/activeAlertmanagers
+      droppedAlertmanagers: $response.body#/data/droppedAlertmanagers
+      firstAlertmanagerUrl: $response.body#/data/activeAlertmanagers/0/url
+  - stepId: checkAlertmanagerReceipt
+    description: >-
+      Ask Alertmanager whether the alert actually arrived, deliberately
+      including silenced and inhibited alerts so a suppressed alert still shows
+      up here rather than looking like it never landed.
+    operationId: $sourceDescriptions.alertmanagerApi.getAlerts
+    parameters:
+    - name: filter
+      in: query
+      value:
+      - $inputs.alertNameMatcher
+    - name: active
+      in: query
+      value: true
+    - name: silenced
+      in: query
+      value: true
+    - name: inhibited
+      in: query
+      value: true
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      alertmanagerAlerts: $response.body
+      firstFingerprint: $response.body#/0/fingerprint
+      firstStatusState: $response.body#/0/status/state
+      firstSilencedBy: $response.body#/0/status/silencedBy
+      firstInhibitedBy: $response.body#/0/status/inhibitedBy
+      firstReceivers: $response.body#/0/receivers
+  - stepId: checkSilences
+    description: >-
+      List the silences whose matchers cover this alert. A silence in the active
+      state explains a firing alert that arrives at Alertmanager and produces no
+      notification.
+    operationId: listSilences
+    parameters:
+    - name: filter
+      in: query
+      value:
+      - $inputs.alertNameMatcher
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      silences: $response.body
+      firstSilenceId: $response.body#/0/id
+      firstSilenceState: $response.body#/0/status/state
+      firstSilenceComment: $response.body#/0/comment
+  outputs:
+    ruleGroups: $steps.confirmRuleLoaded.outputs.ruleGroups
+    prometheusAlerts: $steps.checkPrometheusAlerts.outputs.prometheusAlerts
+    activeAlertmanagers: $steps.checkAlertmanagerDiscovery.outputs.activeAlertmanagers
+    alertmanagerAlerts: $steps.checkAlertmanagerReceipt.outputs.alertmanagerAlerts
+    silences: $steps.checkSilences.outputs.silences

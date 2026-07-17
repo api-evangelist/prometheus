@@ -1,0 +1,113 @@
+arazzo: 1.0.1
+info:
+  title: Prometheus Verify Server Readiness After a Restart
+  summary: Confirm a restarted or upgraded server is healthy, past WAL replay, and running the expected build.
+  description: >-
+    A restarted Prometheus is alive long before it is useful. It must replay its
+    write-ahead log to recover everything since the last checkpoint, and on a
+    large head block that takes minutes during which queries return incomplete
+    data. The workflow separates liveness from readiness, reads the WAL replay
+    progress that explains the gap between them, and confirms the build and
+    flags are the ones the deployment intended. Every step spells out its
+    request inline so the flow can be read and executed without opening the
+    underlying OpenAPI description.
+  version: 1.0.0
+sourceDescriptions:
+- name: httpApi
+  url: ../openapi/prometheus-http-api-openapi.yml
+  type: openapi
+- name: managementApi
+  url: ../openapi/prometheus-management-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: server-restart-readiness
+  summary: Post-restart verification of health, readiness, WAL replay, build, and flags.
+  description: >-
+    The health and readiness endpoints back Kubernetes liveness and readiness
+    probes respectively, and the difference is the point: healthy means the
+    process is fine, ready means it is actually serving queries.
+  inputs:
+    type: object
+    properties:
+      expectedVersion:
+        type: string
+        description: >-
+          Optional version string the deployment expected to roll out, for
+          comparison against the reported build info.
+  steps:
+  - stepId: checkHealth
+    description: >-
+      Liveness check. A 200 means the process is up and not wedged; it says
+      nothing about whether the server can answer queries yet.
+    operationId: checkHealth
+    successCriteria:
+    - condition: $statusCode == 200
+  - stepId: checkReady
+    description: >-
+      Readiness check. A 503 here on a freshly restarted server is expected and
+      normally means WAL replay is still in progress, which the next step
+      quantifies.
+    operationId: checkReady
+    successCriteria:
+    - condition: $statusCode == 200
+  - stepId: checkWalReplay
+    description: >-
+      Read WAL replay progress. The current and max segment numbers turn "not
+      ready yet" into an actual estimate of how much longer recovery will take.
+    operationId: getWalReplayStatus
+    successCriteria:
+    - condition: $statusCode == 200
+    - condition: $response.body#/status == "success"
+    - condition: $response.body#/data/state == "done"
+    outputs:
+      replayState: $response.body#/data/state
+      currentSegment: $response.body#/data/current
+      maxSegment: $response.body#/data/max
+      minSegment: $response.body#/data/min
+  - stepId: checkBuildInfo
+    description: >-
+      Confirm the running binary is the build the deployment intended. The
+      revision is what settles a disagreement about whether a rollout actually
+      landed on this instance.
+    operationId: getBuildInfo
+    successCriteria:
+    - condition: $statusCode == 200
+    - condition: $response.body#/status == "success"
+    outputs:
+      version: $response.body#/data/version
+      revision: $response.body#/data/revision
+      branch: $response.body#/data/branch
+      goVersion: $response.body#/data/goVersion
+      buildDate: $response.body#/data/buildDate
+  - stepId: checkFlags
+    description: >-
+      Read the command-line flags in force. Retention, storage paths, and the
+      enable-lifecycle and enable-admin-api toggles are all set here, and a
+      restart is exactly when one of them silently changes.
+    operationId: getFlags
+    successCriteria:
+    - condition: $statusCode == 200
+    - condition: $response.body#/status == "success"
+    outputs:
+      flags: $response.body#/data
+  - stepId: checkRuntimeInfo
+    description: >-
+      Read the runtime properties to confirm the server came back with its
+      configuration successfully loaded and to record the new start time.
+    operationId: getRuntimeInfo
+    successCriteria:
+    - condition: $statusCode == 200
+    - condition: $response.body#/status == "success"
+    - condition: $response.body#/data/reloadConfigSuccess == true
+    outputs:
+      startTime: $response.body#/data/startTime
+      reloadConfigSuccess: $response.body#/data/reloadConfigSuccess
+      lastConfigTime: $response.body#/data/lastConfigTime
+      corruptionCount: $response.body#/data/corruptionCount
+  outputs:
+    replayState: $steps.checkWalReplay.outputs.replayState
+    version: $steps.checkBuildInfo.outputs.version
+    revision: $steps.checkBuildInfo.outputs.revision
+    flags: $steps.checkFlags.outputs.flags
+    startTime: $steps.checkRuntimeInfo.outputs.startTime
+    corruptionCount: $steps.checkRuntimeInfo.outputs.corruptionCount

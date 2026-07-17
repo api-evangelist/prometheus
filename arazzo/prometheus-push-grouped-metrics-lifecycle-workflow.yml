@@ -1,0 +1,119 @@
+arazzo: 1.0.1
+info:
+  title: Prometheus Manage a Grouped Metric Group End to End
+  summary: Push, update, verify, and tear down metrics scoped by instance-level grouping labels.
+  description: >-
+    When several workers run the same job concurrently, pushing on the job label
+    alone makes them overwrite each other. Grouping labels give each worker its
+    own group, addressed as alternating label-name and label-value path
+    segments. The workflow replaces one worker's group, updates a single metric
+    within it, verifies the stored state, and deletes the group when the worker
+    is torn down. Every step spells out its request inline so the flow can be
+    read and executed without opening the underlying OpenAPI description.
+  version: 1.0.0
+sourceDescriptions:
+- name: pushgatewayApi
+  url: ../openapi/prometheus-pushgateway-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: push-grouped-metrics-lifecycle
+  summary: Full lifecycle of a metric group identified by job plus grouping labels.
+  description: >-
+    The grouping labels form part of the group's identity, so the delete at the
+    end must carry exactly the same label path as the pushes, or it silently
+    removes nothing.
+  inputs:
+    type: object
+    required:
+    - jobName
+    - groupingLabels
+    - metricsPayload
+    - updatePayload
+    properties:
+      jobName:
+        type: string
+        description: The job label for this metric group (e.g. batch-importer).
+      groupingLabels:
+        type: string
+        description: >-
+          Additional grouping labels as alternating label-name/label-value path
+          segments (e.g. instance/server01 or instance/host1/datacenter/eu).
+      metricsPayload:
+        type: string
+        description: >-
+          The worker's metrics in Prometheus text exposition format, with a
+          trailing newline.
+      updatePayload:
+        type: string
+        description: >-
+          A subset of metrics in text exposition format to update within the
+          existing group without replacing it.
+  steps:
+  - stepId: replaceGroupedMetrics
+    description: >-
+      Atomically replace this worker's group. Because the group is keyed on job
+      plus the grouping labels, this touches only this worker and leaves every
+      sibling worker's group intact.
+    operationId: replaceGroupedMetrics
+    parameters:
+    - name: job
+      in: path
+      value: $inputs.jobName
+    - name: labels
+      in: path
+      value: $inputs.groupingLabels
+    requestBody:
+      contentType: text/plain
+      payload: $inputs.metricsPayload
+    successCriteria:
+    - condition: $statusCode == 200
+  - stepId: updateGroupedMetrics
+    description: >-
+      Update a subset of the metrics in the group. POST preserves the metrics
+      already in the group, which is what makes progress reporting from a
+      long-running worker possible without re-sending everything.
+    operationId: pushGroupedMetrics
+    parameters:
+    - name: job
+      in: path
+      value: $inputs.jobName
+    - name: labels
+      in: path
+      value: $inputs.groupingLabels
+    requestBody:
+      contentType: text/plain
+      payload: $inputs.updatePayload
+    successCriteria:
+    - condition: $statusCode == 200
+  - stepId: verifyGroupState
+    description: >-
+      Read back the stored groups and confirm this worker's group carries both
+      the replaced metrics and the update, under the expected label set.
+    operationId: listAllMetrics
+    successCriteria:
+    - condition: $statusCode == 200
+    - condition: $response.body#/status == "success"
+    outputs:
+      metricGroups: $response.body#/data
+      firstGroupLabels: $response.body#/data/0/labels
+      firstGroupLastPushedAt: $response.body#/data/0/lastPushedAt
+      firstGroupMetricFamilies: $response.body#/data/0/metricFamilies
+  - stepId: deleteGroupedMetrics
+    description: >-
+      Delete this worker's group at teardown. Only the group with this exact
+      label set is removed. Skipping this is what leaves a decommissioned
+      worker's last values being scraped indefinitely as though they were live.
+    operationId: deleteGroupedMetrics
+    parameters:
+    - name: job
+      in: path
+      value: $inputs.jobName
+    - name: labels
+      in: path
+      value: $inputs.groupingLabels
+    successCriteria:
+    - condition: $statusCode == 202
+  outputs:
+    metricGroups: $steps.verifyGroupState.outputs.metricGroups
+    groupLabels: $steps.verifyGroupState.outputs.firstGroupLabels
+    lastPushedAt: $steps.verifyGroupState.outputs.firstGroupLastPushedAt

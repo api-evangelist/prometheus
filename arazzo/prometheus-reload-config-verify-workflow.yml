@@ -1,0 +1,104 @@
+arazzo: 1.0.1
+info:
+  title: Prometheus Reload Configuration and Verify It Applied
+  summary: Trigger a config reload and prove the new configuration and rules are live.
+  description: >-
+    A configuration reload is the most routine change made to a running
+    Prometheus, and the one most often assumed to have worked. The reload
+    endpoint returning 200 only means the file parsed. The workflow captures the
+    configuration before the change, triggers the reload, checks the runtime
+    info where reloadConfigSuccess reports whether the server actually adopted
+    it, re-reads the configuration to confirm the new content is live, and lists
+    the rules to catch rule files that failed to load. Every step spells out its
+    request inline so the flow can be read and executed without opening the
+    underlying OpenAPI description.
+  version: 1.0.0
+sourceDescriptions:
+- name: httpApi
+  url: ../openapi/prometheus-http-api-openapi.yml
+  type: openapi
+- name: managementApi
+  url: ../openapi/prometheus-management-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: reload-config-verify
+  summary: Reload the configuration and confirm it took effect.
+  description: >-
+    The reload endpoint requires the --web.enable-lifecycle flag; without it the
+    server will not expose it at all. reloadConfigSuccess in the runtime info is
+    the authoritative signal that the reload was adopted, not just accepted.
+  inputs:
+    type: object
+    properties:
+      ruleType:
+        type: string
+        description: >-
+          Optional rule type filter for the post-reload rule listing — alert or
+          record. Omit to list both.
+  steps:
+  - stepId: captureConfigBefore
+    description: >-
+      Read the currently loaded configuration so there is a before image to
+      compare against, and a record of what to restore if the reload goes wrong.
+    operationId: getConfig
+    successCriteria:
+    - condition: $statusCode == 200
+    - condition: $response.body#/status == "success"
+    outputs:
+      configYamlBefore: $response.body#/data/yaml
+  - stepId: reloadConfig
+    description: >-
+      Trigger the reload of the configuration file and all rule files. A 500
+      here means the new configuration failed to parse and the server has kept
+      running on the old one.
+    operationId: reloadConfig
+    successCriteria:
+    - condition: $statusCode == 200
+  - stepId: confirmReloadSucceeded
+    description: >-
+      Read the runtime info and check reloadConfigSuccess. This is the field
+      that separates a reload the server accepted from one it actually adopted,
+      and lastConfigTime dates the adoption.
+    operationId: getRuntimeInfo
+    successCriteria:
+    - condition: $statusCode == 200
+    - condition: $response.body#/status == "success"
+    - condition: $response.body#/data/reloadConfigSuccess == true
+    outputs:
+      reloadConfigSuccess: $response.body#/data/reloadConfigSuccess
+      lastConfigTime: $response.body#/data/lastConfigTime
+      startTime: $response.body#/data/startTime
+  - stepId: captureConfigAfter
+    description: >-
+      Re-read the loaded configuration and confirm the running server is serving
+      the new content rather than the before image.
+    operationId: getConfig
+    successCriteria:
+    - condition: $statusCode == 200
+    - condition: $response.body#/status == "success"
+    outputs:
+      configYamlAfter: $response.body#/data/yaml
+  - stepId: confirmRulesLoaded
+    description: >-
+      List the rule groups now loaded. A reload can succeed on the main
+      configuration while a referenced rule file quietly contributes nothing, so
+      confirming the expected groups are present closes the loop.
+    operationId: getRules
+    parameters:
+    - name: type
+      in: query
+      value: $inputs.ruleType
+    successCriteria:
+    - condition: $statusCode == 200
+    - condition: $response.body#/status == "success"
+    outputs:
+      ruleGroups: $response.body#/data/groups
+      firstGroupName: $response.body#/data/groups/0/name
+      firstGroupFile: $response.body#/data/groups/0/file
+      firstGroupLastEvaluation: $response.body#/data/groups/0/lastEvaluation
+  outputs:
+    configYamlBefore: $steps.captureConfigBefore.outputs.configYamlBefore
+    configYamlAfter: $steps.captureConfigAfter.outputs.configYamlAfter
+    reloadConfigSuccess: $steps.confirmReloadSucceeded.outputs.reloadConfigSuccess
+    lastConfigTime: $steps.confirmReloadSucceeded.outputs.lastConfigTime
+    ruleGroups: $steps.confirmRulesLoaded.outputs.ruleGroups
