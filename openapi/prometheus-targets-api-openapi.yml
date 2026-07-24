@@ -1,0 +1,206 @@
+openapi: 3.1.0
+info:
+  title: Prometheus Alertmanager Admin Targets API
+  description: The Prometheus Alertmanager HTTP API v2 provides endpoints for querying active alert status, creating and managing silences, retrieving receiver configurations, and checking cluster peer status. Alertmanager deduplicates, groups, and routes alert notifications to receivers such as email, PagerDuty, Slack, and OpsGenie. The API base path is /api/v2.
+  version: v0.28.0
+  contact:
+    name: Prometheus Project
+    url: https://prometheus.io/community/
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+servers:
+- url: http://{host}:{port}
+  description: Alertmanager server
+  variables:
+    host:
+      default: localhost
+      description: Alertmanager server hostname
+    port:
+      default: '9093'
+      description: Alertmanager server port
+tags:
+- name: Targets
+  description: Endpoints for discovering scrape targets and their current health status.
+paths:
+  /api/v1/targets:
+    get:
+      operationId: getTargets
+      summary: Prometheus Get scrape targets
+      description: Returns an overview of the current state of the Prometheus target discovery including active and dropped targets, their labels, and scrape health status.
+      tags:
+      - Targets
+      parameters:
+      - name: state
+        in: query
+        description: Filter targets by state.
+        schema:
+          type: string
+          enum:
+          - active
+          - dropped
+          - any
+          default: any
+      responses:
+        '200':
+          description: Targets returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TargetsResponse'
+  /api/v1/targets/metadata:
+    get:
+      operationId: getTargetMetadata
+      summary: Prometheus Get target metadata
+      description: Returns metadata about metrics for individual targets. Allows filtering by target label matchers and metric name to retrieve per-target metadata contributed by scrape pools.
+      tags:
+      - Targets
+      parameters:
+      - name: match_target
+        in: query
+        description: Label selectors matching target labels.
+        schema:
+          type: string
+      - name: metric
+        in: query
+        description: Metric name to filter by.
+        schema:
+          type: string
+      - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Target metadata returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TargetMetadataResponse'
+        '400':
+          description: Bad request
+components:
+  schemas:
+    TargetMetadataResponse:
+      type: object
+      description: Response containing per-target metric metadata.
+      required:
+      - status
+      - data
+      properties:
+        status:
+          type: string
+          enum:
+          - success
+          - error
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              target:
+                type: object
+                additionalProperties:
+                  type: string
+                description: Labels identifying the target.
+              metric:
+                type: string
+                description: Metric name.
+              type:
+                type: string
+                description: Metric type.
+              help:
+                type: string
+                description: Help text.
+              unit:
+                type: string
+                description: Unit.
+    DroppedTarget:
+      type: object
+      description: A scrape target dropped by relabeling.
+      properties:
+        discoveredLabels:
+          type: object
+          additionalProperties:
+            type: string
+          description: Labels from service discovery before the target was dropped.
+    ActiveTarget:
+      type: object
+      description: An active scrape target.
+      properties:
+        discoveredLabels:
+          type: object
+          additionalProperties:
+            type: string
+          description: Unmodified labels before relabeling from service discovery.
+        labels:
+          type: object
+          additionalProperties:
+            type: string
+          description: Labels after relabeling.
+        scrapePool:
+          type: string
+          description: The scrape pool this target belongs to.
+        scrapeUrl:
+          type: string
+          format: uri
+          description: The URL Prometheus will scrape.
+        globalUrl:
+          type: string
+          description: The globally accessible scrape URL.
+        lastError:
+          type: string
+          description: Error from the last scrape, empty if successful.
+        lastScrape:
+          type: string
+          format: date-time
+          description: Timestamp of the last scrape.
+        lastScrapeDuration:
+          type: number
+          description: Duration of the last scrape in seconds.
+        health:
+          type: string
+          enum:
+          - up
+          - down
+          - unknown
+          description: Health status of the target.
+        scrapeInterval:
+          type: string
+          description: The scrape interval for this target.
+        scrapeTimeout:
+          type: string
+          description: The scrape timeout for this target.
+    TargetsResponse:
+      type: object
+      description: Response containing active and dropped scrape targets.
+      required:
+      - status
+      - data
+      properties:
+        status:
+          type: string
+          enum:
+          - success
+          - error
+        data:
+          type: object
+          properties:
+            activeTargets:
+              type: array
+              items:
+                $ref: '#/components/schemas/ActiveTarget'
+              description: List of currently active scrape targets.
+            droppedTargets:
+              type: array
+              items:
+                $ref: '#/components/schemas/DroppedTarget'
+              description: List of dropped targets from service discovery.
+  parameters:
+    Limit:
+      name: limit
+      in: query
+      description: Maximum number of items to return.
+      schema:
+        type: integer
+        minimum: 1
+externalDocs:
+  description: Alertmanager Documentation
+  url: https://prometheus.io/docs/alerting/latest/alertmanager/

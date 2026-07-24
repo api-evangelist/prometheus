@@ -1,0 +1,257 @@
+openapi: 3.1.0
+info:
+  title: Prometheus Alertmanager Admin Metadata API
+  description: The Prometheus Alertmanager HTTP API v2 provides endpoints for querying active alert status, creating and managing silences, retrieving receiver configurations, and checking cluster peer status. Alertmanager deduplicates, groups, and routes alert notifications to receivers such as email, PagerDuty, Slack, and OpsGenie. The API base path is /api/v2.
+  version: v0.28.0
+  contact:
+    name: Prometheus Project
+    url: https://prometheus.io/community/
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+servers:
+- url: http://{host}:{port}
+  description: Alertmanager server
+  variables:
+    host:
+      default: localhost
+      description: Alertmanager server hostname
+    port:
+      default: '9093'
+      description: Alertmanager server port
+tags:
+- name: Metadata
+  description: Endpoints for querying label names, label values, series metadata, and metric metadata without executing PromQL expressions.
+paths:
+  /api/v1/labels:
+    get:
+      operationId: getLabelNames
+      summary: Prometheus Get label names
+      description: Returns a list of label names present in the TSDB. Optionally filtered by a time range or series selectors. Useful for building autocomplete in query UIs.
+      tags:
+      - Metadata
+      parameters:
+      - name: start
+        in: query
+        description: Start of the time range filter.
+        schema:
+          type: string
+      - name: end
+        in: query
+        description: End of the time range filter.
+        schema:
+          type: string
+      - name: match[]
+        in: query
+        description: Series selector(s) to restrict the label results.
+        schema:
+          type: array
+          items:
+            type: string
+      - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Label names returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringListResponse'
+        '400':
+          description: Bad request
+  /api/v1/label/{label_name}/values:
+    get:
+      operationId: getLabelValues
+      summary: Prometheus Get label values
+      description: Returns a list of values for a given label name. Optionally filtered by a time range or series selectors. The special label name __name__ returns all metric names.
+      tags:
+      - Metadata
+      parameters:
+      - name: label_name
+        in: path
+        required: true
+        description: The label name to retrieve values for.
+        schema:
+          type: string
+          example: job
+      - name: start
+        in: query
+        description: Start of the time range filter.
+        schema:
+          type: string
+      - name: end
+        in: query
+        description: End of the time range filter.
+        schema:
+          type: string
+      - name: match[]
+        in: query
+        description: Series selector(s) to restrict the label value results.
+        schema:
+          type: array
+          items:
+            type: string
+      - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Label values returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringListResponse'
+        '400':
+          description: Bad request
+        '404':
+          description: Label not found
+  /api/v1/series:
+    get:
+      operationId: querySeries
+      summary: Prometheus Query series
+      description: Returns the list of time series that match a certain label set. The response contains the label sets identifying each time series. At least one match[] selector must be provided.
+      tags:
+      - Metadata
+      parameters:
+      - name: match[]
+        in: query
+        required: true
+        description: Series selector(s). At least one required.
+        schema:
+          type: array
+          items:
+            type: string
+      - name: start
+        in: query
+        description: Start of the time range filter.
+        schema:
+          type: string
+      - name: end
+        in: query
+        description: End of the time range filter.
+        schema:
+          type: string
+      - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Series returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeriesResponse'
+        '400':
+          description: Bad request
+  /api/v1/metadata:
+    get:
+      operationId: getMetricMetadata
+      summary: Prometheus Get metric metadata
+      description: Returns metadata about metrics currently scraped from targets. Metadata includes the metric type (counter, gauge, histogram, summary, untyped) and help string. Multiple targets may provide metadata for the same metric.
+      tags:
+      - Metadata
+      parameters:
+      - $ref: '#/components/parameters/Limit'
+      - name: metric
+        in: query
+        description: Metric name to filter by. If omitted, all metrics are returned.
+        schema:
+          type: string
+      - name: limit_per_metric
+        in: query
+        description: Maximum number of metadata entries to return per metric.
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Metric metadata returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MetricMetadataResponse'
+        '400':
+          description: Bad request
+components:
+  schemas:
+    SeriesResponse:
+      type: object
+      description: Response containing a list of series label sets.
+      required:
+      - status
+      - data
+      properties:
+        status:
+          type: string
+          enum:
+          - success
+          - error
+        data:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: string
+          description: List of label sets, each identifying a matching time series.
+    StringListResponse:
+      type: object
+      description: Response containing a list of string values.
+      required:
+      - status
+      - data
+      properties:
+        status:
+          type: string
+          enum:
+          - success
+          - error
+        data:
+          type: array
+          items:
+            type: string
+          description: List of string values.
+        warnings:
+          type: array
+          items:
+            type: string
+    MetricMetadataResponse:
+      type: object
+      description: Response containing metadata for metrics.
+      required:
+      - status
+      - data
+      properties:
+        status:
+          type: string
+          enum:
+          - success
+          - error
+        data:
+          type: object
+          description: Map of metric names to arrays of metadata entries.
+          additionalProperties:
+            type: array
+            items:
+              type: object
+              properties:
+                type:
+                  type: string
+                  enum:
+                  - counter
+                  - gauge
+                  - histogram
+                  - gaugehistogram
+                  - summary
+                  - untyped
+                  description: Metric type.
+                help:
+                  type: string
+                  description: Help text for the metric.
+                unit:
+                  type: string
+                  description: Unit of the metric.
+  parameters:
+    Limit:
+      name: limit
+      in: query
+      description: Maximum number of items to return.
+      schema:
+        type: integer
+        minimum: 1
+externalDocs:
+  description: Alertmanager Documentation
+  url: https://prometheus.io/docs/alerting/latest/alertmanager/

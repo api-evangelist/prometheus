@@ -1,0 +1,369 @@
+openapi: 3.1.0
+info:
+  title: Prometheus Alertmanager Admin Alerts API
+  description: The Prometheus Alertmanager HTTP API v2 provides endpoints for querying active alert status, creating and managing silences, retrieving receiver configurations, and checking cluster peer status. Alertmanager deduplicates, groups, and routes alert notifications to receivers such as email, PagerDuty, Slack, and OpsGenie. The API base path is /api/v2.
+  version: v0.28.0
+  contact:
+    name: Prometheus Project
+    url: https://prometheus.io/community/
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+servers:
+- url: http://{host}:{port}
+  description: Alertmanager server
+  variables:
+    host:
+      default: localhost
+      description: Alertmanager server hostname
+    port:
+      default: '9093'
+      description: Alertmanager server port
+tags:
+- name: Alerts
+  description: Endpoints for listing and creating alerts in the Alertmanager.
+paths:
+  /api/v2/alerts:
+    get:
+      operationId: getAlerts
+      summary: Prometheus Get active alerts
+      description: Returns a list of active alerts currently managed by Alertmanager. Supports filtering by silenced, inhibited, active state, and label matchers.
+      tags:
+      - Alerts
+      parameters:
+      - name: active
+        in: query
+        description: Only return active (non-silenced, non-inhibited) alerts.
+        schema:
+          type: boolean
+          default: true
+      - name: silenced
+        in: query
+        description: Include silenced alerts in results.
+        schema:
+          type: boolean
+          default: false
+      - name: inhibited
+        in: query
+        description: Include inhibited alerts in results.
+        schema:
+          type: boolean
+          default: false
+      - name: unprocessed
+        in: query
+        description: Include unprocessed alerts that have not yet been routed.
+        schema:
+          type: boolean
+          default: false
+      - name: filter
+        in: query
+        description: A list of label matchers to filter alerts by. Matchers use the syntax label=value, label!=value, label=~regex, or label!~regex.
+        schema:
+          type: array
+          items:
+            type: string
+      - name: receiver
+        in: query
+        description: Filter by receiver name.
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Active alerts returned successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GettableAlert'
+        '400':
+          description: Bad request — invalid filter matchers
+    post:
+      operationId: postAlerts
+      summary: Prometheus Post alerts
+      description: Creates or updates alerts in Alertmanager. Prometheus typically calls this endpoint to send firing alerts. Each alert must include a labels map; generatorURL is optional but recommended for linking back to the triggering expression.
+      tags:
+      - Alerts
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/PostableAlert'
+      responses:
+        '200':
+          description: Alerts accepted
+        '400':
+          description: Bad request — invalid alert format
+        '500':
+          description: Internal server error
+  /api/v2/alerts/groups:
+    get:
+      operationId: getAlertGroups
+      summary: Prometheus Get alert groups
+      description: Returns a list of alert groups. Alertmanager groups alerts by their group labels as configured in routing rules. Each group has a receiver and a set of alerts.
+      tags:
+      - Alerts
+      parameters:
+      - name: active
+        in: query
+        description: Include active alerts.
+        schema:
+          type: boolean
+          default: true
+      - name: silenced
+        in: query
+        description: Include silenced alerts.
+        schema:
+          type: boolean
+          default: false
+      - name: inhibited
+        in: query
+        description: Include inhibited alerts.
+        schema:
+          type: boolean
+          default: false
+      - name: filter
+        in: query
+        description: Label matchers to filter by.
+        schema:
+          type: array
+          items:
+            type: string
+      - name: receiver
+        in: query
+        description: Filter by receiver name.
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Alert groups returned successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AlertGroup'
+        '400':
+          description: Bad request
+  /api/v1/alerts:
+    get:
+      operationId: getAlerts
+      summary: Prometheus Get alerts
+      description: Returns a list of all active alerts currently firing or pending in Prometheus. Alerts include their labels, state, and timestamps.
+      tags:
+      - Alerts
+      responses:
+        '200':
+          description: Alerts returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlertsResponse'
+components:
+  schemas:
+    Receiver:
+      type: object
+      description: An Alertmanager notification receiver.
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          description: Receiver name as defined in the configuration file.
+    AlertStatus:
+      type: object
+      description: The current routing and inhibition status of an alert.
+      required:
+      - state
+      - silencedBy
+      - inhibitedBy
+      properties:
+        state:
+          type: string
+          enum:
+          - unprocessed
+          - active
+          - suppressed
+          description: Whether the alert is active, silenced, or inhibited.
+        silencedBy:
+          type: array
+          items:
+            type: string
+          description: IDs of silences that mute this alert.
+        inhibitedBy:
+          type: array
+          items:
+            type: string
+          description: Fingerprints of alerts that inhibit this alert.
+    PostableAlert:
+      type: object
+      description: An alert payload for sending to Alertmanager.
+      required:
+      - labels
+      properties:
+        labels:
+          type: object
+          additionalProperties:
+            type: string
+          description: Alert identification labels. Must include alertname.
+        annotations:
+          type: object
+          additionalProperties:
+            type: string
+          description: Non-identifying metadata.
+        startsAt:
+          type: string
+          format: date-time
+          description: Alert start time. Defaults to current time if omitted.
+        endsAt:
+          type: string
+          format: date-time
+          description: Alert end time. If in the past, the alert resolves.
+        generatorURL:
+          type: string
+          format: uri
+          description: URL to the expression that triggered this alert.
+    GettableAlert:
+      type: object
+      description: An alert as returned by Alertmanager including routing metadata.
+      required:
+      - labels
+      - annotations
+      - startsAt
+      - endsAt
+      - updatedAt
+      - fingerprint
+      - receivers
+      - status
+      properties:
+        labels:
+          type: object
+          additionalProperties:
+            type: string
+          description: Alert identification labels including alertname.
+        annotations:
+          type: object
+          additionalProperties:
+            type: string
+          description: Non-identifying metadata such as summary and description.
+        startsAt:
+          type: string
+          format: date-time
+          description: Timestamp when the alert started firing.
+        endsAt:
+          type: string
+          format: date-time
+          description: Timestamp when the alert resolves. Set far future if still active.
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp of the last update.
+        generatorURL:
+          type: string
+          format: uri
+          description: URL linking back to the expression that triggered this alert.
+        fingerprint:
+          type: string
+          description: Hash identifying this unique alert label set.
+        receivers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Receiver'
+          description: Receivers that will be notified for this alert.
+        status:
+          $ref: '#/components/schemas/AlertStatus'
+    AlertsResponse:
+      type: object
+      description: Response containing currently active alerts.
+      required:
+      - status
+      - data
+      properties:
+        status:
+          type: string
+          enum:
+          - success
+          - error
+        data:
+          type: object
+          properties:
+            alerts:
+              type: array
+              items:
+                $ref: '#/components/schemas/AlertInstance'
+    AlertGroup:
+      type: object
+      description: A group of alerts sharing common group labels.
+      required:
+      - labels
+      - groupLabels
+      - commonLabels
+      - commonAnnotations
+      - externalURL
+      - receiver
+      - alerts
+      properties:
+        labels:
+          type: object
+          additionalProperties:
+            type: string
+          description: Labels common to all alerts in this group.
+        groupLabels:
+          type: object
+          additionalProperties:
+            type: string
+          description: Labels used to group these alerts per the routing config.
+        commonLabels:
+          type: object
+          additionalProperties:
+            type: string
+          description: Labels present on all alerts in the group.
+        commonAnnotations:
+          type: object
+          additionalProperties:
+            type: string
+          description: Annotations present on all alerts in the group.
+        externalURL:
+          type: string
+          format: uri
+          description: External URL for the Alertmanager instance.
+        receiver:
+          $ref: '#/components/schemas/Receiver'
+        alerts:
+          type: array
+          items:
+            $ref: '#/components/schemas/GettableAlert'
+          description: Alerts belonging to this group.
+    AlertInstance:
+      type: object
+      description: An instance of a firing or pending alert.
+      properties:
+        labels:
+          type: object
+          additionalProperties:
+            type: string
+          description: Labels of this alert instance.
+        annotations:
+          type: object
+          additionalProperties:
+            type: string
+          description: Annotations of this alert instance.
+        state:
+          type: string
+          enum:
+          - firing
+          - pending
+          description: Current alert state.
+        activeAt:
+          type: string
+          format: date-time
+          description: Time the alert became active.
+        value:
+          type: string
+          description: The value of the expression at the time of the last evaluation.
+externalDocs:
+  description: Alertmanager Documentation
+  url: https://prometheus.io/docs/alerting/latest/alertmanager/

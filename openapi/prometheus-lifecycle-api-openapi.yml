@@ -1,0 +1,74 @@
+openapi: 3.1.0
+info:
+  title: Prometheus Alertmanager Admin Lifecycle API
+  description: The Prometheus Alertmanager HTTP API v2 provides endpoints for querying active alert status, creating and managing silences, retrieving receiver configurations, and checking cluster peer status. Alertmanager deduplicates, groups, and routes alert notifications to receivers such as email, PagerDuty, Slack, and OpsGenie. The API base path is /api/v2.
+  version: v0.28.0
+  contact:
+    name: Prometheus Project
+    url: https://prometheus.io/community/
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+servers:
+- url: http://{host}:{port}
+  description: Alertmanager server
+  variables:
+    host:
+      default: localhost
+      description: Alertmanager server hostname
+    port:
+      default: '9093'
+      description: Alertmanager server port
+tags:
+- name: Lifecycle
+  description: Endpoints for managing the Prometheus server lifecycle including configuration reloads and graceful shutdown. Requires --web.enable-lifecycle flag.
+paths:
+  /-/reload:
+    post:
+      operationId: reloadConfig
+      summary: Prometheus Reload configuration
+      description: Triggers a reload of the Prometheus configuration file and rule files. Returns 200 when the reload is successful and 500 if the reload fails. Requires --web.enable-lifecycle flag. Also triggered by sending SIGHUP to the Prometheus process.
+      tags:
+      - Lifecycle
+      responses:
+        '200':
+          description: Configuration reloaded successfully
+        '500':
+          description: Configuration reload failed
+  /-/quit:
+    post:
+      operationId: quitServer
+      summary: Prometheus Graceful shutdown
+      description: Triggers a graceful shutdown of the Prometheus server. Returns 200 immediately while the shutdown proceeds asynchronously. Requires --web.enable-lifecycle flag. Also triggered by sending SIGTERM to the Prometheus process.
+      tags:
+      - Lifecycle
+      responses:
+        '200':
+          description: Shutdown initiated
+  /-/healthy:
+    get:
+      operationId: checkHealth
+      summary: Prometheus Health check
+      description: Returns 200 when Prometheus is healthy and ready to serve requests. Returns 500 if Prometheus is not ready. Used for Kubernetes liveness probes.
+      tags:
+      - Lifecycle
+      responses:
+        '200':
+          description: Prometheus is healthy
+        '500':
+          description: Prometheus is not healthy
+  /-/ready:
+    get:
+      operationId: checkReady
+      summary: Prometheus Readiness check
+      description: Returns 200 when Prometheus is ready to serve traffic, meaning it has finished startup and is serving queries. Returns 503 if not yet ready. Used for Kubernetes readiness probes.
+      tags:
+      - Lifecycle
+      responses:
+        '200':
+          description: Prometheus is ready to serve traffic
+        '503':
+          description: Prometheus is not yet ready
+externalDocs:
+  description: Alertmanager Documentation
+  url: https://prometheus.io/docs/alerting/latest/alertmanager/

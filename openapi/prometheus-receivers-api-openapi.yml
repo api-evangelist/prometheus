@@ -1,0 +1,55 @@
+openapi: 3.1.0
+info:
+  title: Prometheus Alertmanager Admin Receivers API
+  description: The Prometheus Alertmanager HTTP API v2 provides endpoints for querying active alert status, creating and managing silences, retrieving receiver configurations, and checking cluster peer status. Alertmanager deduplicates, groups, and routes alert notifications to receivers such as email, PagerDuty, Slack, and OpsGenie. The API base path is /api/v2.
+  version: v0.28.0
+  contact:
+    name: Prometheus Project
+    url: https://prometheus.io/community/
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+servers:
+- url: http://{host}:{port}
+  description: Alertmanager server
+  variables:
+    host:
+      default: localhost
+      description: Alertmanager server hostname
+    port:
+      default: '9093'
+      description: Alertmanager server port
+tags:
+- name: Receivers
+  description: Endpoints for listing configured alert receivers.
+paths:
+  /api/v2/receivers:
+    get:
+      operationId: listReceivers
+      summary: Prometheus List receivers
+      description: Returns a list of all configured alert receivers. Receivers are the notification integrations (email, Slack, PagerDuty, etc.) configured in the Alertmanager configuration file.
+      tags:
+      - Receivers
+      responses:
+        '200':
+          description: Receivers returned successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Receiver'
+components:
+  schemas:
+    Receiver:
+      type: object
+      description: An Alertmanager notification receiver.
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          description: Receiver name as defined in the configuration file.
+externalDocs:
+  description: Alertmanager Documentation
+  url: https://prometheus.io/docs/alerting/latest/alertmanager/

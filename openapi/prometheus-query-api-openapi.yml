@@ -1,0 +1,399 @@
+openapi: 3.1.0
+info:
+  title: Prometheus Alertmanager Admin Query API
+  description: The Prometheus Alertmanager HTTP API v2 provides endpoints for querying active alert status, creating and managing silences, retrieving receiver configurations, and checking cluster peer status. Alertmanager deduplicates, groups, and routes alert notifications to receivers such as email, PagerDuty, Slack, and OpsGenie. The API base path is /api/v2.
+  version: v0.28.0
+  contact:
+    name: Prometheus Project
+    url: https://prometheus.io/community/
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+servers:
+- url: http://{host}:{port}
+  description: Alertmanager server
+  variables:
+    host:
+      default: localhost
+      description: Alertmanager server hostname
+    port:
+      default: '9093'
+      description: Alertmanager server port
+tags:
+- name: Query
+  description: PromQL instant and range query endpoints for evaluating expressions against the time series database.
+paths:
+  /api/v1/query:
+    get:
+      operationId: queryInstant
+      summary: Prometheus Execute instant query
+      description: Evaluates a PromQL expression at a single point in time. Returns a vector of time series with their values at the specified time. If the time parameter is omitted, the current server time is used.
+      tags:
+      - Query
+      parameters:
+      - $ref: '#/components/parameters/QueryExpr'
+      - name: time
+        in: query
+        description: Evaluation timestamp as a Unix timestamp or RFC3339 string. Defaults to current server time.
+        schema:
+          type: string
+      - $ref: '#/components/parameters/Timeout'
+      responses:
+        '200':
+          description: Query executed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryResponse'
+        '400':
+          description: Bad request — invalid query expression or parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Unprocessable entity — expression cannot be executed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '503':
+          description: Query timed out or was aborted
+    post:
+      operationId: queryInstantPost
+      summary: Prometheus Execute instant query (POST)
+      description: Evaluates a PromQL expression at a single point in time using a POST request body. Use POST when query parameters exceed URL length limits.
+      tags:
+      - Query
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+              - query
+              properties:
+                query:
+                  type: string
+                  description: PromQL expression to evaluate.
+                time:
+                  type: string
+                  description: Evaluation timestamp.
+                timeout:
+                  type: string
+                  description: Evaluation timeout.
+      responses:
+        '200':
+          description: Query executed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryResponse'
+        '400':
+          description: Bad request
+  /api/v1/query_range:
+    get:
+      operationId: queryRange
+      summary: Prometheus Execute range query
+      description: Evaluates a PromQL expression over a range of time, returning a matrix of time series with values at each step interval. Used for generating graphs and time-based analysis.
+      tags:
+      - Query
+      parameters:
+      - $ref: '#/components/parameters/QueryExpr'
+      - name: start
+        in: query
+        required: true
+        description: Start of the time range as a Unix timestamp or RFC3339 string.
+        schema:
+          type: string
+      - name: end
+        in: query
+        required: true
+        description: End of the time range as a Unix timestamp or RFC3339 string.
+        schema:
+          type: string
+      - name: step
+        in: query
+        required: true
+        description: Query resolution step width as a duration string (e.g., 15s, 1m, 1h).
+        schema:
+          type: string
+      - $ref: '#/components/parameters/Timeout'
+      responses:
+        '200':
+          description: Range query executed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryResponse'
+        '400':
+          description: Bad request — invalid query or time parameters
+        '422':
+          description: Unprocessable query expression
+    post:
+      operationId: queryRangePost
+      summary: Prometheus Execute range query (POST)
+      description: Evaluates a PromQL expression over a range of time using a POST request body. Use POST when query parameters exceed URL length limits.
+      tags:
+      - Query
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+              - query
+              - start
+              - end
+              - step
+              properties:
+                query:
+                  type: string
+                  description: PromQL expression to evaluate.
+                start:
+                  type: string
+                  description: Start of the time range.
+                end:
+                  type: string
+                  description: End of the time range.
+                step:
+                  type: string
+                  description: Query resolution step width.
+                timeout:
+                  type: string
+                  description: Evaluation timeout.
+      responses:
+        '200':
+          description: Range query executed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryResponse'
+        '400':
+          description: Bad request
+  /api/v1/query_exemplars:
+    get:
+      operationId: queryExemplars
+      summary: Prometheus Query exemplars
+      description: Returns a list of exemplars for a given PromQL expression over a time range. Exemplars are specific trace or log IDs attached to high-value metric observations that link metrics to traces.
+      tags:
+      - Query
+      parameters:
+      - $ref: '#/components/parameters/QueryExpr'
+      - name: start
+        in: query
+        required: true
+        description: Start of the time range.
+        schema:
+          type: string
+      - name: end
+        in: query
+        required: true
+        description: End of the time range.
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Exemplars returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExemplarResponse'
+        '400':
+          description: Bad request
+components:
+  schemas:
+    SamplePair:
+      type: array
+      description: A [timestamp, value] pair where timestamp is a Unix float and value is a string-encoded float.
+      prefixItems:
+      - type: number
+        description: Unix timestamp as a float.
+      - type: string
+        description: Metric value as a string-encoded float (including Inf, -Inf, NaN).
+      minItems: 2
+      maxItems: 2
+    VectorSample:
+      type: object
+      description: A single time series with one value at a specific timestamp (instant query result).
+      required:
+      - metric
+      - value
+      properties:
+        metric:
+          type: object
+          additionalProperties:
+            type: string
+          description: Label set identifying this time series.
+        value:
+          $ref: '#/components/schemas/SamplePair'
+    MatrixSeries:
+      type: object
+      description: A time series with multiple values over a time range (range query result).
+      required:
+      - metric
+      - values
+      properties:
+        metric:
+          type: object
+          additionalProperties:
+            type: string
+          description: Label set identifying this time series.
+        values:
+          type: array
+          items:
+            $ref: '#/components/schemas/SamplePair'
+          description: Array of timestamp-value pairs over the queried time range.
+    ErrorResponse:
+      type: object
+      description: Error response from the Prometheus API.
+      required:
+      - status
+      - errorType
+      - error
+      properties:
+        status:
+          type: string
+          enum:
+          - error
+        errorType:
+          type: string
+          description: Category of the error.
+          enum:
+          - timeout
+          - canceled
+          - execution
+          - bad_data
+          - internal
+          - unavailable
+          - not_found
+        error:
+          type: string
+          description: Human-readable error message.
+        warnings:
+          type: array
+          items:
+            type: string
+          description: Warnings that occurred alongside the error.
+    ExemplarResponse:
+      type: object
+      description: Response containing exemplars for a query.
+      required:
+      - status
+      - data
+      properties:
+        status:
+          type: string
+          enum:
+          - success
+          - error
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExemplarData'
+    QueryResponse:
+      type: object
+      description: Standard response envelope for query results.
+      required:
+      - status
+      - data
+      properties:
+        status:
+          type: string
+          description: Request status — success or error.
+          enum:
+          - success
+          - error
+        data:
+          $ref: '#/components/schemas/QueryData'
+        errorType:
+          type: string
+          description: Type of error if status is error.
+        error:
+          type: string
+          description: Error message if status is error.
+        warnings:
+          type: array
+          items:
+            type: string
+          description: Non-fatal warnings encountered during query execution.
+    ScalarValue:
+      type: array
+      description: A scalar value at a timestamp.
+      prefixItems:
+      - type: number
+        description: Unix timestamp.
+      - type: string
+        description: Scalar value.
+      minItems: 2
+      maxItems: 2
+    ExemplarData:
+      type: object
+      description: Exemplar data for a metric series.
+      properties:
+        seriesLabels:
+          type: object
+          additionalProperties:
+            type: string
+          description: Labels identifying the metric series.
+        exemplars:
+          type: array
+          items:
+            type: object
+            properties:
+              labels:
+                type: object
+                additionalProperties:
+                  type: string
+                description: Exemplar labels including trace ID.
+              value:
+                type: string
+                description: Metric value at the exemplar timestamp.
+              timestamp:
+                type: number
+                description: Unix timestamp of the exemplar.
+    QueryData:
+      type: object
+      description: The result data from a query, containing the result type and values.
+      required:
+      - resultType
+      - result
+      properties:
+        resultType:
+          type: string
+          description: The type of the result data.
+          enum:
+          - matrix
+          - vector
+          - scalar
+          - string
+        result:
+          description: 'The query result. Shape depends on resultType: matrix contains arrays of values over time, vector contains a single value per series, scalar is a single numeric value.'
+          oneOf:
+          - type: array
+            items:
+              $ref: '#/components/schemas/MatrixSeries'
+          - type: array
+            items:
+              $ref: '#/components/schemas/VectorSample'
+          - $ref: '#/components/schemas/ScalarValue'
+  parameters:
+    Timeout:
+      name: timeout
+      in: query
+      description: Evaluation timeout as a duration string (e.g., 30s).
+      schema:
+        type: string
+    QueryExpr:
+      name: query
+      in: query
+      required: true
+      description: PromQL expression to evaluate.
+      schema:
+        type: string
+        example: rate(http_requests_total[5m])
+externalDocs:
+  description: Alertmanager Documentation
+  url: https://prometheus.io/docs/alerting/latest/alertmanager/

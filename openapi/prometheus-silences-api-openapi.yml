@@ -1,0 +1,230 @@
+openapi: 3.1.0
+info:
+  title: Prometheus Alertmanager Admin Silences API
+  description: The Prometheus Alertmanager HTTP API v2 provides endpoints for querying active alert status, creating and managing silences, retrieving receiver configurations, and checking cluster peer status. Alertmanager deduplicates, groups, and routes alert notifications to receivers such as email, PagerDuty, Slack, and OpsGenie. The API base path is /api/v2.
+  version: v0.28.0
+  contact:
+    name: Prometheus Project
+    url: https://prometheus.io/community/
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+servers:
+- url: http://{host}:{port}
+  description: Alertmanager server
+  variables:
+    host:
+      default: localhost
+      description: Alertmanager server hostname
+    port:
+      default: '9093'
+      description: Alertmanager server port
+tags:
+- name: Silences
+  description: Endpoints for creating, listing, updating, and expiring silences that mute matching alerts.
+paths:
+  /api/v2/silences:
+    get:
+      operationId: listSilences
+      summary: Prometheus List silences
+      description: Returns a list of all silences including pending, active, and expired silences. Silences mute alerts matching their matchers for a defined time range.
+      tags:
+      - Silences
+      parameters:
+      - name: filter
+        in: query
+        description: Label matchers to filter silences by.
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: Silences returned successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GettableSilence'
+        '400':
+          description: Bad request
+    post:
+      operationId: createSilence
+      summary: Prometheus Create or update silence
+      description: Creates a new silence or updates an existing one. To update, include the ID of the existing silence. Silences mute all alerts whose labels match every matcher in the silence for the specified time period.
+      tags:
+      - Silences
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostableSilence'
+      responses:
+        '200':
+          description: Silence created or updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  silenceID:
+                    type: string
+                    format: uuid
+                    description: ID of the created or updated silence.
+        '400':
+          description: Bad request — invalid silence definition
+        '404':
+          description: Silence not found (when updating by ID)
+  /api/v2/silence/{silenceID}:
+    get:
+      operationId: getSilence
+      summary: Prometheus Get silence by ID
+      description: Returns the silence with the specified ID, including its matchers, time range, creator, and current status.
+      tags:
+      - Silences
+      parameters:
+      - $ref: '#/components/parameters/SilenceID'
+      responses:
+        '200':
+          description: Silence returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GettableSilence'
+        '404':
+          description: Silence not found
+    delete:
+      operationId: deleteSilence
+      summary: Prometheus Expire silence
+      description: Expires a silence, setting its end time to now. Expired silences no longer mute alerts but remain visible until fully removed.
+      tags:
+      - Silences
+      parameters:
+      - $ref: '#/components/parameters/SilenceID'
+      responses:
+        '200':
+          description: Silence expired successfully
+        '404':
+          description: Silence not found
+        '500':
+          description: Internal error expiring silence
+components:
+  schemas:
+    GettableSilence:
+      type: object
+      description: A silence as returned by Alertmanager with full metadata.
+      required:
+      - id
+      - status
+      - updatedAt
+      - matchers
+      - startsAt
+      - endsAt
+      - createdBy
+      - comment
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier of the silence.
+        status:
+          type: object
+          properties:
+            state:
+              type: string
+              enum:
+              - expired
+              - active
+              - pending
+              description: Current state of the silence.
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp of the last update to this silence.
+        matchers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Matcher'
+          description: Label matchers that determine which alerts this silence affects.
+        startsAt:
+          type: string
+          format: date-time
+          description: When the silence takes effect.
+        endsAt:
+          type: string
+          format: date-time
+          description: When the silence expires.
+        createdBy:
+          type: string
+          description: The person or system that created this silence.
+        comment:
+          type: string
+          description: A comment explaining the reason for the silence.
+    PostableSilence:
+      type: object
+      description: Silence definition for creation or update.
+      required:
+      - matchers
+      - startsAt
+      - endsAt
+      - createdBy
+      - comment
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ID of existing silence to update. Omit for creation.
+        matchers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Matcher'
+          description: Label matchers for the silence.
+        startsAt:
+          type: string
+          format: date-time
+          description: When the silence takes effect.
+        endsAt:
+          type: string
+          format: date-time
+          description: When the silence expires.
+        createdBy:
+          type: string
+          description: The person or system creating this silence.
+        comment:
+          type: string
+          description: Reason for the silence.
+    Matcher:
+      type: object
+      description: A label matcher used in silences and routes.
+      required:
+      - name
+      - value
+      - isRegex
+      properties:
+        name:
+          type: string
+          description: Label name to match.
+        value:
+          type: string
+          description: Label value or regex to match against.
+        isRegex:
+          type: boolean
+          description: Whether value is a regular expression.
+        isEqual:
+          type: boolean
+          description: Whether the match is equality (true) or inequality (false).
+          default: true
+  parameters:
+    SilenceID:
+      name: silenceID
+      in: path
+      required: true
+      description: UUID identifier of the silence.
+      schema:
+        type: string
+        format: uuid
+externalDocs:
+  description: Alertmanager Documentation
+  url: https://prometheus.io/docs/alerting/latest/alertmanager/

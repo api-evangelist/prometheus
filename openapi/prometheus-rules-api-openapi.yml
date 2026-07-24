@@ -1,0 +1,206 @@
+openapi: 3.1.0
+info:
+  title: Prometheus Alertmanager Admin Rules API
+  description: The Prometheus Alertmanager HTTP API v2 provides endpoints for querying active alert status, creating and managing silences, retrieving receiver configurations, and checking cluster peer status. Alertmanager deduplicates, groups, and routes alert notifications to receivers such as email, PagerDuty, Slack, and OpsGenie. The API base path is /api/v2.
+  version: v0.28.0
+  contact:
+    name: Prometheus Project
+    url: https://prometheus.io/community/
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+servers:
+- url: http://{host}:{port}
+  description: Alertmanager server
+  variables:
+    host:
+      default: localhost
+      description: Alertmanager server hostname
+    port:
+      default: '9093'
+      description: Alertmanager server port
+tags:
+- name: Rules
+  description: Endpoints for retrieving loaded recording rules and alerting rules.
+paths:
+  /api/v1/rules:
+    get:
+      operationId: getRules
+      summary: Prometheus Get rules
+      description: Returns a list of alerting and recording rules currently loaded. Rules include the rule expression, their last evaluation time, and any active alerts for alerting rules.
+      tags:
+      - Rules
+      parameters:
+      - name: type
+        in: query
+        description: Filter by rule type.
+        schema:
+          type: string
+          enum:
+          - alert
+          - record
+      - name: rule_name[]
+        in: query
+        description: Filter by rule name.
+        schema:
+          type: array
+          items:
+            type: string
+      - name: rule_group[]
+        in: query
+        description: Filter by rule group name.
+        schema:
+          type: array
+          items:
+            type: string
+      - name: file[]
+        in: query
+        description: Filter by the file the rule group was loaded from.
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: Rules returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RulesResponse'
+components:
+  schemas:
+    RuleGroup:
+      type: object
+      description: A group of recording and alerting rules.
+      required:
+      - name
+      - rules
+      properties:
+        name:
+          type: string
+          description: Group name.
+        file:
+          type: string
+          description: File the group was loaded from.
+        interval:
+          type: number
+          description: Evaluation interval in seconds.
+        limit:
+          type: integer
+          description: Maximum number of alerts this group can produce.
+        rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/Rule'
+          description: List of rules in this group.
+        lastEvaluation:
+          type: string
+          format: date-time
+          description: Timestamp of the last evaluation.
+        evaluationTime:
+          type: number
+          description: Duration of the last evaluation in seconds.
+    RulesResponse:
+      type: object
+      description: Response containing recording and alerting rule groups.
+      required:
+      - status
+      - data
+      properties:
+        status:
+          type: string
+          enum:
+          - success
+          - error
+        data:
+          type: object
+          properties:
+            groups:
+              type: array
+              items:
+                $ref: '#/components/schemas/RuleGroup'
+    AlertInstance:
+      type: object
+      description: An instance of a firing or pending alert.
+      properties:
+        labels:
+          type: object
+          additionalProperties:
+            type: string
+          description: Labels of this alert instance.
+        annotations:
+          type: object
+          additionalProperties:
+            type: string
+          description: Annotations of this alert instance.
+        state:
+          type: string
+          enum:
+          - firing
+          - pending
+          description: Current alert state.
+        activeAt:
+          type: string
+          format: date-time
+          description: Time the alert became active.
+        value:
+          type: string
+          description: The value of the expression at the time of the last evaluation.
+    Rule:
+      type: object
+      description: A recording rule or alerting rule.
+      required:
+      - name
+      - query
+      - type
+      properties:
+        name:
+          type: string
+          description: Rule or alert name.
+        query:
+          type: string
+          description: PromQL expression of the rule.
+        labels:
+          type: object
+          additionalProperties:
+            type: string
+          description: Labels to add to the rule output.
+        annotations:
+          type: object
+          additionalProperties:
+            type: string
+          description: Annotations for alerting rules (e.g., summary, description).
+        duration:
+          type: number
+          description: Alerting duration in seconds (for rules with for clauses).
+        health:
+          type: string
+          enum:
+          - ok
+          - err
+          - unknown
+          description: Rule evaluation health.
+        lastError:
+          type: string
+          description: Last evaluation error if health is err.
+        lastEvaluation:
+          type: string
+          format: date-time
+          description: Timestamp of last evaluation.
+        evaluationTime:
+          type: number
+          description: Time taken for the last evaluation in seconds.
+        type:
+          type: string
+          enum:
+          - recording
+          - alerting
+          description: Whether this is a recording or alerting rule.
+        alerts:
+          type: array
+          items:
+            $ref: '#/components/schemas/AlertInstance'
+          description: Currently active alerts for alerting rules.
+externalDocs:
+  description: Alertmanager Documentation
+  url: https://prometheus.io/docs/alerting/latest/alertmanager/

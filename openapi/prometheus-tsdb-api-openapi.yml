@@ -1,0 +1,148 @@
+openapi: 3.1.0
+info:
+  title: Prometheus Alertmanager Admin TSDB API
+  description: The Prometheus Alertmanager HTTP API v2 provides endpoints for querying active alert status, creating and managing silences, retrieving receiver configurations, and checking cluster peer status. Alertmanager deduplicates, groups, and routes alert notifications to receivers such as email, PagerDuty, Slack, and OpsGenie. The API base path is /api/v2.
+  version: v0.28.0
+  contact:
+    name: Prometheus Project
+    url: https://prometheus.io/community/
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+servers:
+- url: http://{host}:{port}
+  description: Alertmanager server
+  variables:
+    host:
+      default: localhost
+      description: Alertmanager server hostname
+    port:
+      default: '9093'
+      description: Alertmanager server port
+tags:
+- name: TSDB
+  description: Endpoints for querying TSDB statistics and deleting time series data.
+paths:
+  /api/v1/series:
+    delete:
+      operationId: deleteSeries
+      summary: Prometheus Delete series
+      description: Deletes data for a selection of series in a time range. This only creates tombstones in the TSDB; actual deletion happens on the next compaction. Requires --web.enable-admin-api flag.
+      tags:
+      - TSDB
+      parameters:
+      - name: match[]
+        in: query
+        required: true
+        description: Series selector(s) to delete. At least one required.
+        schema:
+          type: array
+          items:
+            type: string
+      - name: start
+        in: query
+        description: Start of the time range. Defaults to minimum possible time.
+        schema:
+          type: string
+      - name: end
+        in: query
+        description: End of the time range. Defaults to maximum possible time.
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Series deletion tombstones created successfully
+        '400':
+          description: Bad request
+        '403':
+          description: Admin API not enabled
+  /api/v1/status/tsdb:
+    get:
+      operationId: getTsdbStatus
+      summary: Prometheus Get TSDB statistics
+      description: Returns a set of properties about the Prometheus TSDB including the top series by label count, top chunks by label, most frequently changing metrics, and head statistics.
+      tags:
+      - TSDB
+      parameters:
+      - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: TSDB statistics returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TsdbStatusResponse'
+components:
+  schemas:
+    TsdbStatusResponse:
+      type: object
+      description: Response containing TSDB statistics.
+      required:
+      - status
+      - data
+      properties:
+        status:
+          type: string
+          enum:
+          - success
+          - error
+        data:
+          type: object
+          properties:
+            headStats:
+              type: object
+              description: Statistics about the TSDB head block.
+              properties:
+                numSeries:
+                  type: integer
+                  description: Number of series in the head block.
+                numLabelPairs:
+                  type: integer
+                  description: Number of label pairs in the head block.
+                chunkCount:
+                  type: integer
+                  description: Number of chunks in the head block.
+                minTime:
+                  type: integer
+                  description: Minimum time in milliseconds.
+                maxTime:
+                  type: integer
+                  description: Maximum time in milliseconds.
+            seriesCountByMetricName:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  value:
+                    type: integer
+            labelValueCountByLabelName:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  value:
+                    type: integer
+            memoryInBytesByLabelName:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  value:
+                    type: integer
+  parameters:
+    Limit:
+      name: limit
+      in: query
+      description: Maximum number of items to return.
+      schema:
+        type: integer
+        minimum: 1
+externalDocs:
+  description: Alertmanager Documentation
+  url: https://prometheus.io/docs/alerting/latest/alertmanager/
