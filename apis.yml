@@ -4,7 +4,20 @@ description: >-
   An open-source systems monitoring and alerting toolkit originally built at SoundCloud. Prometheus collects and stores
   metrics as time series data and provides a powerful query language (PromQL) for analysis.
 type: Index
-image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+accessModel:
+  pricing: free
+  onboarding: open
+  trial: false
+  try_now: true
+  public: true
+  label: Free · Open access
+  confidence: high
+  source:
+  - plans
+  - authentication
+  generated: '2026-07-22'
+  method: derived
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/prometheus.png
 tags:
   - Alerting
   - Metrics
@@ -16,134 +29,452 @@ created: '2024-01-01'
 modified: '2026-06-20'
 specificationVersion: '0.19'
 apis:
-  - aid: prometheus:prometheus-http-api
-    name: Prometheus HTTP API
-    description: >-
-      The Prometheus HTTP API provides endpoints for executing instant and range queries using PromQL, querying metadata
-      such as labels and series, and managing targets and rules. The API is reachable under /api/v1 on a Prometheus
-      server and returns JSON responses. An OpenAPI specification is served at /api/v1/openapi.yaml.
-    humanURL: https://prometheus.io/docs/prometheus/latest/querying/api/
-    tags:
-      - Metrics
-      - PromQL
-      - Query
-      - Time Series
-    properties:
-      - type: Documentation
-        url: https://prometheus.io/docs/prometheus/latest/querying/api/
-      - type: OpenAPI
-        url: openapi/prometheus-http-api-openapi.yml
-      - type: Overlay
-        url: overlays/prometheus-http-api-overlay.yaml
-      - type: GitHubRepository
-        url: https://github.com/prometheus/prometheus
-      - type: ChangeLog
-        url: https://github.com/prometheus/prometheus/blob/main/CHANGELOG.md
-      - type: JSONSchema
-        url: json-schema/prometheus-metrics-schema.json
-  - aid: prometheus:prometheus-management-api
-    name: Prometheus Management API
-    description: >-
-      The Prometheus Management API provides administrative endpoints for managing a running Prometheus server,
-      including configuration reloads, taking snapshots of the TSDB, cleaning tombstones, and graceful shutdown. These
-      endpoints are disabled by default and require the --web.enable-lifecycle flag.
-    humanURL: https://prometheus.io/docs/prometheus/latest/management_api/
-    tags:
-      - Administration
-      - Management
-      - Monitoring
-    properties:
-      - type: Documentation
-        url: https://prometheus.io/docs/prometheus/latest/management_api/
-      - type: OpenAPI
-        url: openapi/prometheus-management-api-openapi.yml
-      - type: Overlay
-        url: overlays/prometheus-management-api-overlay.yaml
-  - aid: prometheus:prometheus-pushgateway-api
-    name: Prometheus Pushgateway API
-    description: >-
-      The Pushgateway API accepts metrics pushed from short-lived batch jobs and ephemeral processes via HTTP PUT, POST,
-      and DELETE requests. Metrics are organized by job and optional grouping labels, and are exposed for Prometheus
-      scraping until explicitly deleted.
-    humanURL: https://github.com/prometheus/pushgateway
-    tags:
-      - Batch Jobs
-      - Metrics
-      - Pushgateway
-    properties:
-      - type: Documentation
-        url: https://github.com/prometheus/pushgateway/blob/master/README.md
-      - type: OpenAPI
-        url: openapi/prometheus-pushgateway-api-openapi.yml
-      - type: Overlay
-        url: overlays/prometheus-pushgateway-api-overlay.yaml
-      - type: GitHubRepository
-        url: https://github.com/prometheus/pushgateway
-      - type: ChangeLog
-        url: https://github.com/prometheus/pushgateway/releases
-  - aid: prometheus:prometheus-alertmanager-api
-    name: Prometheus Alertmanager API
-    description: >-
-      The Alertmanager API v2 provides HTTP endpoints for querying alert status, managing silences and inhibitions,
-      retrieving receiver configurations, and checking cluster status. An OpenAPI 2.0 specification is available in the
-      Alertmanager repository.
-    humanURL: https://prometheus.io/docs/alerting/latest/alertmanager/
-    tags:
-      - Alerting
-      - Notifications
-      - Silences
-    properties:
-      - type: Documentation
-        url: https://prometheus.io/docs/alerting/latest/alertmanager/
-      - type: OpenAPI
-        url: openapi/prometheus-alertmanager-api-openapi.yml
-      - type: Overlay
-        url: overlays/prometheus-alertmanager-api-overlay.yaml
-      - type: AsyncAPI
-        url: asyncapi/prometheus-alertmanager-webhook-asyncapi.yml
-      - type: GitHubRepository
-        url: https://github.com/prometheus/alertmanager
-      - type: ChangeLog
-        url: https://github.com/prometheus/alertmanager/releases
-  - aid: prometheus:prometheus-remote-write-api
-    name: Prometheus Remote Write API
-    description: >-
-      The Prometheus Remote Write API defines a standard protocol for sending time series data from Prometheus or
-      compatible agents to remote storage backends via HTTP POST with Snappy-compressed protobuf payloads. The
-      specification documents the wire format, required headers, and retry semantics for interoperable remote write
-      implementations.
-    humanURL: https://prometheus.io/docs/specs/prw/remote_write_spec/
-    tags:
-      - Integration
-      - Remote Write
-      - Storage
-      - Time Series
-    properties:
-      - type: Documentation
-        url: https://prometheus.io/docs/specs/prw/remote_write_spec/
-      - type: Protobuf
-        url: grpc/prometheus-remote.proto
-      - type: Protobuf
-        url: grpc/prometheus-types.proto
-      - type: Protobuf
-        url: grpc/prometheus-write-v2-types.proto
-  - aid: prometheus:prometheus-client-libraries
-    name: Prometheus Client Libraries
-    description: >-
-      Prometheus provides official client libraries for Go, Java/Scala, Python, Ruby, and Rust that enable application
-      instrumentation. Libraries implement the Prometheus metric types (Counter, Gauge, Histogram, Summary) and expose
-      metrics via an HTTP endpoint for Prometheus to scrape.
-    humanURL: https://prometheus.io/docs/instrumenting/clientlibs/
-    tags:
-      - Client Libraries
-      - Instrumentation
-      - Metrics
-      - SDK
-    properties:
-      - type: Documentation
-        url: https://prometheus.io/docs/instrumenting/clientlibs/
-      - type: Reference
-        url: https://prometheus.io/docs/instrumenting/writing_clientlibs/
+- aid: prometheus:prometheus-remote-write-api
+  name: Prometheus Remote Write API
+  description: >-
+    The Prometheus Remote Write API defines a standard protocol for sending time series data from Prometheus
+    or compatible agents to remote storage backends via HTTP POST with Snappy-compressed protobuf payloads.
+    The specification documents the wire format, required headers, and retry semantics for interoperable
+    remote write implementations.
+  humanURL: https://prometheus.io/docs/specs/prw/remote_write_spec/
+  tags:
+  - Integration
+  - Remote Write
+  - Storage
+  - Time Series
+  properties:
+  - type: Documentation
+    url: https://prometheus.io/docs/specs/prw/remote_write_spec/
+  - type: Protobuf
+    url: grpc/prometheus-remote.proto
+  - type: Protobuf
+    url: grpc/prometheus-types.proto
+  - type: Protobuf
+    url: grpc/prometheus-write-v2-types.proto
+- aid: prometheus:prometheus-client-libraries
+  name: Prometheus Client Libraries
+  description: >-
+    Prometheus provides official client libraries for Go, Java/Scala, Python, Ruby, and Rust that enable
+    application instrumentation. Libraries implement the Prometheus metric types (Counter, Gauge, Histogram,
+    Summary) and expose metrics via an HTTP endpoint for Prometheus to scrape.
+  humanURL: https://prometheus.io/docs/instrumenting/clientlibs/
+  tags:
+  - Client Libraries
+  - Instrumentation
+  - Metrics
+  - SDK
+  properties:
+  - type: Documentation
+    url: https://prometheus.io/docs/instrumenting/clientlibs/
+  - type: Reference
+    url: https://prometheus.io/docs/instrumenting/writing_clientlibs/
+- aid: prometheus:prometheus-admin-api
+  name: Prometheus Admin API
+  description: >-
+    Administrative endpoints for TSDB management including snapshots and tombstone cleanup. Requires --web.enable-admin-api
+    flag.
+  humanURL: https://prometheus.io/docs/prometheus/latest/querying/api/
+  tags:
+  - Admin
+  properties:
+  - type: OpenAPI
+    url: openapi/prometheus-admin-api-openapi.yml
+  - type: Documentation
+    url: https://prometheus.io/docs/prometheus/latest/querying/api/
+  - type: GitHubRepository
+    url: https://github.com/prometheus/prometheus
+  - type: ChangeLog
+    url: https://github.com/prometheus/prometheus/blob/main/CHANGELOG.md
+  - type: JSONSchema
+    url: json-schema/prometheus-metrics-schema.json
+  - type: Documentation
+    url: https://prometheus.io/docs/prometheus/latest/management_api/
+  - type: Documentation
+    url: https://github.com/prometheus/pushgateway/blob/master/README.md
+  - type: GitHubRepository
+    url: https://github.com/prometheus/pushgateway
+  - type: ChangeLog
+    url: https://github.com/prometheus/pushgateway/releases
+  - type: Documentation
+    url: https://prometheus.io/docs/alerting/latest/alertmanager/
+  - type: AsyncAPI
+    url: asyncapi/prometheus-alertmanager-webhook-asyncapi.yml
+  - type: GitHubRepository
+    url: https://github.com/prometheus/alertmanager
+  - type: ChangeLog
+    url: https://github.com/prometheus/alertmanager/releases
+- aid: prometheus:prometheus-alerts-api
+  name: Prometheus Alerts API
+  description: Endpoints for listing and creating alerts in the Alertmanager.
+  humanURL: https://prometheus.io/docs/prometheus/latest/querying/api/
+  tags:
+  - Alerts
+  properties:
+  - type: OpenAPI
+    url: openapi/prometheus-alerts-api-openapi.yml
+  - type: Documentation
+    url: https://prometheus.io/docs/prometheus/latest/querying/api/
+  - type: GitHubRepository
+    url: https://github.com/prometheus/prometheus
+  - type: ChangeLog
+    url: https://github.com/prometheus/prometheus/blob/main/CHANGELOG.md
+  - type: JSONSchema
+    url: json-schema/prometheus-metrics-schema.json
+  - type: Documentation
+    url: https://prometheus.io/docs/prometheus/latest/management_api/
+  - type: Documentation
+    url: https://github.com/prometheus/pushgateway/blob/master/README.md
+  - type: GitHubRepository
+    url: https://github.com/prometheus/pushgateway
+  - type: ChangeLog
+    url: https://github.com/prometheus/pushgateway/releases
+  - type: Documentation
+    url: https://prometheus.io/docs/alerting/latest/alertmanager/
+  - type: AsyncAPI
+    url: asyncapi/prometheus-alertmanager-webhook-asyncapi.yml
+  - type: GitHubRepository
+    url: https://github.com/prometheus/alertmanager
+  - type: ChangeLog
+    url: https://github.com/prometheus/alertmanager/releases
+- aid: prometheus:prometheus-lifecycle-api
+  name: Prometheus Lifecycle API
+  description: >-
+    Endpoints for managing the Prometheus server lifecycle including configuration reloads and graceful
+    shutdown. Requires --web.enable-lifecycle flag.
+  humanURL: https://prometheus.io/docs/prometheus/latest/querying/api/
+  tags:
+  - Lifecycle
+  properties:
+  - type: OpenAPI
+    url: openapi/prometheus-lifecycle-api-openapi.yml
+  - type: Documentation
+    url: https://prometheus.io/docs/prometheus/latest/querying/api/
+  - type: GitHubRepository
+    url: https://github.com/prometheus/prometheus
+  - type: ChangeLog
+    url: https://github.com/prometheus/prometheus/blob/main/CHANGELOG.md
+  - type: JSONSchema
+    url: json-schema/prometheus-metrics-schema.json
+  - type: Documentation
+    url: https://prometheus.io/docs/prometheus/latest/management_api/
+  - type: Documentation
+    url: https://github.com/prometheus/pushgateway/blob/master/README.md
+  - type: GitHubRepository
+    url: https://github.com/prometheus/pushgateway
+  - type: ChangeLog
+    url: https://github.com/prometheus/pushgateway/releases
+  - type: Documentation
+    url: https://prometheus.io/docs/alerting/latest/alertmanager/
+  - type: AsyncAPI
+    url: asyncapi/prometheus-alertmanager-webhook-asyncapi.yml
+  - type: GitHubRepository
+    url: https://github.com/prometheus/alertmanager
+  - type: ChangeLog
+    url: https://github.com/prometheus/alertmanager/releases
+- aid: prometheus:prometheus-metadata-api
+  name: Prometheus Metadata API
+  description: >-
+    Endpoints for querying label names, label values, series metadata, and metric metadata without executing
+    PromQL expressions.
+  humanURL: https://prometheus.io/docs/prometheus/latest/querying/api/
+  tags:
+  - Metadata
+  properties:
+  - type: OpenAPI
+    url: openapi/prometheus-metadata-api-openapi.yml
+  - type: Documentation
+    url: https://prometheus.io/docs/prometheus/latest/querying/api/
+  - type: GitHubRepository
+    url: https://github.com/prometheus/prometheus
+  - type: ChangeLog
+    url: https://github.com/prometheus/prometheus/blob/main/CHANGELOG.md
+  - type: JSONSchema
+    url: json-schema/prometheus-metrics-schema.json
+  - type: Documentation
+    url: https://prometheus.io/docs/prometheus/latest/management_api/
+  - type: Documentation
+    url: https://github.com/prometheus/pushgateway/blob/master/README.md
+  - type: GitHubRepository
+    url: https://github.com/prometheus/pushgateway
+  - type: ChangeLog
+    url: https://github.com/prometheus/pushgateway/releases
+  - type: Documentation
+    url: https://prometheus.io/docs/alerting/latest/alertmanager/
+  - type: AsyncAPI
+    url: asyncapi/prometheus-alertmanager-webhook-asyncapi.yml
+  - type: GitHubRepository
+    url: https://github.com/prometheus/alertmanager
+  - type: ChangeLog
+    url: https://github.com/prometheus/alertmanager/releases
+- aid: prometheus:prometheus-metrics-api
+  name: Prometheus Metrics API
+  description: >-
+    Endpoints for pushing, replacing, and deleting metric groups. Metrics are grouped by job and optional
+    additional labels.
+  humanURL: https://prometheus.io/docs/prometheus/latest/querying/api/
+  tags:
+  - Metrics
+  properties:
+  - type: OpenAPI
+    url: openapi/prometheus-metrics-api-openapi.yml
+  - type: Documentation
+    url: https://prometheus.io/docs/prometheus/latest/querying/api/
+  - type: GitHubRepository
+    url: https://github.com/prometheus/prometheus
+  - type: ChangeLog
+    url: https://github.com/prometheus/prometheus/blob/main/CHANGELOG.md
+  - type: JSONSchema
+    url: json-schema/prometheus-metrics-schema.json
+  - type: Documentation
+    url: https://prometheus.io/docs/prometheus/latest/management_api/
+  - type: Documentation
+    url: https://github.com/prometheus/pushgateway/blob/master/README.md
+  - type: GitHubRepository
+    url: https://github.com/prometheus/pushgateway
+  - type: ChangeLog
+    url: https://github.com/prometheus/pushgateway/releases
+  - type: Documentation
+    url: https://prometheus.io/docs/alerting/latest/alertmanager/
+  - type: AsyncAPI
+    url: asyncapi/prometheus-alertmanager-webhook-asyncapi.yml
+  - type: GitHubRepository
+    url: https://github.com/prometheus/alertmanager
+  - type: ChangeLog
+    url: https://github.com/prometheus/alertmanager/releases
+- aid: prometheus:prometheus-query-api
+  name: Prometheus Query API
+  description: >-
+    PromQL instant and range query endpoints for evaluating expressions against the time series database.
+  humanURL: https://prometheus.io/docs/prometheus/latest/querying/api/
+  tags:
+  - Query
+  properties:
+  - type: OpenAPI
+    url: openapi/prometheus-query-api-openapi.yml
+  - type: Documentation
+    url: https://prometheus.io/docs/prometheus/latest/querying/api/
+  - type: GitHubRepository
+    url: https://github.com/prometheus/prometheus
+  - type: ChangeLog
+    url: https://github.com/prometheus/prometheus/blob/main/CHANGELOG.md
+  - type: JSONSchema
+    url: json-schema/prometheus-metrics-schema.json
+  - type: Documentation
+    url: https://prometheus.io/docs/prometheus/latest/management_api/
+  - type: Documentation
+    url: https://github.com/prometheus/pushgateway/blob/master/README.md
+  - type: GitHubRepository
+    url: https://github.com/prometheus/pushgateway
+  - type: ChangeLog
+    url: https://github.com/prometheus/pushgateway/releases
+  - type: Documentation
+    url: https://prometheus.io/docs/alerting/latest/alertmanager/
+  - type: AsyncAPI
+    url: asyncapi/prometheus-alertmanager-webhook-asyncapi.yml
+  - type: GitHubRepository
+    url: https://github.com/prometheus/alertmanager
+  - type: ChangeLog
+    url: https://github.com/prometheus/alertmanager/releases
+- aid: prometheus:prometheus-receivers-api
+  name: Prometheus Receivers API
+  description: Endpoints for listing configured alert receivers.
+  humanURL: https://prometheus.io/docs/prometheus/latest/querying/api/
+  tags:
+  - Receivers
+  properties:
+  - type: OpenAPI
+    url: openapi/prometheus-receivers-api-openapi.yml
+  - type: Documentation
+    url: https://prometheus.io/docs/prometheus/latest/querying/api/
+  - type: GitHubRepository
+    url: https://github.com/prometheus/prometheus
+  - type: ChangeLog
+    url: https://github.com/prometheus/prometheus/blob/main/CHANGELOG.md
+  - type: JSONSchema
+    url: json-schema/prometheus-metrics-schema.json
+  - type: Documentation
+    url: https://prometheus.io/docs/prometheus/latest/management_api/
+  - type: Documentation
+    url: https://github.com/prometheus/pushgateway/blob/master/README.md
+  - type: GitHubRepository
+    url: https://github.com/prometheus/pushgateway
+  - type: ChangeLog
+    url: https://github.com/prometheus/pushgateway/releases
+  - type: Documentation
+    url: https://prometheus.io/docs/alerting/latest/alertmanager/
+  - type: AsyncAPI
+    url: asyncapi/prometheus-alertmanager-webhook-asyncapi.yml
+  - type: GitHubRepository
+    url: https://github.com/prometheus/alertmanager
+  - type: ChangeLog
+    url: https://github.com/prometheus/alertmanager/releases
+- aid: prometheus:prometheus-rules-api
+  name: Prometheus Rules API
+  description: Endpoints for retrieving loaded recording rules and alerting rules.
+  humanURL: https://prometheus.io/docs/prometheus/latest/querying/api/
+  tags:
+  - Rules
+  properties:
+  - type: OpenAPI
+    url: openapi/prometheus-rules-api-openapi.yml
+  - type: Documentation
+    url: https://prometheus.io/docs/prometheus/latest/querying/api/
+  - type: GitHubRepository
+    url: https://github.com/prometheus/prometheus
+  - type: ChangeLog
+    url: https://github.com/prometheus/prometheus/blob/main/CHANGELOG.md
+  - type: JSONSchema
+    url: json-schema/prometheus-metrics-schema.json
+  - type: Documentation
+    url: https://prometheus.io/docs/prometheus/latest/management_api/
+  - type: Documentation
+    url: https://github.com/prometheus/pushgateway/blob/master/README.md
+  - type: GitHubRepository
+    url: https://github.com/prometheus/pushgateway
+  - type: ChangeLog
+    url: https://github.com/prometheus/pushgateway/releases
+  - type: Documentation
+    url: https://prometheus.io/docs/alerting/latest/alertmanager/
+  - type: AsyncAPI
+    url: asyncapi/prometheus-alertmanager-webhook-asyncapi.yml
+  - type: GitHubRepository
+    url: https://github.com/prometheus/alertmanager
+  - type: ChangeLog
+    url: https://github.com/prometheus/alertmanager/releases
+- aid: prometheus:prometheus-silences-api
+  name: Prometheus Silences API
+  description: >-
+    Endpoints for creating, listing, updating, and expiring silences that mute matching alerts.
+  humanURL: https://prometheus.io/docs/prometheus/latest/querying/api/
+  tags:
+  - Silences
+  properties:
+  - type: OpenAPI
+    url: openapi/prometheus-silences-api-openapi.yml
+  - type: Documentation
+    url: https://prometheus.io/docs/prometheus/latest/querying/api/
+  - type: GitHubRepository
+    url: https://github.com/prometheus/prometheus
+  - type: ChangeLog
+    url: https://github.com/prometheus/prometheus/blob/main/CHANGELOG.md
+  - type: JSONSchema
+    url: json-schema/prometheus-metrics-schema.json
+  - type: Documentation
+    url: https://prometheus.io/docs/prometheus/latest/management_api/
+  - type: Documentation
+    url: https://github.com/prometheus/pushgateway/blob/master/README.md
+  - type: GitHubRepository
+    url: https://github.com/prometheus/pushgateway
+  - type: ChangeLog
+    url: https://github.com/prometheus/pushgateway/releases
+  - type: Documentation
+    url: https://prometheus.io/docs/alerting/latest/alertmanager/
+  - type: AsyncAPI
+    url: asyncapi/prometheus-alertmanager-webhook-asyncapi.yml
+  - type: GitHubRepository
+    url: https://github.com/prometheus/alertmanager
+  - type: ChangeLog
+    url: https://github.com/prometheus/alertmanager/releases
+- aid: prometheus:prometheus-status-api
+  name: Prometheus Status API
+  description: >-
+    Endpoints for retrieving Alertmanager configuration, cluster status, and version information.
+  humanURL: https://prometheus.io/docs/prometheus/latest/querying/api/
+  tags:
+  - Status
+  properties:
+  - type: OpenAPI
+    url: openapi/prometheus-status-api-openapi.yml
+  - type: Documentation
+    url: https://prometheus.io/docs/prometheus/latest/querying/api/
+  - type: GitHubRepository
+    url: https://github.com/prometheus/prometheus
+  - type: ChangeLog
+    url: https://github.com/prometheus/prometheus/blob/main/CHANGELOG.md
+  - type: JSONSchema
+    url: json-schema/prometheus-metrics-schema.json
+  - type: Documentation
+    url: https://prometheus.io/docs/prometheus/latest/management_api/
+  - type: Documentation
+    url: https://github.com/prometheus/pushgateway/blob/master/README.md
+  - type: GitHubRepository
+    url: https://github.com/prometheus/pushgateway
+  - type: ChangeLog
+    url: https://github.com/prometheus/pushgateway/releases
+  - type: Documentation
+    url: https://prometheus.io/docs/alerting/latest/alertmanager/
+  - type: AsyncAPI
+    url: asyncapi/prometheus-alertmanager-webhook-asyncapi.yml
+  - type: GitHubRepository
+    url: https://github.com/prometheus/alertmanager
+  - type: ChangeLog
+    url: https://github.com/prometheus/alertmanager/releases
+- aid: prometheus:prometheus-targets-api
+  name: Prometheus Targets API
+  description: Endpoints for discovering scrape targets and their current health status.
+  humanURL: https://prometheus.io/docs/prometheus/latest/querying/api/
+  tags:
+  - Targets
+  properties:
+  - type: OpenAPI
+    url: openapi/prometheus-targets-api-openapi.yml
+  - type: Documentation
+    url: https://prometheus.io/docs/prometheus/latest/querying/api/
+  - type: GitHubRepository
+    url: https://github.com/prometheus/prometheus
+  - type: ChangeLog
+    url: https://github.com/prometheus/prometheus/blob/main/CHANGELOG.md
+  - type: JSONSchema
+    url: json-schema/prometheus-metrics-schema.json
+  - type: Documentation
+    url: https://prometheus.io/docs/prometheus/latest/management_api/
+  - type: Documentation
+    url: https://github.com/prometheus/pushgateway/blob/master/README.md
+  - type: GitHubRepository
+    url: https://github.com/prometheus/pushgateway
+  - type: ChangeLog
+    url: https://github.com/prometheus/pushgateway/releases
+  - type: Documentation
+    url: https://prometheus.io/docs/alerting/latest/alertmanager/
+  - type: AsyncAPI
+    url: asyncapi/prometheus-alertmanager-webhook-asyncapi.yml
+  - type: GitHubRepository
+    url: https://github.com/prometheus/alertmanager
+  - type: ChangeLog
+    url: https://github.com/prometheus/alertmanager/releases
+- aid: prometheus:prometheus-tsdb-api
+  name: Prometheus TSDB API
+  description: Endpoints for querying TSDB statistics and deleting time series data.
+  humanURL: https://prometheus.io/docs/prometheus/latest/querying/api/
+  tags:
+  - TSDB
+  properties:
+  - type: OpenAPI
+    url: openapi/prometheus-tsdb-api-openapi.yml
+  - type: Documentation
+    url: https://prometheus.io/docs/prometheus/latest/querying/api/
+  - type: GitHubRepository
+    url: https://github.com/prometheus/prometheus
+  - type: ChangeLog
+    url: https://github.com/prometheus/prometheus/blob/main/CHANGELOG.md
+  - type: JSONSchema
+    url: json-schema/prometheus-metrics-schema.json
+  - type: Documentation
+    url: https://prometheus.io/docs/prometheus/latest/management_api/
+  - type: Documentation
+    url: https://github.com/prometheus/pushgateway/blob/master/README.md
+  - type: GitHubRepository
+    url: https://github.com/prometheus/pushgateway
+  - type: ChangeLog
+    url: https://github.com/prometheus/pushgateway/releases
+  - type: Documentation
+    url: https://prometheus.io/docs/alerting/latest/alertmanager/
+  - type: AsyncAPI
+    url: asyncapi/prometheus-alertmanager-webhook-asyncapi.yml
+  - type: GitHubRepository
+    url: https://github.com/prometheus/alertmanager
+  - type: ChangeLog
+    url: https://github.com/prometheus/alertmanager/releases
 common:
   - type: AgenticAccess
     url: agentic-access/prometheus-agentic-access.yml
