@@ -1,0 +1,36 @@
+{
+  "provider": "prometheus",
+  "sources": [
+    "prometheus-admin-api-openapi.yml",
+    "prometheus-alerts-api-openapi.yml",
+    "prometheus-lifecycle-api-openapi.yml",
+    "prometheus-metadata-api-openapi.yml",
+    "prometheus-metrics-api-openapi.yml",
+    "prometheus-query-api-openapi.yml",
+    "prometheus-receivers-api-openapi.yml",
+    "prometheus-rules-api-openapi.yml",
+    "prometheus-silences-api-openapi.yml",
+    "prometheus-status-api-openapi.yml",
+    "prometheus-targets-api-openapi.yml",
+    "prometheus-tsdb-api-openapi.yml"
+  ],
+  "outputs": [
+    "prometheus-admin-api-openapi.yml",
+    "prometheus-alerts-api-openapi.yml",
+    "prometheus-lifecycle-api-openapi.yml",
+    "prometheus-metadata-api-openapi.yml",
+    "prometheus-metrics-api-openapi.yml",
+    "prometheus-query-api-openapi.yml",
+    "prometheus-receivers-api-openapi.yml",
+    "prometheus-rules-api-openapi.yml",
+    "prometheus-silences-api-openapi.yml",
+    "prometheus-status-api-openapi.yml",
+    "prometheus-targets-api-openapi.yml",
+    "prometheus-tsdb-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [],
+  "skipped": []
+}
