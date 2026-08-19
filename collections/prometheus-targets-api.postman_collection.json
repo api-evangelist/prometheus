@@ -1,0 +1,354 @@
+{
+  "item": [
+    {
+      "id": "7af55ece-5e03-4c08-87cc-e8a5b0be1b4a",
+      "name": "Targets",
+      "description": {
+        "content": "Endpoints for discovering scrape targets and their current health status.",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "0ebcf50c-04c7-481f-b25f-4b9e937cb1c5",
+          "name": "Prometheus Get scrape targets",
+          "request": {
+            "name": "Prometheus Get scrape targets",
+            "description": {
+              "content": "Returns an overview of the current state of the Prometheus target discovery including active and dropped targets, their labels, and scrape health status.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "v1",
+                "targets"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "state",
+                  "value": "any",
+                  "description": "Filter targets by state."
+                }
+              ],
+              "variable": [
+                {
+                  "description": "Alertmanager server hostname",
+                  "type": "any",
+                  "value": "{{host}}",
+                  "key": "host"
+                },
+                {
+                  "description": "Alertmanager server port",
+                  "type": "any",
+                  "value": "{{port}}",
+                  "key": "port"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "20b1c932-6189-465e-969d-4ecbacfee778",
+              "name": "Targets returned successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "targets"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "state",
+                      "value": "any"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"status\": \"success\",\n  \"data\": {\n    \"activeTargets\": [\n      {\n        \"discoveredLabels\": {\n          \"key_0\": \"string\",\n          \"key_1\": \"string\",\n          \"key_2\": \"string\"\n        },\n        \"labels\": {\n          \"key_0\": \"string\"\n        },\n        \"scrapePool\": \"string\",\n        \"scrapeUrl\": \"http://r.zrfV+d2HYHxraZSHINxCBAZy5ZI5KLf5Spk6nMcu0xEoUxhlIkLtAuV,xOd\",\n        \"globalUrl\": \"string\",\n        \"lastError\": \"string\",\n        \"lastScrape\": \"2025-05-07T00:22:40.996Z\",\n        \"lastScrapeDuration\": 9253.641164647903,\n        \"health\": \"unknown\",\n        \"scrapeInterval\": \"string\",\n        \"scrapeTimeout\": \"string\"\n      },\n      {\n        \"discoveredLabels\": {\n          \"key_0\": \"string\"\n        },\n        \"labels\": {\n          \"key_0\": \"string\"\n        },\n        \"scrapePool\": \"string\",\n        \"scrapeUrl\": \"https://qSiGaOVqgVSahLbEsDaWSdchpppc.wcmNJTdQown1SUUxFJ4M3kX+G5C\",\n        \"globalUrl\": \"string\",\n        \"lastError\": \"string\",\n        \"lastScrape\": \"2007-08-17T02:47:25.655Z\",\n        \"lastScrapeDuration\": 8527.085617363982,\n        \"health\": \"down\",\n        \"scrapeInterval\": \"string\",\n        \"scrapeTimeout\": \"string\"\n      }\n    ],\n    \"droppedTargets\": [\n      {\n        \"discoveredLabels\": {\n          \"key_0\": \"string\",\n          \"key_1\": \"string\"\n        }\n      },\n      {\n        \"discoveredLabels\": {\n          \"key_0\": \"string\"\n        }\n      }\n    ]\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "93f3b08d-9f11-4597-ba4c-0faba291242e",
+          "name": "Prometheus Get target metadata",
+          "request": {
+            "name": "Prometheus Get target metadata",
+            "description": {
+              "content": "Returns metadata about metrics for individual targets. Allows filtering by target label matchers and metric name to retrieve per-target metadata contributed by scrape pools.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "v1",
+                "targets",
+                "metadata"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "match_target",
+                  "value": "<string>",
+                  "description": "Label selectors matching target labels."
+                },
+                {
+                  "disabled": false,
+                  "key": "metric",
+                  "value": "<string>",
+                  "description": "Metric name to filter by."
+                },
+                {
+                  "disabled": false,
+                  "key": "limit",
+                  "value": "<integer>",
+                  "description": "Maximum number of items to return."
+                }
+              ],
+              "variable": [
+                {
+                  "description": "Alertmanager server hostname",
+                  "type": "any",
+                  "value": "{{host}}",
+                  "key": "host"
+                },
+                {
+                  "description": "Alertmanager server port",
+                  "type": "any",
+                  "value": "{{port}}",
+                  "key": "port"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "43aab7a6-dbf2-457e-af58-d49d414c68a3",
+              "name": "Target metadata returned successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "targets",
+                    "metadata"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "match_target",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "metric",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "<integer>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"status\": \"success\",\n  \"data\": [\n    {\n      \"target\": {\n        \"key_0\": \"string\",\n        \"key_1\": \"string\",\n        \"key_2\": \"string\"\n      },\n      \"metric\": \"string\",\n      \"type\": \"string\",\n      \"help\": \"string\",\n      \"unit\": \"string\"\n    },\n    {\n      \"target\": {\n        \"key_0\": \"string\"\n      },\n      \"metric\": \"string\",\n      \"type\": \"string\",\n      \"help\": \"string\",\n      \"unit\": \"string\"\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "04c5bd77-6848-496e-a36f-ed74b24575eb",
+              "name": "Bad request",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "targets",
+                    "metadata"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "match_target",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "metric",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "<integer>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "description": {
+        "content": "Alertmanager server hostname",
+        "type": "text/plain"
+      },
+      "type": "any",
+      "value": "localhost",
+      "key": "host"
+    },
+    {
+      "description": {
+        "content": "Alertmanager server port",
+        "type": "text/plain"
+      },
+      "type": "any",
+      "value": "9093",
+      "key": "port"
+    },
+    {
+      "type": "string",
+      "value": "http://{{host}}:{{port}}",
+      "key": "baseUrl"
+    }
+  ],
+  "info": {
+    "_postman_id": "91910a9b-6db0-498c-94a7-9410a04b92f5",
+    "name": "Prometheus Alertmanager Admin Targets API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "The Prometheus Alertmanager HTTP API v2 provides endpoints for querying active alert status, creating and managing silences, retrieving receiver configurations, and checking cluster peer status. Alertmanager deduplicates, groups, and routes alert notifications to receivers such as email, PagerDuty, Slack, and OpsGenie. The API base path is /api/v2.\n\nContact Support:\n Name: Prometheus Project",
+      "type": "text/plain"
+    }
+  }
+}

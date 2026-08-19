@@ -1,0 +1,222 @@
+{
+  "item": [
+    {
+      "id": "a3ef103b-2434-4853-b04c-5fb7de5b1708",
+      "name": "Rules",
+      "description": {
+        "content": "Endpoints for retrieving loaded recording rules and alerting rules.",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "66efd424-fc10-4bae-a672-5b4c449c3161",
+          "name": "Prometheus Get rules",
+          "request": {
+            "name": "Prometheus Get rules",
+            "description": {
+              "content": "Returns a list of alerting and recording rules currently loaded. Rules include the rule expression, their last evaluation time, and any active alerts for alerting rules.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "v1",
+                "rules"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "type",
+                  "value": "<string>",
+                  "description": "Filter by rule type."
+                },
+                {
+                  "disabled": false,
+                  "key": "rule_name[]",
+                  "value": "<string>",
+                  "description": "Filter by rule name."
+                },
+                {
+                  "disabled": false,
+                  "key": "rule_name[]",
+                  "value": "<string>",
+                  "description": "Filter by rule name."
+                },
+                {
+                  "disabled": false,
+                  "key": "rule_group[]",
+                  "value": "<string>",
+                  "description": "Filter by rule group name."
+                },
+                {
+                  "disabled": false,
+                  "key": "rule_group[]",
+                  "value": "<string>",
+                  "description": "Filter by rule group name."
+                },
+                {
+                  "disabled": false,
+                  "key": "file[]",
+                  "value": "<string>",
+                  "description": "Filter by the file the rule group was loaded from."
+                },
+                {
+                  "disabled": false,
+                  "key": "file[]",
+                  "value": "<string>",
+                  "description": "Filter by the file the rule group was loaded from."
+                }
+              ],
+              "variable": [
+                {
+                  "description": "Alertmanager server hostname",
+                  "type": "any",
+                  "value": "{{host}}",
+                  "key": "host"
+                },
+                {
+                  "description": "Alertmanager server port",
+                  "type": "any",
+                  "value": "{{port}}",
+                  "key": "port"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "b61c6074-bb64-4554-b1df-d1e66e092ed9",
+              "name": "Rules returned successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "rules"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "type",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "rule_name[]",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "rule_name[]",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "rule_group[]",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "rule_group[]",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "file[]",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "file[]",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"status\": \"success\",\n  \"data\": {\n    \"groups\": [\n      {\n        \"name\": \"string\",\n        \"rules\": [\n          {\n            \"name\": \"string\",\n            \"query\": \"string\",\n            \"type\": \"alerting\",\n            \"labels\": {\n              \"key_0\": \"string\",\n              \"key_1\": \"string\"\n            },\n            \"annotations\": {\n              \"key_0\": \"string\",\n              \"key_1\": \"string\",\n              \"key_2\": \"string\"\n            },\n            \"duration\": 2576.0930554532356,\n            \"health\": \"err\",\n            \"lastError\": \"string\",\n            \"lastEvaluation\": \"1983-11-06T02:55:03.842Z\",\n            \"evaluationTime\": 4126.370676369855,\n            \"alerts\": [\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            ]\n          },\n          {\n            \"name\": \"string\",\n            \"query\": \"string\",\n            \"type\": \"alerting\",\n            \"labels\": {\n              \"key_0\": \"string\"\n            },\n            \"annotations\": {\n              \"key_0\": \"string\",\n              \"key_1\": \"string\"\n            },\n            \"duration\": 1375.0630317969858,\n            \"health\": \"err\",\n            \"lastError\": \"string\",\n            \"lastEvaluation\": \"1960-01-21T07:36:06.469Z\",\n            \"evaluationTime\": 4274.2887483893655,\n            \"alerts\": [\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            ]\n          }\n        ],\n        \"file\": \"string\",\n        \"interval\": 1313.4626089013168,\n        \"limit\": 4222,\n        \"lastEvaluation\": \"1989-03-14T16:25:39.217Z\",\n        \"evaluationTime\": 193.48180212307776\n      },\n      {\n        \"name\": \"string\",\n        \"rules\": [\n          {\n            \"name\": \"string\",\n            \"query\": \"string\",\n            \"type\": \"alerting\",\n            \"labels\": {\n              \"key_0\": \"string\",\n              \"key_1\": \"string\",\n              \"key_2\": \"string\"\n            },\n            \"annotations\": {\n              \"key_0\": \"string\",\n              \"key_1\": \"string\",\n              \"key_2\": \"string\"\n            },\n            \"duration\": 4860.453690744656,\n            \"health\": \"ok\",\n            \"lastError\": \"string\",\n            \"lastEvaluation\": \"2012-01-08T21:46:40.889Z\",\n            \"evaluationTime\": 1920.8288970039778,\n            \"alerts\": [\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            ]\n          },\n          {\n            \"name\": \"string\",\n            \"query\": \"string\",\n            \"type\": \"recording\",\n            \"labels\": {\n              \"key_0\": \"string\",\n              \"key_1\": \"string\",\n              \"key_2\": \"string\"\n            },\n            \"annotations\": {\n              \"key_0\": \"string\",\n              \"key_1\": \"string\",\n              \"key_2\": \"string\"\n            },\n            \"duration\": 879.8518810024092,\n            \"health\": \"err\",\n            \"lastError\": \"string\",\n            \"lastEvaluation\": \"1978-06-09T10:58:28.524Z\",\n            \"evaluationTime\": 2855.2867346682233,\n            \"alerts\": [\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            ]\n          }\n        ],\n        \"file\": \"string\",\n        \"interval\": 4011.830118566725,\n        \"limit\": 7651,\n        \"lastEvaluation\": \"1954-02-03T02:13:18.354Z\",\n        \"evaluationTime\": 3182.2470470800513\n      }\n    ]\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "description": {
+        "content": "Alertmanager server hostname",
+        "type": "text/plain"
+      },
+      "type": "any",
+      "value": "localhost",
+      "key": "host"
+    },
+    {
+      "description": {
+        "content": "Alertmanager server port",
+        "type": "text/plain"
+      },
+      "type": "any",
+      "value": "9093",
+      "key": "port"
+    },
+    {
+      "type": "string",
+      "value": "http://{{host}}:{{port}}",
+      "key": "baseUrl"
+    }
+  ],
+  "info": {
+    "_postman_id": "8f2cb602-4dc1-41e6-9401-3b5f7c131c9d",
+    "name": "Prometheus Alertmanager Admin Rules API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "The Prometheus Alertmanager HTTP API v2 provides endpoints for querying active alert status, creating and managing silences, retrieving receiver configurations, and checking cluster peer status. Alertmanager deduplicates, groups, and routes alert notifications to receivers such as email, PagerDuty, Slack, and OpsGenie. The API base path is /api/v2.\n\nContact Support:\n Name: Prometheus Project",
+      "type": "text/plain"
+    }
+  }
+}

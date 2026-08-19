@@ -1,0 +1,166 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Prometheus Alertmanager Admin Metadata API",
+    "version": "v0.28.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Metadata",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Prometheus Get label names",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://{host}:{port}/api/v1/labels",
+            "params": [
+              {
+                "name": "start",
+                "value": "",
+                "type": "query",
+                "description": "Start of the time range filter."
+              },
+              {
+                "name": "end",
+                "value": "",
+                "type": "query",
+                "description": "End of the time range filter."
+              },
+              {
+                "name": "match[]",
+                "value": "",
+                "type": "query",
+                "description": "Series selector(s) to restrict the label results."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Maximum number of items to return."
+              }
+            ]
+          },
+          "docs": "Returns a list of label names present in the TSDB. Optionally filtered by a time range or series selectors. Useful for building autocomplete in query UIs."
+        },
+        {
+          "info": {
+            "name": "Prometheus Get label values",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://{host}:{port}/api/v1/label/:label_name/values",
+            "params": [
+              {
+                "name": "label_name",
+                "value": "",
+                "type": "path",
+                "description": "The label name to retrieve values for."
+              },
+              {
+                "name": "start",
+                "value": "",
+                "type": "query",
+                "description": "Start of the time range filter."
+              },
+              {
+                "name": "end",
+                "value": "",
+                "type": "query",
+                "description": "End of the time range filter."
+              },
+              {
+                "name": "match[]",
+                "value": "",
+                "type": "query",
+                "description": "Series selector(s) to restrict the label value results."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Maximum number of items to return."
+              }
+            ]
+          },
+          "docs": "Returns a list of values for a given label name. Optionally filtered by a time range or series selectors. The special label name __name__ returns all metric names."
+        },
+        {
+          "info": {
+            "name": "Prometheus Query series",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://{host}:{port}/api/v1/series",
+            "params": [
+              {
+                "name": "match[]",
+                "value": "",
+                "type": "query",
+                "description": "Series selector(s). At least one required."
+              },
+              {
+                "name": "start",
+                "value": "",
+                "type": "query",
+                "description": "Start of the time range filter."
+              },
+              {
+                "name": "end",
+                "value": "",
+                "type": "query",
+                "description": "End of the time range filter."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Maximum number of items to return."
+              }
+            ]
+          },
+          "docs": "Returns the list of time series that match a certain label set. The response contains the label sets identifying each time series. At least one match[] selector must be provided."
+        },
+        {
+          "info": {
+            "name": "Prometheus Get metric metadata",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://{host}:{port}/api/v1/metadata",
+            "params": [
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Maximum number of items to return."
+              },
+              {
+                "name": "metric",
+                "value": "",
+                "type": "query",
+                "description": "Metric name to filter by. If omitted, all metrics are returned."
+              },
+              {
+                "name": "limit_per_metric",
+                "value": "",
+                "type": "query",
+                "description": "Maximum number of metadata entries to return per metric."
+              }
+            ]
+          },
+          "docs": "Returns metadata about metrics currently scraped from targets. Metadata includes the metric type (counter, gauge, histogram, summary, untyped) and help string. Multiple targets may provide metadata for the same metric."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

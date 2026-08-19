@@ -1,0 +1,68 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Prometheus Alertmanager Admin TSDB API",
+    "version": "v0.28.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "TSDB",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Prometheus Delete series",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "http://{host}:{port}/api/v1/series",
+            "params": [
+              {
+                "name": "match[]",
+                "value": "",
+                "type": "query",
+                "description": "Series selector(s) to delete. At least one required."
+              },
+              {
+                "name": "start",
+                "value": "",
+                "type": "query",
+                "description": "Start of the time range. Defaults to minimum possible time."
+              },
+              {
+                "name": "end",
+                "value": "",
+                "type": "query",
+                "description": "End of the time range. Defaults to maximum possible time."
+              }
+            ]
+          },
+          "docs": "Deletes data for a selection of series in a time range. This only creates tombstones in the TSDB; actual deletion happens on the next compaction. Requires --web.enable-admin-api flag."
+        },
+        {
+          "info": {
+            "name": "Prometheus Get TSDB statistics",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://{host}:{port}/api/v1/status/tsdb",
+            "params": [
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Maximum number of items to return."
+              }
+            ]
+          },
+          "docs": "Returns a set of properties about the Prometheus TSDB including the top series by label count, top chunks by label, most frequently changing metrics, and head statistics."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

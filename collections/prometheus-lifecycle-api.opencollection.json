@@ -1,0 +1,62 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Prometheus Alertmanager Admin Lifecycle API",
+    "version": "v0.28.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Lifecycle",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Prometheus Reload configuration",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "http://{host}:{port}/-/reload"
+          },
+          "docs": "Triggers a reload of the Prometheus configuration file and rule files. Returns 200 when the reload is successful and 500 if the reload fails. Requires --web.enable-lifecycle flag. Also triggered by sending SIGHUP to the Prometheus process."
+        },
+        {
+          "info": {
+            "name": "Prometheus Graceful shutdown",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "http://{host}:{port}/-/quit"
+          },
+          "docs": "Triggers a graceful shutdown of the Prometheus server. Returns 200 immediately while the shutdown proceeds asynchronously. Requires --web.enable-lifecycle flag. Also triggered by sending SIGTERM to the Prometheus process."
+        },
+        {
+          "info": {
+            "name": "Prometheus Health check",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://{host}:{port}/-/healthy"
+          },
+          "docs": "Returns 200 when Prometheus is healthy and ready to serve requests. Returns 500 if Prometheus is not ready. Used for Kubernetes liveness probes."
+        },
+        {
+          "info": {
+            "name": "Prometheus Readiness check",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://{host}:{port}/-/ready"
+          },
+          "docs": "Returns 200 when Prometheus is ready to serve traffic, meaning it has finished startup and is serving queries. Returns 503 if not yet ready. Used for Kubernetes readiness probes."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

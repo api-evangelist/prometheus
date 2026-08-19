@@ -1,0 +1,826 @@
+{
+  "item": [
+    {
+      "id": "c14d6815-14a5-41da-8e5e-57d1624687d6",
+      "name": "Silences",
+      "description": {
+        "content": "Endpoints for creating, listing, updating, and expiring silences that mute matching alerts.",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "def60be1-9e49-41bb-a1ea-1eee4d6b7494",
+          "name": "Prometheus List silences",
+          "request": {
+            "name": "Prometheus List silences",
+            "description": {
+              "content": "Returns a list of all silences including pending, active, and expired silences. Silences mute alerts matching their matchers for a defined time range.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "v2",
+                "silences"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "filter",
+                  "value": "<string>",
+                  "description": "Label matchers to filter silences by."
+                },
+                {
+                  "disabled": false,
+                  "key": "filter",
+                  "value": "<string>",
+                  "description": "Label matchers to filter silences by."
+                }
+              ],
+              "variable": [
+                {
+                  "description": "Alertmanager server hostname",
+                  "type": "any",
+                  "value": "{{host}}",
+                  "key": "host"
+                },
+                {
+                  "description": "Alertmanager server port",
+                  "type": "any",
+                  "value": "{{port}}",
+                  "key": "port"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "0ca6bf0f-fd49-44fd-88e2-22d5f98f8eb2",
+              "name": "Silences returned successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v2",
+                    "silences"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "filter",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "filter",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"id\": \"160b9dd1-b3e8-3980-6f22-880c5496d57d\",\n    \"status\": {\n      \"state\": \"expired\"\n    },\n    \"updatedAt\": \"2025-02-05T13:34:53.724Z\",\n    \"matchers\": [\n      {\n        \"name\": \"string\",\n        \"value\": \"string\",\n        \"isRegex\": false,\n        \"isEqual\": true\n      },\n      {\n        \"name\": \"string\",\n        \"value\": \"string\",\n        \"isRegex\": false,\n        \"isEqual\": true\n      }\n    ],\n    \"startsAt\": \"1994-12-02T17:34:20.602Z\",\n    \"endsAt\": \"2004-03-08T05:47:59.736Z\",\n    \"createdBy\": \"string\",\n    \"comment\": \"string\"\n  },\n  {\n    \"id\": \"b99e16fb-48ae-51d0-1987-9260674f9714\",\n    \"status\": {\n      \"state\": \"active\"\n    },\n    \"updatedAt\": \"1949-09-26T08:27:30.315Z\",\n    \"matchers\": [\n      {\n        \"name\": \"string\",\n        \"value\": \"string\",\n        \"isRegex\": true,\n        \"isEqual\": true\n      },\n      {\n        \"name\": \"string\",\n        \"value\": \"string\",\n        \"isRegex\": false,\n        \"isEqual\": true\n      }\n    ],\n    \"startsAt\": \"2006-09-01T17:02:59.953Z\",\n    \"endsAt\": \"1967-09-24T22:36:36.951Z\",\n    \"createdBy\": \"string\",\n    \"comment\": \"string\"\n  }\n]",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "fa5fe6e8-a59b-4d28-b9ac-98a4435c2e4a",
+              "name": "Bad request",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v2",
+                    "silences"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "filter",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "filter",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "ca841d3a-861c-48d9-b338-3c42e4dbc270",
+          "name": "Prometheus Create or update silence",
+          "request": {
+            "name": "Prometheus Create or update silence",
+            "description": {
+              "content": "Creates a new silence or updates an existing one. To update, include the ID of the existing silence. Silences mute all alerts whose labels match every matcher in the silence for the specified time period.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "v2",
+                "silences"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "description": "Alertmanager server hostname",
+                  "type": "any",
+                  "value": "{{host}}",
+                  "key": "host"
+                },
+                {
+                  "description": "Alertmanager server port",
+                  "type": "any",
+                  "value": "{{port}}",
+                  "key": "port"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"matchers\": [\n    {\n      \"name\": \"<string>\",\n      \"value\": \"<string>\",\n      \"isRegex\": \"<boolean>\",\n      \"isEqual\": true\n    },\n    {\n      \"name\": \"<string>\",\n      \"value\": \"<string>\",\n      \"isRegex\": \"<boolean>\",\n      \"isEqual\": true\n    }\n  ],\n  \"startsAt\": \"<dateTime>\",\n  \"endsAt\": \"<dateTime>\",\n  \"createdBy\": \"<string>\",\n  \"comment\": \"<string>\",\n  \"id\": \"<uuid>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "eef5b149-9b4f-4b58-b6f2-f2e98a1a97e6",
+              "name": "Silence created or updated",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v2",
+                    "silences"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"matchers\": [\n    {\n      \"name\": \"string\",\n      \"value\": \"string\",\n      \"isRegex\": false,\n      \"isEqual\": true\n    },\n    {\n      \"name\": \"string\",\n      \"value\": \"string\",\n      \"isRegex\": true,\n      \"isEqual\": true\n    }\n  ],\n  \"startsAt\": \"<dateTime>\",\n  \"endsAt\": \"<dateTime>\",\n  \"createdBy\": \"<string>\",\n  \"comment\": \"<string>\",\n  \"id\": \"<uuid>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"silenceID\": \"51ffcca3-b7f8-7006-f4c8-0a266f6a89e4\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "cb23c0a2-89e7-42ae-b47b-b2bd84a2fd4a",
+              "name": "Bad request — invalid silence definition",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v2",
+                    "silences"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"matchers\": [\n    {\n      \"name\": \"string\",\n      \"value\": \"string\",\n      \"isRegex\": false,\n      \"isEqual\": true\n    },\n    {\n      \"name\": \"string\",\n      \"value\": \"string\",\n      \"isRegex\": true,\n      \"isEqual\": true\n    }\n  ],\n  \"startsAt\": \"<dateTime>\",\n  \"endsAt\": \"<dateTime>\",\n  \"createdBy\": \"<string>\",\n  \"comment\": \"<string>\",\n  \"id\": \"<uuid>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "4615226f-d09d-44a8-9aa9-1d037568298b",
+              "name": "Silence not found (when updating by ID)",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v2",
+                    "silences"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"matchers\": [\n    {\n      \"name\": \"string\",\n      \"value\": \"string\",\n      \"isRegex\": false,\n      \"isEqual\": true\n    },\n    {\n      \"name\": \"string\",\n      \"value\": \"string\",\n      \"isRegex\": true,\n      \"isEqual\": true\n    }\n  ],\n  \"startsAt\": \"<dateTime>\",\n  \"endsAt\": \"<dateTime>\",\n  \"createdBy\": \"<string>\",\n  \"comment\": \"<string>\",\n  \"id\": \"<uuid>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "57a9568d-bea5-4d51-b01d-7233e453456f",
+          "name": "Prometheus Get silence by ID",
+          "request": {
+            "name": "Prometheus Get silence by ID",
+            "description": {
+              "content": "Returns the silence with the specified ID, including its matchers, time range, creator, and current status.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "v2",
+                "silence",
+                ":silenceID"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<uuid>",
+                  "key": "silenceID",
+                  "description": "(Required) UUID identifier of the silence."
+                },
+                {
+                  "description": "Alertmanager server hostname",
+                  "type": "any",
+                  "value": "{{host}}",
+                  "key": "host"
+                },
+                {
+                  "description": "Alertmanager server port",
+                  "type": "any",
+                  "value": "{{port}}",
+                  "key": "port"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "5d04360d-da40-4ccf-8583-5362e9f5e11a",
+              "name": "Silence returned successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v2",
+                    "silence",
+                    ":silenceID"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "silenceID",
+                      "description": "(Required) UUID identifier of the silence."
+                    },
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"c6ee1bfd-eaaf-fb1b-23de-d28be011bbe9\",\n  \"status\": {\n    \"state\": \"pending\"\n  },\n  \"updatedAt\": \"2015-08-05T01:57:30.892Z\",\n  \"matchers\": [\n    {\n      \"name\": \"string\",\n      \"value\": \"string\",\n      \"isRegex\": false,\n      \"isEqual\": true\n    },\n    {\n      \"name\": \"string\",\n      \"value\": \"string\",\n      \"isRegex\": false,\n      \"isEqual\": true\n    }\n  ],\n  \"startsAt\": \"1989-07-28T13:10:17.325Z\",\n  \"endsAt\": \"1953-11-25T08:37:06.668Z\",\n  \"createdBy\": \"string\",\n  \"comment\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "07991645-3c88-46e2-a7a0-c3a42c39c67c",
+              "name": "Silence not found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v2",
+                    "silence",
+                    ":silenceID"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "silenceID",
+                      "description": "(Required) UUID identifier of the silence."
+                    },
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "7925fc94-ab92-4195-b409-57bdad0aaf1d",
+          "name": "Prometheus Expire silence",
+          "request": {
+            "name": "Prometheus Expire silence",
+            "description": {
+              "content": "Expires a silence, setting its end time to now. Expired silences no longer mute alerts but remain visible until fully removed.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "v2",
+                "silence",
+                ":silenceID"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<uuid>",
+                  "key": "silenceID",
+                  "description": "(Required) UUID identifier of the silence."
+                },
+                {
+                  "description": "Alertmanager server hostname",
+                  "type": "any",
+                  "value": "{{host}}",
+                  "key": "host"
+                },
+                {
+                  "description": "Alertmanager server port",
+                  "type": "any",
+                  "value": "{{port}}",
+                  "key": "port"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "6ae4da38-62f2-4614-b1b5-d43e0744878d",
+              "name": "Silence expired successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v2",
+                    "silence",
+                    ":silenceID"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "silenceID",
+                      "description": "(Required) UUID identifier of the silence."
+                    },
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "baa8e1e7-31c2-4bd2-8688-b802946ba59e",
+              "name": "Silence not found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v2",
+                    "silence",
+                    ":silenceID"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "silenceID",
+                      "description": "(Required) UUID identifier of the silence."
+                    },
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "4633bc46-c072-4115-b113-42bd97d02735",
+              "name": "Internal error expiring silence",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v2",
+                    "silence",
+                    ":silenceID"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "silenceID",
+                      "description": "(Required) UUID identifier of the silence."
+                    },
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "description": {
+        "content": "Alertmanager server hostname",
+        "type": "text/plain"
+      },
+      "type": "any",
+      "value": "localhost",
+      "key": "host"
+    },
+    {
+      "description": {
+        "content": "Alertmanager server port",
+        "type": "text/plain"
+      },
+      "type": "any",
+      "value": "9093",
+      "key": "port"
+    },
+    {
+      "type": "string",
+      "value": "http://{{host}}:{{port}}",
+      "key": "baseUrl"
+    }
+  ],
+  "info": {
+    "_postman_id": "7cbf5e8d-e6b9-4785-a2cb-93caf6fa1801",
+    "name": "Prometheus Alertmanager Admin Silences API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "The Prometheus Alertmanager HTTP API v2 provides endpoints for querying active alert status, creating and managing silences, retrieving receiver configurations, and checking cluster peer status. Alertmanager deduplicates, groups, and routes alert notifications to receivers such as email, PagerDuty, Slack, and OpsGenie. The API base path is /api/v2.\n\nContact Support:\n Name: Prometheus Project",
+      "type": "text/plain"
+    }
+  }
+}

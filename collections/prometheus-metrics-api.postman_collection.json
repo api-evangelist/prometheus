@@ -1,0 +1,1204 @@
+{
+  "item": [
+    {
+      "id": "43b95069-e967-4a0e-abb1-8690e50354fe",
+      "name": "Metrics",
+      "description": {
+        "content": "Endpoints for pushing, replacing, and deleting metric groups. Metrics are grouped by job and optional additional labels.",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "f4bffa1b-9bc2-408e-b3d8-512dfa4f2b47",
+          "name": "Prometheus Replace all metrics for a job",
+          "request": {
+            "name": "Prometheus Replace all metrics for a job",
+            "description": {
+              "content": "Replaces all metrics for the specified job with the metrics in the request body. The entire group of metrics for the job is atomically replaced. Use PUT when you want to fully overwrite the existing metric set for a job.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "metrics",
+                "job",
+                ":job"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "job",
+                  "description": "(Required) The job label value for this metric group. This is the primary grouping key for pushed metrics."
+                },
+                {
+                  "description": "Alertmanager server hostname",
+                  "type": "any",
+                  "value": "{{host}}",
+                  "key": "host"
+                },
+                {
+                  "description": "Alertmanager server port",
+                  "type": "any",
+                  "value": "{{port}}",
+                  "key": "port"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/plain"
+              }
+            ],
+            "method": "PUT",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "<string>"
+            }
+          },
+          "response": [
+            {
+              "id": "e5d2aca2-a8c1-4bca-b536-8f6116d4a182",
+              "name": "Metrics replaced successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "metrics",
+                    "job",
+                    ":job"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "job",
+                      "description": "(Required) The job label value for this metric group. This is the primary grouping key for pushed metrics."
+                    },
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "# HELP batch_job_duration_seconds Duration of a batch job.\n# TYPE batch_job_duration_seconds gauge\nbatch_job_duration_seconds 42.0\n"
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "ec433eef-ebae-4808-801c-a205788ad5d4",
+              "name": "Bad request — invalid metric format or labels",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "metrics",
+                    "job",
+                    ":job"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "job",
+                      "description": "(Required) The job label value for this metric group. This is the primary grouping key for pushed metrics."
+                    },
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "# HELP batch_job_duration_seconds Duration of a batch job.\n# TYPE batch_job_duration_seconds gauge\nbatch_job_duration_seconds 42.0\n"
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "793d3bde-1acc-4443-9639-0503ce6d6e5e",
+          "name": "Prometheus Add or update metrics for a job",
+          "request": {
+            "name": "Prometheus Add or update metrics for a job",
+            "description": {
+              "content": "Adds new metrics for the specified job or updates existing metrics. Unlike PUT, POST only updates the metrics that are present in the request body while leaving other metrics in the group untouched.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "metrics",
+                "job",
+                ":job"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "job",
+                  "description": "(Required) The job label value for this metric group. This is the primary grouping key for pushed metrics."
+                },
+                {
+                  "description": "Alertmanager server hostname",
+                  "type": "any",
+                  "value": "{{host}}",
+                  "key": "host"
+                },
+                {
+                  "description": "Alertmanager server port",
+                  "type": "any",
+                  "value": "{{port}}",
+                  "key": "port"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/plain"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "<string>"
+            }
+          },
+          "response": [
+            {
+              "id": "73856b2a-59da-4316-b690-eb546adb3608",
+              "name": "Metrics added or updated successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "metrics",
+                    "job",
+                    ":job"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "job",
+                      "description": "(Required) The job label value for this metric group. This is the primary grouping key for pushed metrics."
+                    },
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "<string>"
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "2aad6acb-8849-49a0-8d1d-db54f75c8dff",
+              "name": "Bad request — invalid metric format or labels",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "metrics",
+                    "job",
+                    ":job"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "job",
+                      "description": "(Required) The job label value for this metric group. This is the primary grouping key for pushed metrics."
+                    },
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "<string>"
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "14957b11-d31c-403a-bb22-d1e9a6dfecb4",
+          "name": "Prometheus Delete all metrics for a job",
+          "request": {
+            "name": "Prometheus Delete all metrics for a job",
+            "description": {
+              "content": "Deletes all metrics for the specified job from the Pushgateway. After deletion, Prometheus will no longer scrape any metrics for this job label combination.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "metrics",
+                "job",
+                ":job"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "job",
+                  "description": "(Required) The job label value for this metric group. This is the primary grouping key for pushed metrics."
+                },
+                {
+                  "description": "Alertmanager server hostname",
+                  "type": "any",
+                  "value": "{{host}}",
+                  "key": "host"
+                },
+                {
+                  "description": "Alertmanager server port",
+                  "type": "any",
+                  "value": "{{port}}",
+                  "key": "port"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "a63735f1-2d22-4a95-a1e4-cb2014eaba32",
+              "name": "Metrics deletion accepted",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "metrics",
+                    "job",
+                    ":job"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "job",
+                      "description": "(Required) The job label value for this metric group. This is the primary grouping key for pushed metrics."
+                    },
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Accepted",
+              "code": 202,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "0385bc39-f975-4e52-a176-e82eae491f0f",
+              "name": "Bad request — invalid job label value",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "metrics",
+                    "job",
+                    ":job"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "job",
+                      "description": "(Required) The job label value for this metric group. This is the primary grouping key for pushed metrics."
+                    },
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "772d99d6-d750-4893-b816-14b7b6e877af",
+          "name": "Prometheus Replace metrics for a job with grouping labels",
+          "request": {
+            "name": "Prometheus Replace metrics for a job with grouping labels",
+            "description": {
+              "content": "Replaces all metrics for the specified job and grouping label combination. Grouping labels are additional key-value pairs appended to the path as alternating label name and value segments (e.g., /metrics/job/myjob/instance/myinstance).",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "metrics",
+                "job",
+                ":job",
+                ":labels"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "job",
+                  "description": "(Required) The job label value for this metric group. This is the primary grouping key for pushed metrics."
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "labels",
+                  "description": "(Required) Additional grouping labels as alternating label-name/label-value path segments (e.g., instance/host1/datacenter/eu)."
+                },
+                {
+                  "description": "Alertmanager server hostname",
+                  "type": "any",
+                  "value": "{{host}}",
+                  "key": "host"
+                },
+                {
+                  "description": "Alertmanager server port",
+                  "type": "any",
+                  "value": "{{port}}",
+                  "key": "port"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/plain"
+              }
+            ],
+            "method": "PUT",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "<string>"
+            }
+          },
+          "response": [
+            {
+              "id": "85d81acd-9f92-4ebc-b8b9-14fe92abfdd4",
+              "name": "Metrics replaced successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "metrics",
+                    "job",
+                    ":job",
+                    ":labels"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "job",
+                      "description": "(Required) The job label value for this metric group. This is the primary grouping key for pushed metrics."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "labels",
+                      "description": "(Required) Additional grouping labels as alternating label-name/label-value path segments (e.g., instance/host1/datacenter/eu)."
+                    },
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "<string>"
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "85a089e4-dee8-44b6-9ab1-bbac96edcc46",
+              "name": "Bad request — invalid metric format or label names",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "metrics",
+                    "job",
+                    ":job",
+                    ":labels"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "job",
+                      "description": "(Required) The job label value for this metric group. This is the primary grouping key for pushed metrics."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "labels",
+                      "description": "(Required) Additional grouping labels as alternating label-name/label-value path segments (e.g., instance/host1/datacenter/eu)."
+                    },
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "<string>"
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "309f781c-23df-4596-9d2c-db2cac2fc90f",
+          "name": "Prometheus Add or update metrics for a job with grouping labels",
+          "request": {
+            "name": "Prometheus Add or update metrics for a job with grouping labels",
+            "description": {
+              "content": "Adds or updates metrics for the specified job and grouping label combination. Only metrics included in the request body are changed; other metrics in the group are preserved.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "metrics",
+                "job",
+                ":job",
+                ":labels"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "job",
+                  "description": "(Required) The job label value for this metric group. This is the primary grouping key for pushed metrics."
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "labels",
+                  "description": "(Required) Additional grouping labels as alternating label-name/label-value path segments (e.g., instance/host1/datacenter/eu)."
+                },
+                {
+                  "description": "Alertmanager server hostname",
+                  "type": "any",
+                  "value": "{{host}}",
+                  "key": "host"
+                },
+                {
+                  "description": "Alertmanager server port",
+                  "type": "any",
+                  "value": "{{port}}",
+                  "key": "port"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/plain"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "<string>"
+            }
+          },
+          "response": [
+            {
+              "id": "0ebc753a-db5f-446b-92f6-e963e82482e0",
+              "name": "Metrics added or updated successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "metrics",
+                    "job",
+                    ":job",
+                    ":labels"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "job",
+                      "description": "(Required) The job label value for this metric group. This is the primary grouping key for pushed metrics."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "labels",
+                      "description": "(Required) Additional grouping labels as alternating label-name/label-value path segments (e.g., instance/host1/datacenter/eu)."
+                    },
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "<string>"
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "4f93e04a-35a9-4eab-9479-298ffe42bc39",
+              "name": "Bad request",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "metrics",
+                    "job",
+                    ":job",
+                    ":labels"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "job",
+                      "description": "(Required) The job label value for this metric group. This is the primary grouping key for pushed metrics."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "labels",
+                      "description": "(Required) Additional grouping labels as alternating label-name/label-value path segments (e.g., instance/host1/datacenter/eu)."
+                    },
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "<string>"
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "4cd69df2-8c71-4296-9e5a-935d33c38f7f",
+          "name": "Prometheus Delete metrics for a job with grouping labels",
+          "request": {
+            "name": "Prometheus Delete metrics for a job with grouping labels",
+            "description": {
+              "content": "Deletes all metrics for the specified job and grouping label combination. Only metrics with the exact label set specified in the path are deleted.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "metrics",
+                "job",
+                ":job",
+                ":labels"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "job",
+                  "description": "(Required) The job label value for this metric group. This is the primary grouping key for pushed metrics."
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "labels",
+                  "description": "(Required) Additional grouping labels as alternating label-name/label-value path segments (e.g., instance/host1/datacenter/eu)."
+                },
+                {
+                  "description": "Alertmanager server hostname",
+                  "type": "any",
+                  "value": "{{host}}",
+                  "key": "host"
+                },
+                {
+                  "description": "Alertmanager server port",
+                  "type": "any",
+                  "value": "{{port}}",
+                  "key": "port"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "11af419a-dbdf-4ca2-9be7-1111764a9c3a",
+              "name": "Metrics deletion accepted",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "metrics",
+                    "job",
+                    ":job",
+                    ":labels"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "job",
+                      "description": "(Required) The job label value for this metric group. This is the primary grouping key for pushed metrics."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "labels",
+                      "description": "(Required) Additional grouping labels as alternating label-name/label-value path segments (e.g., instance/host1/datacenter/eu)."
+                    },
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Accepted",
+              "code": 202,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "09dd0067-e79d-4459-b1a4-0a0c9a37a85d",
+              "name": "Bad request",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "metrics",
+                    "job",
+                    ":job",
+                    ":labels"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "job",
+                      "description": "(Required) The job label value for this metric group. This is the primary grouping key for pushed metrics."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "labels",
+                      "description": "(Required) Additional grouping labels as alternating label-name/label-value path segments (e.g., instance/host1/datacenter/eu)."
+                    },
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "37450a08-d9dc-4155-92b7-25346a7488d3",
+          "name": "Prometheus List all pushed metrics",
+          "request": {
+            "name": "Prometheus List all pushed metrics",
+            "description": {
+              "content": "Returns all currently stored metric families in JSON format, grouped by job and grouping labels. This endpoint provides a structured view of all metrics available for Prometheus to scrape.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "v1",
+                "metrics"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "description": "Alertmanager server hostname",
+                  "type": "any",
+                  "value": "{{host}}",
+                  "key": "host"
+                },
+                {
+                  "description": "Alertmanager server port",
+                  "type": "any",
+                  "value": "{{port}}",
+                  "key": "port"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "163a604f-c7d2-43ec-9e7e-1935fe94d7e3",
+              "name": "All pushed metrics returned successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "metrics"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"status\": \"success\",\n  \"data\": [\n    {\n      \"labels\": {\n        \"key_0\": \"string\"\n      },\n      \"lastPushedAt\": \"1970-12-03T17:02:57.064Z\",\n      \"metricFamilies\": {\n        \"key_0\": {\n          \"name\": \"string\",\n          \"help\": \"string\",\n          \"type\": \"HISTOGRAM\",\n          \"metric\": [\n            {\n              \"label\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"gauge\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"counter\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"timestampMs\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            },\n            {\n              \"label\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"gauge\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"counter\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"timestampMs\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            }\n          ]\n        },\n        \"key_1\": {\n          \"name\": \"string\",\n          \"help\": \"string\",\n          \"type\": \"GAUGE\",\n          \"metric\": [\n            {\n              \"label\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"gauge\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"counter\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"timestampMs\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            },\n            {\n              \"label\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"gauge\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"counter\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"timestampMs\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            }\n          ]\n        },\n        \"key_2\": {\n          \"name\": \"string\",\n          \"help\": \"string\",\n          \"type\": \"HISTOGRAM\",\n          \"metric\": [\n            {\n              \"label\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"gauge\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"counter\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"timestampMs\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            },\n            {\n              \"label\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"gauge\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"counter\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"timestampMs\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            }\n          ]\n        }\n      }\n    },\n    {\n      \"labels\": {\n        \"key_0\": \"string\",\n        \"key_1\": \"string\"\n      },\n      \"lastPushedAt\": \"2011-12-31T06:44:23.505Z\",\n      \"metricFamilies\": {\n        \"key_0\": {\n          \"name\": \"string\",\n          \"help\": \"string\",\n          \"type\": \"COUNTER\",\n          \"metric\": [\n            {\n              \"label\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"gauge\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"counter\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"timestampMs\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            },\n            {\n              \"label\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"gauge\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"counter\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"timestampMs\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            }\n          ]\n        },\n        \"key_1\": {\n          \"name\": \"string\",\n          \"help\": \"string\",\n          \"type\": \"COUNTER\",\n          \"metric\": [\n            {\n              \"label\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"gauge\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"counter\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"timestampMs\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            },\n            {\n              \"label\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"gauge\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"counter\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"timestampMs\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            }\n          ]\n        },\n        \"key_2\": {\n          \"name\": \"string\",\n          \"help\": \"string\",\n          \"type\": \"COUNTER\",\n          \"metric\": [\n            {\n              \"label\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"gauge\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"counter\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"timestampMs\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            },\n            {\n              \"label\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"gauge\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"counter\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"timestampMs\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            }\n          ]\n        }\n      }\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "description": {
+        "content": "Alertmanager server hostname",
+        "type": "text/plain"
+      },
+      "type": "any",
+      "value": "localhost",
+      "key": "host"
+    },
+    {
+      "description": {
+        "content": "Alertmanager server port",
+        "type": "text/plain"
+      },
+      "type": "any",
+      "value": "9093",
+      "key": "port"
+    },
+    {
+      "type": "string",
+      "value": "http://{{host}}:{{port}}",
+      "key": "baseUrl"
+    }
+  ],
+  "info": {
+    "_postman_id": "7df4f6d5-2aca-4610-8a32-feda38867ae4",
+    "name": "Prometheus Alertmanager Admin Metrics API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "The Prometheus Alertmanager HTTP API v2 provides endpoints for querying active alert status, creating and managing silences, retrieving receiver configurations, and checking cluster peer status. Alertmanager deduplicates, groups, and routes alert notifications to receivers such as email, PagerDuty, Slack, and OpsGenie. The API base path is /api/v2.\n\nContact Support:\n Name: Prometheus Project",
+      "type": "text/plain"
+    }
+  }
+}

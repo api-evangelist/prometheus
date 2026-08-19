@@ -1,0 +1,844 @@
+{
+  "item": [
+    {
+      "id": "4fabddfc-2e03-4c24-b099-0f79c0930f0b",
+      "name": "Alerts",
+      "description": {
+        "content": "Endpoints for listing and creating alerts in the Alertmanager.",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "ef3b4bd4-ff7a-4ed8-bea6-329be90b1181",
+          "name": "Prometheus Get active alerts",
+          "request": {
+            "name": "Prometheus Get active alerts",
+            "description": {
+              "content": "Returns a list of active alerts currently managed by Alertmanager. Supports filtering by silenced, inhibited, active state, and label matchers.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "v2",
+                "alerts"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "active",
+                  "value": "true",
+                  "description": "Only return active (non-silenced, non-inhibited) alerts."
+                },
+                {
+                  "disabled": false,
+                  "key": "silenced",
+                  "value": "false",
+                  "description": "Include silenced alerts in results."
+                },
+                {
+                  "disabled": false,
+                  "key": "inhibited",
+                  "value": "false",
+                  "description": "Include inhibited alerts in results."
+                },
+                {
+                  "disabled": false,
+                  "key": "unprocessed",
+                  "value": "false",
+                  "description": "Include unprocessed alerts that have not yet been routed."
+                },
+                {
+                  "disabled": false,
+                  "key": "filter",
+                  "value": "<string>",
+                  "description": "A list of label matchers to filter alerts by. Matchers use the syntax label=value, label!=value, label=~regex, or label!~regex."
+                },
+                {
+                  "disabled": false,
+                  "key": "filter",
+                  "value": "<string>",
+                  "description": "A list of label matchers to filter alerts by. Matchers use the syntax label=value, label!=value, label=~regex, or label!~regex."
+                },
+                {
+                  "disabled": false,
+                  "key": "receiver",
+                  "value": "<string>",
+                  "description": "Filter by receiver name."
+                }
+              ],
+              "variable": [
+                {
+                  "description": "Alertmanager server hostname",
+                  "type": "any",
+                  "value": "{{host}}",
+                  "key": "host"
+                },
+                {
+                  "description": "Alertmanager server port",
+                  "type": "any",
+                  "value": "{{port}}",
+                  "key": "port"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "c1b9d3a2-f1d5-48cb-a353-c8bedda1bf35",
+              "name": "Active alerts returned successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v2",
+                    "alerts"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "active",
+                      "value": "true"
+                    },
+                    {
+                      "key": "silenced",
+                      "value": "false"
+                    },
+                    {
+                      "key": "inhibited",
+                      "value": "false"
+                    },
+                    {
+                      "key": "unprocessed",
+                      "value": "false"
+                    },
+                    {
+                      "key": "filter",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "filter",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "receiver",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"labels\": {\n      \"key_0\": \"string\",\n      \"key_1\": \"string\"\n    },\n    \"annotations\": {\n      \"key_0\": \"string\"\n    },\n    \"startsAt\": \"1969-03-22T03:14:21.548Z\",\n    \"endsAt\": \"1947-05-09T11:55:45.967Z\",\n    \"updatedAt\": \"1960-07-11T11:57:52.086Z\",\n    \"fingerprint\": \"string\",\n    \"receivers\": [\n      {\n        \"name\": \"string\"\n      },\n      {\n        \"name\": \"string\"\n      }\n    ],\n    \"status\": {\n      \"state\": \"active\",\n      \"silencedBy\": [\n        \"string\",\n        \"string\"\n      ],\n      \"inhibitedBy\": [\n        \"string\",\n        \"string\"\n      ]\n    },\n    \"generatorURL\": \"http://T.yjfO6RgJcKvuaUx2d.YdyqquWR9QmKPZM5hkwfqH4CLe7FKe6IpVgjrNKNdacq\"\n  },\n  {\n    \"labels\": {\n      \"key_0\": \"string\",\n      \"key_1\": \"string\",\n      \"key_2\": \"string\",\n      \"key_3\": \"string\"\n    },\n    \"annotations\": {\n      \"key_0\": \"string\"\n    },\n    \"startsAt\": \"1998-08-05T19:58:51.309Z\",\n    \"endsAt\": \"1973-08-28T18:44:15.130Z\",\n    \"updatedAt\": \"1974-12-18T18:04:15.787Z\",\n    \"fingerprint\": \"string\",\n    \"receivers\": [\n      {\n        \"name\": \"string\"\n      },\n      {\n        \"name\": \"string\"\n      }\n    ],\n    \"status\": {\n      \"state\": \"unprocessed\",\n      \"silencedBy\": [\n        \"string\",\n        \"string\"\n      ],\n      \"inhibitedBy\": [\n        \"string\",\n        \"string\"\n      ]\n    },\n    \"generatorURL\": \"http://OhCzUT.dsosTTBGd7Cw6ZcapoJK,oG+HJ538z2Cpnx6ZP8x6nhDeadJz25yyvZmrJBRj\"\n  }\n]",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "d465875c-6544-49d0-886c-64798c247208",
+              "name": "Bad request — invalid filter matchers",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v2",
+                    "alerts"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "active",
+                      "value": "true"
+                    },
+                    {
+                      "key": "silenced",
+                      "value": "false"
+                    },
+                    {
+                      "key": "inhibited",
+                      "value": "false"
+                    },
+                    {
+                      "key": "unprocessed",
+                      "value": "false"
+                    },
+                    {
+                      "key": "filter",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "filter",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "receiver",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "e6a049e5-06f4-4d3a-ac7c-9887770e8b94",
+          "name": "Prometheus Post alerts",
+          "request": {
+            "name": "Prometheus Post alerts",
+            "description": {
+              "content": "Creates or updates alerts in Alertmanager. Prometheus typically calls this endpoint to send firing alerts. Each alert must include a labels map; generatorURL is optional but recommended for linking back to the triggering expression.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "v2",
+                "alerts"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "description": "Alertmanager server hostname",
+                  "type": "any",
+                  "value": "{{host}}",
+                  "key": "host"
+                },
+                {
+                  "description": "Alertmanager server port",
+                  "type": "any",
+                  "value": "{{port}}",
+                  "key": "port"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"labels\": {\n      \"key_0\": \"<string>\",\n      \"key_1\": \"<string>\",\n      \"key_2\": \"<string>\"\n    },\n    \"annotations\": {\n      \"key_0\": \"<string>\",\n      \"key_1\": \"<string>\"\n    },\n    \"startsAt\": \"<dateTime>\",\n    \"endsAt\": \"<dateTime>\",\n    \"generatorURL\": \"<uri>\"\n  },\n  {\n    \"labels\": {\n      \"key_0\": \"<string>\",\n      \"key_1\": \"<string>\"\n    },\n    \"annotations\": {\n      \"key_0\": \"<string>\",\n      \"key_1\": \"<string>\",\n      \"key_2\": \"<string>\"\n    },\n    \"startsAt\": \"<dateTime>\",\n    \"endsAt\": \"<dateTime>\",\n    \"generatorURL\": \"<uri>\"\n  }\n]",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "d3e45732-f991-48b3-8b3a-f3c5c9d82188",
+              "name": "Alerts accepted",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v2",
+                    "alerts"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "[\n  {\n    \"labels\": {\n      \"key_0\": \"string\"\n    },\n    \"annotations\": {\n      \"key_0\": \"string\",\n      \"key_1\": \"string\",\n      \"key_2\": \"string\"\n    },\n    \"startsAt\": \"2009-11-16T01:55:15.286Z\",\n    \"endsAt\": \"2000-02-15T06:05:41.231Z\",\n    \"generatorURL\": \"http://BlSDZPBckvxMxjYldHRSRbZufMwLXt.qpz6dS7CC7sTjKQ,GRE8PnVVmGBh0\"\n  },\n  {\n    \"labels\": {\n      \"key_0\": \"string\"\n    },\n    \"annotations\": {\n      \"key_0\": \"string\",\n      \"key_1\": \"string\"\n    },\n    \"startsAt\": \"2012-02-27T15:05:59.519Z\",\n    \"endsAt\": \"1988-11-29T13:02:22.220Z\",\n    \"generatorURL\": \"http://NzLh.ospED05.,cBgOLhgkaZ-X52ch4li.ex\"\n  }\n]",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "97580738-3214-4514-820a-a0f37b9e7c98",
+              "name": "Bad request — invalid alert format",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v2",
+                    "alerts"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "[\n  {\n    \"labels\": {\n      \"key_0\": \"string\"\n    },\n    \"annotations\": {\n      \"key_0\": \"string\",\n      \"key_1\": \"string\",\n      \"key_2\": \"string\"\n    },\n    \"startsAt\": \"2009-11-16T01:55:15.286Z\",\n    \"endsAt\": \"2000-02-15T06:05:41.231Z\",\n    \"generatorURL\": \"http://BlSDZPBckvxMxjYldHRSRbZufMwLXt.qpz6dS7CC7sTjKQ,GRE8PnVVmGBh0\"\n  },\n  {\n    \"labels\": {\n      \"key_0\": \"string\"\n    },\n    \"annotations\": {\n      \"key_0\": \"string\",\n      \"key_1\": \"string\"\n    },\n    \"startsAt\": \"2012-02-27T15:05:59.519Z\",\n    \"endsAt\": \"1988-11-29T13:02:22.220Z\",\n    \"generatorURL\": \"http://NzLh.ospED05.,cBgOLhgkaZ-X52ch4li.ex\"\n  }\n]",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "5c1c8cd6-aac6-4c4e-bea6-4efbc726d5a4",
+              "name": "Internal server error",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v2",
+                    "alerts"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "[\n  {\n    \"labels\": {\n      \"key_0\": \"string\"\n    },\n    \"annotations\": {\n      \"key_0\": \"string\",\n      \"key_1\": \"string\",\n      \"key_2\": \"string\"\n    },\n    \"startsAt\": \"2009-11-16T01:55:15.286Z\",\n    \"endsAt\": \"2000-02-15T06:05:41.231Z\",\n    \"generatorURL\": \"http://BlSDZPBckvxMxjYldHRSRbZufMwLXt.qpz6dS7CC7sTjKQ,GRE8PnVVmGBh0\"\n  },\n  {\n    \"labels\": {\n      \"key_0\": \"string\"\n    },\n    \"annotations\": {\n      \"key_0\": \"string\",\n      \"key_1\": \"string\"\n    },\n    \"startsAt\": \"2012-02-27T15:05:59.519Z\",\n    \"endsAt\": \"1988-11-29T13:02:22.220Z\",\n    \"generatorURL\": \"http://NzLh.ospED05.,cBgOLhgkaZ-X52ch4li.ex\"\n  }\n]",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "22e1c2a9-67bc-459e-a0f1-759f446dd6ab",
+          "name": "Prometheus Get alert groups",
+          "request": {
+            "name": "Prometheus Get alert groups",
+            "description": {
+              "content": "Returns a list of alert groups. Alertmanager groups alerts by their group labels as configured in routing rules. Each group has a receiver and a set of alerts.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "v2",
+                "alerts",
+                "groups"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "active",
+                  "value": "true",
+                  "description": "Include active alerts."
+                },
+                {
+                  "disabled": false,
+                  "key": "silenced",
+                  "value": "false",
+                  "description": "Include silenced alerts."
+                },
+                {
+                  "disabled": false,
+                  "key": "inhibited",
+                  "value": "false",
+                  "description": "Include inhibited alerts."
+                },
+                {
+                  "disabled": false,
+                  "key": "filter",
+                  "value": "<string>",
+                  "description": "Label matchers to filter by."
+                },
+                {
+                  "disabled": false,
+                  "key": "filter",
+                  "value": "<string>",
+                  "description": "Label matchers to filter by."
+                },
+                {
+                  "disabled": false,
+                  "key": "receiver",
+                  "value": "<string>",
+                  "description": "Filter by receiver name."
+                }
+              ],
+              "variable": [
+                {
+                  "description": "Alertmanager server hostname",
+                  "type": "any",
+                  "value": "{{host}}",
+                  "key": "host"
+                },
+                {
+                  "description": "Alertmanager server port",
+                  "type": "any",
+                  "value": "{{port}}",
+                  "key": "port"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "f417ad8f-9255-4f61-8796-c63ddc54602e",
+              "name": "Alert groups returned successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v2",
+                    "alerts",
+                    "groups"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "active",
+                      "value": "true"
+                    },
+                    {
+                      "key": "silenced",
+                      "value": "false"
+                    },
+                    {
+                      "key": "inhibited",
+                      "value": "false"
+                    },
+                    {
+                      "key": "filter",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "filter",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "receiver",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"labels\": {\n      \"key_0\": \"string\"\n    },\n    \"groupLabels\": {\n      \"key_0\": \"string\"\n    },\n    \"commonLabels\": {\n      \"key_0\": \"string\",\n      \"key_1\": \"string\",\n      \"key_2\": \"string\"\n    },\n    \"commonAnnotations\": {\n      \"key_0\": \"string\",\n      \"key_1\": \"string\"\n    },\n    \"externalURL\": \"https://JKqvIygNeRHv.cjdwa1yq2.MeoqQows7+TVWKebhk\",\n    \"receiver\": {\n      \"name\": \"string\"\n    },\n    \"alerts\": [\n      {\n        \"labels\": {\n          \"key_0\": \"string\",\n          \"key_1\": \"string\"\n        },\n        \"annotations\": {\n          \"key_0\": \"string\",\n          \"key_1\": \"string\"\n        },\n        \"startsAt\": \"1969-02-21T22:13:52.261Z\",\n        \"endsAt\": \"1953-01-08T02:16:00.907Z\",\n        \"updatedAt\": \"1987-04-05T03:26:33.563Z\",\n        \"fingerprint\": \"string\",\n        \"receivers\": [\n          {\n            \"name\": \"string\"\n          },\n          {\n            \"name\": \"string\"\n          }\n        ],\n        \"status\": {\n          \"state\": \"suppressed\",\n          \"silencedBy\": [\n            \"string\",\n            \"string\"\n          ],\n          \"inhibitedBy\": [\n            \"string\",\n            \"string\"\n          ]\n        },\n        \"generatorURL\": \"http://lERlLzOwIuiFSezcfXrk.pvyeslgp7R6JKgTylU58YjwRjlJcOsIrPMj5nD\"\n      },\n      {\n        \"labels\": {\n          \"key_0\": \"string\"\n        },\n        \"annotations\": {\n          \"key_0\": \"string\"\n        },\n        \"startsAt\": \"1993-09-13T02:15:59.136Z\",\n        \"endsAt\": \"2009-11-22T22:21:52.406Z\",\n        \"updatedAt\": \"1985-08-16T15:02:25.243Z\",\n        \"fingerprint\": \"string\",\n        \"receivers\": [\n          {\n            \"name\": \"string\"\n          },\n          {\n            \"name\": \"string\"\n          }\n        ],\n        \"status\": {\n          \"state\": \"unprocessed\",\n          \"silencedBy\": [\n            \"string\",\n            \"string\"\n          ],\n          \"inhibitedBy\": [\n            \"string\",\n            \"string\"\n          ]\n        },\n        \"generatorURL\": \"http://uvcHQPPPEJVhrLrTgthkTyBkTjDIEcL.fta+j+NzamkMb7ee8u5CowA5dDp-f\"\n      }\n    ]\n  },\n  {\n    \"labels\": {\n      \"key_0\": \"string\",\n      \"key_1\": \"string\"\n    },\n    \"groupLabels\": {\n      \"key_0\": \"string\",\n      \"key_1\": \"string\",\n      \"key_2\": \"string\"\n    },\n    \"commonLabels\": {\n      \"key_0\": \"string\",\n      \"key_1\": \"string\",\n      \"key_2\": \"string\",\n      \"key_3\": \"string\"\n    },\n    \"commonAnnotations\": {\n      \"key_0\": \"string\",\n      \"key_1\": \"string\"\n    },\n    \"externalURL\": \"http://ntwiZYNZEc.omemM,gUJYn\",\n    \"receiver\": {\n      \"name\": \"string\"\n    },\n    \"alerts\": [\n      {\n        \"labels\": {\n          \"key_0\": \"string\",\n          \"key_1\": \"string\",\n          \"key_2\": \"string\",\n          \"key_3\": \"string\"\n        },\n        \"annotations\": {\n          \"key_0\": \"string\",\n          \"key_1\": \"string\",\n          \"key_2\": \"string\",\n          \"key_3\": \"string\"\n        },\n        \"startsAt\": \"1963-05-14T02:32:28.566Z\",\n        \"endsAt\": \"1963-06-21T10:24:04.392Z\",\n        \"updatedAt\": \"1966-06-02T16:35:42.466Z\",\n        \"fingerprint\": \"string\",\n        \"receivers\": [\n          {\n            \"name\": \"string\"\n          },\n          {\n            \"name\": \"string\"\n          }\n        ],\n        \"status\": {\n          \"state\": \"unprocessed\",\n          \"silencedBy\": [\n            \"string\",\n            \"string\"\n          ],\n          \"inhibitedBy\": [\n            \"string\",\n            \"string\"\n          ]\n        },\n        \"generatorURL\": \"https://uryHyRYPDBFbIo.cyxyp-y\"\n      },\n      {\n        \"labels\": {\n          \"key_0\": \"string\"\n        },\n        \"annotations\": {\n          \"key_0\": \"string\"\n        },\n        \"startsAt\": \"1952-01-09T10:48:46.753Z\",\n        \"endsAt\": \"1959-02-13T23:37:08.041Z\",\n        \"updatedAt\": \"1997-01-08T07:10:17.551Z\",\n        \"fingerprint\": \"string\",\n        \"receivers\": [\n          {\n            \"name\": \"string\"\n          },\n          {\n            \"name\": \"string\"\n          }\n        ],\n        \"status\": {\n          \"state\": \"unprocessed\",\n          \"silencedBy\": [\n            \"string\",\n            \"string\"\n          ],\n          \"inhibitedBy\": [\n            \"string\",\n            \"string\"\n          ]\n        },\n        \"generatorURL\": \"https://heDJDwvQjXCuXncgpvAbFRdRG.fhmvLa70YzBfk90OnZgfT,l+Gp0NkUf77PA3\"\n      }\n    ]\n  }\n]",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "d9294e98-77f0-4ebd-b37b-0ba26095e9c4",
+              "name": "Bad request",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v2",
+                    "alerts",
+                    "groups"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "active",
+                      "value": "true"
+                    },
+                    {
+                      "key": "silenced",
+                      "value": "false"
+                    },
+                    {
+                      "key": "inhibited",
+                      "value": "false"
+                    },
+                    {
+                      "key": "filter",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "filter",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "receiver",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "a69b2186-73db-42d5-941a-be93cc9af542",
+          "name": "Prometheus Get alerts",
+          "request": {
+            "name": "Prometheus Get alerts",
+            "description": {
+              "content": "Returns a list of all active alerts currently firing or pending in Prometheus. Alerts include their labels, state, and timestamps.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "v1",
+                "alerts"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "description": "Alertmanager server hostname",
+                  "type": "any",
+                  "value": "{{host}}",
+                  "key": "host"
+                },
+                {
+                  "description": "Alertmanager server port",
+                  "type": "any",
+                  "value": "{{port}}",
+                  "key": "port"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "6f27f0b2-2877-4c7c-8aa6-af489702bade",
+              "name": "Alerts returned successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "alerts"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "description": "Alertmanager server hostname",
+                      "type": "any",
+                      "value": "{{host}}",
+                      "key": "host"
+                    },
+                    {
+                      "description": "Alertmanager server port",
+                      "type": "any",
+                      "value": "{{port}}",
+                      "key": "port"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"status\": \"success\",\n  \"data\": {\n    \"alerts\": [\n      {\n        \"labels\": {\n          \"key_0\": \"string\"\n        },\n        \"annotations\": {\n          \"key_0\": \"string\"\n        },\n        \"state\": \"pending\",\n        \"activeAt\": \"1954-01-03T02:37:57.481Z\",\n        \"value\": \"string\"\n      },\n      {\n        \"labels\": {\n          \"key_0\": \"string\"\n        },\n        \"annotations\": {\n          \"key_0\": \"string\"\n        },\n        \"state\": \"pending\",\n        \"activeAt\": \"1980-08-29T16:11:46.097Z\",\n        \"value\": \"string\"\n      }\n    ]\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "description": {
+        "content": "Alertmanager server hostname",
+        "type": "text/plain"
+      },
+      "type": "any",
+      "value": "localhost",
+      "key": "host"
+    },
+    {
+      "description": {
+        "content": "Alertmanager server port",
+        "type": "text/plain"
+      },
+      "type": "any",
+      "value": "9093",
+      "key": "port"
+    },
+    {
+      "type": "string",
+      "value": "http://{{host}}:{{port}}",
+      "key": "baseUrl"
+    }
+  ],
+  "info": {
+    "_postman_id": "821589c8-bb89-4445-b5a9-8f53c53ad977",
+    "name": "Prometheus Alertmanager Admin Alerts API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "The Prometheus Alertmanager HTTP API v2 provides endpoints for querying active alert status, creating and managing silences, retrieving receiver configurations, and checking cluster peer status. Alertmanager deduplicates, groups, and routes alert notifications to receivers such as email, PagerDuty, Slack, and OpsGenie. The API base path is /api/v2.\n\nContact Support:\n Name: Prometheus Project",
+      "type": "text/plain"
+    }
+  }
+}

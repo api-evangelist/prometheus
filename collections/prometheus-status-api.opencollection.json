@@ -1,0 +1,128 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Prometheus Alertmanager Admin Status API",
+    "version": "v0.28.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Status",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Prometheus Get Alertmanager status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://{host}:{port}/api/v2/status"
+          },
+          "docs": "Returns the current status of the Alertmanager including the current loaded configuration, cluster peers, and version information."
+        },
+        {
+          "info": {
+            "name": "Prometheus Get Alertmanager discovery status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://{host}:{port}/api/v1/alertmanagers"
+          },
+          "docs": "Returns an overview of the current state of the Prometheus Alertmanager service discovery including active and dropped Alertmanager instances."
+        },
+        {
+          "info": {
+            "name": "Prometheus Get server configuration",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://{host}:{port}/api/v1/status/config"
+          },
+          "docs": "Returns the currently loaded configuration file as a YAML string. Includes the full Prometheus configuration including scrape configs, rule files, and alerting configuration."
+        },
+        {
+          "info": {
+            "name": "Prometheus Get command-line flags",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://{host}:{port}/api/v1/status/flags"
+          },
+          "docs": "Returns the values of all command-line flag settings currently in use by the Prometheus server."
+        },
+        {
+          "info": {
+            "name": "Prometheus Get build information",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://{host}:{port}/api/v1/status/buildinfo"
+          },
+          "docs": "Returns build and version information for the Prometheus server, including version, revision, branch, build user, build date, and Go version."
+        },
+        {
+          "info": {
+            "name": "Prometheus Get runtime information",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://{host}:{port}/api/v1/status/runtimeinfo"
+          },
+          "docs": "Returns various runtime properties about the Prometheus server including the start time, storage retention, TSDB stats summary, and corruptible chunk count."
+        },
+        {
+          "info": {
+            "name": "Prometheus Get WAL replay status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://{host}:{port}/api/v1/status/walreplay"
+          },
+          "docs": "Returns the current status of the WAL (Write-Ahead Log) replay. WAL replay occurs during Prometheus startup to recover data from the most recent checkpoint."
+        },
+        {
+          "info": {
+            "name": "Prometheus Health check",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://{host}:{port}/-/healthy"
+          },
+          "docs": "Returns 200 if the Pushgateway is healthy and ready to accept pushed metrics. Used for liveness probes in Kubernetes deployments."
+        },
+        {
+          "info": {
+            "name": "Prometheus Readiness check",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://{host}:{port}/-/ready"
+          },
+          "docs": "Returns 200 when the Pushgateway is ready to serve traffic. Used for readiness probes in Kubernetes deployments."
+        },
+        {
+          "info": {
+            "name": "Prometheus Get Pushgateway status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://{host}:{port}/api/v1/status"
+          },
+          "docs": "Returns build information and runtime status for the Pushgateway server including version, revision, and configuration flags."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

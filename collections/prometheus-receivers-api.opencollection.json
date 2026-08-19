@@ -1,0 +1,29 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Prometheus Alertmanager Admin Receivers API",
+    "version": "v0.28.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Receivers",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Prometheus List receivers",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://{host}:{port}/api/v2/receivers"
+          },
+          "docs": "Returns a list of all configured alert receivers. Receivers are the notification integrations (email, Slack, PagerDuty, etc.) configured in the Alertmanager configuration file."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

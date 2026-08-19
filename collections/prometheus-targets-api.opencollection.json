@@ -1,0 +1,68 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Prometheus Alertmanager Admin Targets API",
+    "version": "v0.28.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Targets",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Prometheus Get scrape targets",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://{host}:{port}/api/v1/targets",
+            "params": [
+              {
+                "name": "state",
+                "value": "",
+                "type": "query",
+                "description": "Filter targets by state."
+              }
+            ]
+          },
+          "docs": "Returns an overview of the current state of the Prometheus target discovery including active and dropped targets, their labels, and scrape health status."
+        },
+        {
+          "info": {
+            "name": "Prometheus Get target metadata",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "http://{host}:{port}/api/v1/targets/metadata",
+            "params": [
+              {
+                "name": "match_target",
+                "value": "",
+                "type": "query",
+                "description": "Label selectors matching target labels."
+              },
+              {
+                "name": "metric",
+                "value": "",
+                "type": "query",
+                "description": "Metric name to filter by."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Maximum number of items to return."
+              }
+            ]
+          },
+          "docs": "Returns metadata about metrics for individual targets. Allows filtering by target label matchers and metric name to retrieve per-target metadata contributed by scrape pools."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
