@@ -13,11 +13,14 @@ info:
     executed without opening the underlying OpenAPI description.
   version: 1.0.0
 sourceDescriptions:
-- name: httpApi
-  url: ../openapi/prometheus-http-api-openapi.yml
+- name: adminApi
+  url: ../openapi/prometheus-admin-api-openapi.yml
   type: openapi
-- name: managementApi
-  url: ../openapi/prometheus-management-api-openapi.yml
+- name: metadataApi
+  url: ../openapi/prometheus-metadata-api-openapi.yml
+  type: openapi
+- name: tsdbApi
+  url: ../openapi/prometheus-tsdb-api-openapi.yml
   type: openapi
 workflows:
 - workflowId: delete-series-reclaim-space

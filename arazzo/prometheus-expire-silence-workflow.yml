@@ -12,8 +12,8 @@ info:
     underlying OpenAPI description.
   version: 1.0.0
 sourceDescriptions:
-- name: alertmanagerApi
-  url: ../openapi/prometheus-alertmanager-api-openapi.yml
+- name: silencesApi
+  url: ../openapi/prometheus-silences-api-openapi.yml
   type: openapi
 workflows:
 - workflowId: expire-silence

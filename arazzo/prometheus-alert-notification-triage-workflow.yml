@@ -13,11 +13,17 @@ info:
     read and executed without opening the underlying OpenAPI description.
   version: 1.0.0
 sourceDescriptions:
-- name: httpApi
-  url: ../openapi/prometheus-http-api-openapi.yml
+- name: alertsApi
+  url: ../openapi/prometheus-alerts-api-openapi.yml
   type: openapi
-- name: alertmanagerApi
-  url: ../openapi/prometheus-alertmanager-api-openapi.yml
+- name: rulesApi
+  url: ../openapi/prometheus-rules-api-openapi.yml
+  type: openapi
+- name: silencesApi
+  url: ../openapi/prometheus-silences-api-openapi.yml
+  type: openapi
+- name: statusApi
+  url: ../openapi/prometheus-status-api-openapi.yml
   type: openapi
 workflows:
 - workflowId: alert-notification-triage
@@ -71,7 +77,7 @@ workflows:
       Ask Prometheus which alerts its rule engine currently considers pending or
       firing. If the alert is absent here the expression is simply not matching
       and the problem is upstream of any notification path.
-    operationId: $sourceDescriptions.httpApi.getAlerts
+    operationId: $sourceDescriptions.alertsApi.getAlerts
     successCriteria:
     - condition: $statusCode == 200
     - condition: $response.body#/status == "success"
@@ -97,7 +103,7 @@ workflows:
       Ask Alertmanager whether the alert actually arrived, deliberately
       including silenced and inhibited alerts so a suppressed alert still shows
       up here rather than looking like it never landed.
-    operationId: $sourceDescriptions.alertmanagerApi.getAlerts
+    operationId: $sourceDescriptions.alertsApi.getAlerts
     parameters:
     - name: filter
       in: query

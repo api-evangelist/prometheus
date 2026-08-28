@@ -14,8 +14,14 @@ info:
     description.
   version: 1.0.0
 sourceDescriptions:
-- name: alertmanagerApi
-  url: ../openapi/prometheus-alertmanager-api-openapi.yml
+- name: alertsApi
+  url: ../openapi/prometheus-alerts-api-openapi.yml
+  type: openapi
+- name: receiversApi
+  url: ../openapi/prometheus-receivers-api-openapi.yml
+  type: openapi
+- name: statusApi
+  url: ../openapi/prometheus-status-api-openapi.yml
   type: openapi
 workflows:
 - workflowId: test-alert-routing

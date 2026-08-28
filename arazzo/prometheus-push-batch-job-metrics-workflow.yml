@@ -13,8 +13,14 @@ info:
     underlying OpenAPI description.
   version: 1.0.0
 sourceDescriptions:
-- name: pushgatewayApi
-  url: ../openapi/prometheus-pushgateway-api-openapi.yml
+- name: lifecycleApi
+  url: ../openapi/prometheus-lifecycle-api-openapi.yml
+  type: openapi
+- name: metricsApi
+  url: ../openapi/prometheus-metrics-api-openapi.yml
+  type: openapi
+- name: statusApi
+  url: ../openapi/prometheus-status-api-openapi.yml
   type: openapi
 workflows:
 - workflowId: push-batch-job-metrics

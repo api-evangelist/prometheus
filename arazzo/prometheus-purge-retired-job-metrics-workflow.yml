@@ -14,8 +14,8 @@ info:
     OpenAPI description.
   version: 1.0.0
 sourceDescriptions:
-- name: pushgatewayApi
-  url: ../openapi/prometheus-pushgateway-api-openapi.yml
+- name: metricsApi
+  url: ../openapi/prometheus-metrics-api-openapi.yml
   type: openapi
 workflows:
 - workflowId: purge-retired-job-metrics

@@ -12,8 +12,8 @@ info:
     read and executed without opening the underlying OpenAPI description.
   version: 1.0.0
 sourceDescriptions:
-- name: pushgatewayApi
-  url: ../openapi/prometheus-pushgateway-api-openapi.yml
+- name: metricsApi
+  url: ../openapi/prometheus-metrics-api-openapi.yml
   type: openapi
 workflows:
 - workflowId: push-grouped-metrics-lifecycle

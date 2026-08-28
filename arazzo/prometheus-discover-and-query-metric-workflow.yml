@@ -12,8 +12,11 @@ info:
     description.
   version: 1.0.0
 sourceDescriptions:
-- name: httpApi
-  url: ../openapi/prometheus-http-api-openapi.yml
+- name: metadataApi
+  url: ../openapi/prometheus-metadata-api-openapi.yml
+  type: openapi
+- name: queryApi
+  url: ../openapi/prometheus-query-api-openapi.yml
   type: openapi
 workflows:
 - workflowId: discover-and-query-metric

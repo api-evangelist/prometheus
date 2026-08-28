@@ -13,8 +13,14 @@ info:
     without opening the underlying OpenAPI description.
   version: 1.0.0
 sourceDescriptions:
-- name: httpApi
-  url: ../openapi/prometheus-http-api-openapi.yml
+- name: queryApi
+  url: ../openapi/prometheus-query-api-openapi.yml
+  type: openapi
+- name: statusApi
+  url: ../openapi/prometheus-status-api-openapi.yml
+  type: openapi
+- name: targetsApi
+  url: ../openapi/prometheus-targets-api-openapi.yml
   type: openapi
 workflows:
 - workflowId: troubleshoot-scrape-target
