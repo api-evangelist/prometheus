@@ -4,6 +4,19 @@ description: >-
   An open-source systems monitoring and alerting toolkit originally built at SoundCloud. Prometheus collects and stores
   metrics as time series data and provides a powerful query language (PromQL) for analysis.
 type: Index
+deliveryModel:
+  model: self-hosted
+  license: Apache-2.0
+  open_source: true
+  commercial: false
+  callable_host: false
+  label: Self-hosted open source · you run it yourself
+  confidence: high
+  source:
+  - license
+  - openapi
+  generated: '2026-08-28'
+  method: derived
 accessModel:
   pricing: free
   onboarding: open
@@ -476,6 +489,14 @@ apis:
   - type: ChangeLog
     url: https://github.com/prometheus/alertmanager/releases
 common:
+  - type: IssueTracker
+    url: https://github.com/prometheus/prometheus/issues
+  - type: SecurityPolicy
+    url: https://github.com/prometheus/prometheus/blob/main/SECURITY-INSIGHTS.yml
+  - type: CodeOfConduct
+    url: https://github.com/prometheus/prometheus/blob/main/CODE_OF_CONDUCT.md
+  - type: ContributionGuide
+    url: https://github.com/prometheus/prometheus/blob/main/CONTRIBUTING.md
   - type: Overlay
     url: overlays/prometheus-alertmanager-api-overlay.yaml
   - type: License
