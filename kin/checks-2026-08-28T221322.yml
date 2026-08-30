@@ -2,16 +2,16 @@
 kin_checks:
   slug: prometheus
   schema_version: 0.15.1
-  scored_at: '2026-08-27'
-  run_ts: 2026-08-27T140727
+  scored_at: '2026-08-28'
+  run_ts: 2026-08-28T221322
   note: Actionable checks only (missed + partial). earned/na are every other check
     in rubric/scoring-0.15.1.yml; counts below let you verify that.
   counts:
     total: 130
-    earned: 38
+    earned: 43
     partial: 17
-    missed: 51
-    na: 24
+    missed: 50
+    na: 20
   checks:
   - id: base_url_per_api
     status: missed
@@ -51,8 +51,6 @@ kin_checks:
   - id: rate_limits_rich
     status: missed
   - id: deprecation_policy
-    status: missed
-  - id: security_disclosure
     status: missed
   - id: webhooks_advertised
     status: missed
