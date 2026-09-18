@@ -1,8 +1,8 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
-  title: Prometheus Alertmanager Admin Rules API
-  description: The Prometheus Alertmanager HTTP API v2 provides endpoints for querying active alert status, creating and managing silences, retrieving receiver configurations, and checking cluster peer status. Alertmanager deduplicates, groups, and routes alert notifications to receivers such as email, PagerDuty, Slack, and OpsGenie. The API base path is /api/v2.
-  version: v0.28.0
+  title: Prometheus HTTP Rules API
+  description: The Prometheus HTTP API provides endpoints for executing instant and range queries using PromQL, querying metadata such as label names, label values, and series, and accessing targets, rules, alerts, and TSDB information. The API is reachable under /api/v1 on a Prometheus server and returns JSON responses with a consistent envelope containing status, data, and optional error fields.
+  version: v3.1.0
   contact:
     name: Prometheus Project
     url: https://prometheus.io/community/
@@ -11,14 +11,14 @@ info:
     url: https://www.apache.org/licenses/LICENSE-2.0
 servers:
 - url: http://{host}:{port}
-  description: Alertmanager server
+  description: Prometheus server
   variables:
     host:
       default: localhost
-      description: Alertmanager server hostname
+      description: Prometheus server hostname
     port:
-      default: '9093'
-      description: Alertmanager server port
+      default: '9090'
+      description: Prometheus server port
 tags:
 - name: Rules
   description: Endpoints for retrieving loaded recording rules and alerting rules.
@@ -69,83 +69,6 @@ paths:
                 $ref: '#/components/schemas/RulesResponse'
 components:
   schemas:
-    RuleGroup:
-      type: object
-      description: A group of recording and alerting rules.
-      required:
-      - name
-      - rules
-      properties:
-        name:
-          type: string
-          description: Group name.
-        file:
-          type: string
-          description: File the group was loaded from.
-        interval:
-          type: number
-          description: Evaluation interval in seconds.
-        limit:
-          type: integer
-          description: Maximum number of alerts this group can produce.
-        rules:
-          type: array
-          items:
-            $ref: '#/components/schemas/Rule'
-          description: List of rules in this group.
-        lastEvaluation:
-          type: string
-          format: date-time
-          description: Timestamp of the last evaluation.
-        evaluationTime:
-          type: number
-          description: Duration of the last evaluation in seconds.
-    RulesResponse:
-      type: object
-      description: Response containing recording and alerting rule groups.
-      required:
-      - status
-      - data
-      properties:
-        status:
-          type: string
-          enum:
-          - success
-          - error
-        data:
-          type: object
-          properties:
-            groups:
-              type: array
-              items:
-                $ref: '#/components/schemas/RuleGroup'
-    AlertInstance:
-      type: object
-      description: An instance of a firing or pending alert.
-      properties:
-        labels:
-          type: object
-          additionalProperties:
-            type: string
-          description: Labels of this alert instance.
-        annotations:
-          type: object
-          additionalProperties:
-            type: string
-          description: Annotations of this alert instance.
-        state:
-          type: string
-          enum:
-          - firing
-          - pending
-          description: Current alert state.
-        activeAt:
-          type: string
-          format: date-time
-          description: Time the alert became active.
-        value:
-          type: string
-          description: The value of the expression at the time of the last evaluation.
     Rule:
       type: object
       description: A recording rule or alerting rule.
@@ -201,6 +124,83 @@ components:
           items:
             $ref: '#/components/schemas/AlertInstance'
           description: Currently active alerts for alerting rules.
+    RuleGroup:
+      type: object
+      description: A group of recording and alerting rules.
+      required:
+      - name
+      - rules
+      properties:
+        name:
+          type: string
+          description: Group name.
+        file:
+          type: string
+          description: File the group was loaded from.
+        interval:
+          type: number
+          description: Evaluation interval in seconds.
+        limit:
+          type: integer
+          description: Maximum number of alerts this group can produce.
+        rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/Rule'
+          description: List of rules in this group.
+        lastEvaluation:
+          type: string
+          format: date-time
+          description: Timestamp of the last evaluation.
+        evaluationTime:
+          type: number
+          description: Duration of the last evaluation in seconds.
+    AlertInstance:
+      type: object
+      description: An instance of a firing or pending alert.
+      properties:
+        labels:
+          type: object
+          additionalProperties:
+            type: string
+          description: Labels of this alert instance.
+        annotations:
+          type: object
+          additionalProperties:
+            type: string
+          description: Annotations of this alert instance.
+        state:
+          type: string
+          enum:
+          - firing
+          - pending
+          description: Current alert state.
+        activeAt:
+          type: string
+          format: date-time
+          description: Time the alert became active.
+        value:
+          type: string
+          description: The value of the expression at the time of the last evaluation.
+    RulesResponse:
+      type: object
+      description: Response containing recording and alerting rule groups.
+      required:
+      - status
+      - data
+      properties:
+        status:
+          type: string
+          enum:
+          - success
+          - error
+        data:
+          type: object
+          properties:
+            groups:
+              type: array
+              items:
+                $ref: '#/components/schemas/RuleGroup'
 externalDocs:
-  description: Alertmanager Documentation
-  url: https://prometheus.io/docs/alerting/latest/alertmanager/
+  description: Prometheus HTTP API Documentation
+  url: https://prometheus.io/docs/prometheus/latest/querying/api/

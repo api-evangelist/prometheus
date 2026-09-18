@@ -1,36 +1,50 @@
 {
   "provider": "prometheus",
   "sources": [
-    "prometheus-admin-api-openapi.yml",
-    "prometheus-alerts-api-openapi.yml",
-    "prometheus-lifecycle-api-openapi.yml",
-    "prometheus-metadata-api-openapi.yml",
-    "prometheus-metrics-api-openapi.yml",
-    "prometheus-query-api-openapi.yml",
-    "prometheus-receivers-api-openapi.yml",
-    "prometheus-rules-api-openapi.yml",
-    "prometheus-silences-api-openapi.yml",
-    "prometheus-status-api-openapi.yml",
-    "prometheus-targets-api-openapi.yml",
-    "prometheus-tsdb-api-openapi.yml"
+    "_original/prometheus-alertmanager-api-openapi.yml",
+    "_original/prometheus-http-api-openapi.yml",
+    "_original/prometheus-management-api-openapi.yml",
+    "_original/prometheus-pushgateway-api-openapi.yml"
   ],
   "outputs": [
-    "prometheus-admin-api-openapi.yml",
     "prometheus-alerts-api-openapi.yml",
-    "prometheus-lifecycle-api-openapi.yml",
-    "prometheus-metadata-api-openapi.yml",
-    "prometheus-metrics-api-openapi.yml",
-    "prometheus-query-api-openapi.yml",
     "prometheus-receivers-api-openapi.yml",
-    "prometheus-rules-api-openapi.yml",
     "prometheus-silences-api-openapi.yml",
     "prometheus-status-api-openapi.yml",
+    "prometheus-metadata-api-openapi.yml",
+    "prometheus-query-api-openapi.yml",
+    "prometheus-rules-api-openapi.yml",
+    "prometheus-tsdb-api-openapi.yml",
     "prometheus-targets-api-openapi.yml",
-    "prometheus-tsdb-api-openapi.yml"
+    "prometheus-admin-api-openapi.yml",
+    "prometheus-lifecycle-api-openapi.yml",
+    "prometheus-metrics-api-openapi.yml"
   ],
   "archived": [],
   "errors": [],
   "warnings": [],
-  "notes": [],
-  "skipped": []
+  "notes": [
+    "sourced from openapi/_original/ (4 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "prometheus-alertmanager-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "prometheus-http-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "prometheus-management-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "prometheus-pushgateway-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "tag 'Alerts' spans 2 source specs (prometheus-alertmanager-api-openapi.yml, prometheus-http-api-openapi.yml): per-path servers applied",
+    "tag 'Status' spans 3 source specs (prometheus-alertmanager-api-openapi.yml, prometheus-http-api-openapi.yml, prometheus-pushgateway-api-openapi.yml): per-path servers applied",
+    "apis.yml register: already-registered"
+  ],
+  "skipped": [
+    "prometheus-admin-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "prometheus-alerts-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "prometheus-lifecycle-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "prometheus-metadata-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "prometheus-metrics-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "prometheus-query-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "prometheus-receivers-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "prometheus-rules-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "prometheus-silences-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "prometheus-status-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "prometheus-targets-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "prometheus-tsdb-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
 }
